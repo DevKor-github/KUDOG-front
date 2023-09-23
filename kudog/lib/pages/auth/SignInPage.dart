@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/etc/Colors.dart';
+import 'package:kudog/etc/Colors.dart';
 
 class SignInPageWidget extends StatefulWidget {
   const SignInPageWidget({Key? key}) : super(key: key);
@@ -33,6 +33,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
         appBar: AppBar(
@@ -86,7 +87,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           labelText: '이름',
                           labelStyle: TextStyle(
                             fontFamily: 'Readex Pro',
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: primaryText,
                           ),
@@ -166,7 +167,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                     labelText: 'ⓘ 학교 이메일로 입력해주세요.',
                                     labelStyle: TextStyle(
                                       fontFamily: 'Readex Pro',
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w400,
                                       color: primaryText,
                                     ),
@@ -223,13 +224,15 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0)),
-                                    backgroundColor: Colors.transparent,
-                                    textStyle: const TextStyle(
-                                        color: Colors.white,
+                                    backgroundColor: secondaryBackground,
+                                  ),
+                                  child: Text(
+                                    "인증번호 받기",
+                                    style: const TextStyle(
+                                        color: primary,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
-                                  ),
-                                  child: Text("인증번호 받기"))
+                                  ))
                             ],
                           ),
                         ),
@@ -264,7 +267,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           labelText: 'ⓘ 수신 받을 이메일을 입력해주세요.',
                           labelStyle: TextStyle(
                             fontFamily: 'Readex Pro',
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: primaryText,
                           ),
@@ -333,7 +336,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                             labelText: 'ⓘ 6-16자 / 영문 소문자, 숫자 사용가능',
                             labelStyle: TextStyle(
                               fontFamily: 'Readex Pro',
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: primaryText,
                             ),
@@ -383,7 +386,7 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           labelText: 'ⓘ 한 번 더 입력해주세요.',
                           labelStyle: TextStyle(
                             fontFamily: 'Readex Pro',
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
                             color: primaryText,
                           ),
@@ -440,15 +443,15 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                       ),
                     ),
                     Container(
-                      width: 170,
-                      margin: EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsetsDirectional.fromSTEB(6, 4, 6, 4),
                       decoration: BoxDecoration(
                         border:
                             Border.all(color: Color(0xFFCDCDCD), width: 2.0),
                         borderRadius: BorderRadius.circular(24.0),
                       ),
                       child: DropdownButton<String>(
-                        value: selectedMajor,
+                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                         onChanged: (String? newValue) {
                           setState(() {
                             selectedMajor = newValue!;
@@ -466,10 +469,13 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           fontFamily: 'Readex Pro',
                           fontSize: 12,
                         ),
-                        icon: Icon(
-                          Icons.keyboard_arrow_up,
-                          color: secondaryText,
-                          size: 24,
+                        icon: Align(
+                          alignment: Alignment.topRight,
+                          child: Icon(
+                            Icons.keyboard_arrow_up,
+                            color: secondaryText,
+                            size: 24,
+                          ),
                         ),
                         dropdownColor: secondaryBackground,
                         elevation: 2,
@@ -489,7 +495,8 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
+                            Container(
+                              width: 50,
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                               child: Text(
@@ -503,9 +510,9 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                               ),
                             ),
                             Container(
-                              width: 170,
+                              width: 160,
                               margin:
-                                  EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),
+                                  EdgeInsetsDirectional.fromSTEB(6, 4, 6, 12),
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     color: Color(0xFFCDCDCD), width: 2.0),
@@ -555,7 +562,8 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
+                            Container(
+                              width: 50,
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                               child: Text(
@@ -569,9 +577,9 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                               ),
                             ),
                             Container(
-                              width: 170,
+                              width: 160,
                               margin:
-                                  EdgeInsetsDirectional.fromSTEB(16, 4, 16, 4),
+                                  EdgeInsetsDirectional.fromSTEB(6, 4, 6, 12),
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     color: Color(0xFFCDCDCD), width: 2.0),
@@ -627,12 +635,14 @@ class _SignInPageWidgetState extends State<SignInPageWidget> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20.0)),
                       backgroundColor: primary,
-                      textStyle: const TextStyle(
+                    ),
+                    child: Text(
+                      "회원가입",
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w500),
-                    ),
-                    child: Text("회원가입"))
+                    ))
               ],
             ),
           ),

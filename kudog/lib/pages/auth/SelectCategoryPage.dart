@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/etc/Colors.dart';
-import 'package:kudog/pages/etc/TextStyles.dart';
+import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/etc/TextStyles.dart';
 
 class SelectCategoryPageWidget extends StatefulWidget {
   const SelectCategoryPageWidget({Key? key}) : super(key: key);
@@ -110,22 +110,28 @@ class _SelectCategoryPageWidgetState extends State<SelectCategoryPageWidget> {
                     ),
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      side: const BorderSide(
-                        width: 1.0,
-                        color: Colors.transparent,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      backgroundColor: primary,
-                      textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    child: Text("쿠독 시작하기"))
+                Spacer(),
+                Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    width: MediaQuery.of(context).size.width,
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          side: const BorderSide(
+                            width: 1.0,
+                            color: Colors.transparent,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          backgroundColor: primary,
+                        ),
+                        child: Text(
+                          "쿠독 시작하기",
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ))),
               ],
             ),
           ),
