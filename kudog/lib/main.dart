@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/auth/SelectCategoryPage.dart';
+import 'package:kudog/pages/ViewMainPage.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,8 +14,8 @@ class MainApp extends StatelessWidget {
       title: "Login",
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
-      initialRoute: "/SelectCategory",
-      home: SelectCategoryPageWidget(),
+      // initialRoute: "/ViewMainPage",
+      home: ViewMainPageWidget(),
     );
   }
 }
