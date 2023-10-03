@@ -22,7 +22,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    bool empty = true; // TODO : empty assign방식 변경 예정
+    bool empty = false; // TODO : empty assign방식 변경 예정
     return Scaffold(
       backgroundColor: Color(0xFFCE4040),
       body: Column(
