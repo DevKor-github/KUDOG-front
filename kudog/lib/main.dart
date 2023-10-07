@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/ViewMainPage.dart';
+import 'package:kudog/pages/home/ViewMainPage.dart';
 
 void main() {
   runApp(const MainApp());
