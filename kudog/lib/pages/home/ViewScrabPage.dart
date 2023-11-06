@@ -129,7 +129,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
                                           ViewPostDetailPageWidget()));
                             },
                             child: Container(
-                                padding: EdgeInsets.fromLTRB(30, 10, 30, 15),
+                                padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
                                 width: MediaQuery.of(context).size.width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,7 +194,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
                                           ViewPostDetailPageWidget()));
                             },
                             child: Container(
-                                padding: EdgeInsets.fromLTRB(30, 10, 30, 15),
+                                padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
                                 width: MediaQuery.of(context).size.width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,10 +224,10 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
                                           ),
                                           GestureDetector(
                                               onTap: () {
-                                                changeIcon(0);
+                                                changeIcon(1);
                                               },
                                               child: ImageIcon(
-                                                AssetImage(iconStates[0]
+                                                AssetImage(iconStates[1]
                                                     ? "assets/images/icon_9.png"
                                                     : "assets/images/icon_10.png"),
                                                 color: Color(0xFFCE4040),
@@ -259,7 +259,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
                                           ViewPostDetailPageWidget()));
                             },
                             child: Container(
-                                padding: EdgeInsets.fromLTRB(30, 10, 30, 15),
+                                padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
                                 width: MediaQuery.of(context).size.width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,10 +289,10 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
                                           ),
                                           GestureDetector(
                                               onTap: () {
-                                                changeIcon(0);
+                                                changeIcon(2);
                                               },
                                               child: ImageIcon(
-                                                AssetImage(iconStates[0]
+                                                AssetImage(iconStates[2]
                                                     ? "assets/images/icon_9.png"
                                                     : "assets/images/icon_10.png"),
                                                 color: Color(0xFFCE4040),
