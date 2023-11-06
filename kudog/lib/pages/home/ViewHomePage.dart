@@ -223,7 +223,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                     child: Visibility(
                         visible: _isWidgetVisible,
                         child: Container(
-                            height: MediaQuery.of(context).size.height * 0.38,
+                            height: MediaQuery.of(context).size.height * 0.3,
                             decoration: ShapeDecoration(
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -302,24 +302,16 @@ class alertCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                      child: Text(
-                        '쿠독 서비스 인스타그램 친구 태그 이벤트 하고있어요!\n@kudog_email',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                          height: 0,
-                        ),
-                      ),
-                    ),
-                  ],
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: Text(
+                  '쿠독 서비스 인스타그램 친구 태그 이벤트 하고있어요!\n@kudog_email',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w700,
+                    height: 0,
+                  ),
                 ),
               ),
               Container(
