@@ -1,5 +1,5 @@
 import 'package:kudog/pages/auth/SelectCategoryPage.dart';
-import 'package:kudog/pages/auth/SignInPage.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/home/ViewHotPage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
