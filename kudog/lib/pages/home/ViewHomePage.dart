@@ -13,7 +13,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool _isWidgetVisible = false;
-
+  double alertRatio = 0.33;
+  String selectedCategory = 'KUPID 전체';
   List<bool> iconStates = [false, false, false];
   List<String> upperCategories = ["KUPID 전체", "컴퓨터학과", "디자인조형학부", "미디어학부"];
   List<String> lowerCategories = ["학부 공지사항", "대학원", "진로정보", "채용정보"];
@@ -46,6 +47,18 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     print(_isWidgetVisible);
     setState(() {
       _isWidgetVisible = false;
+    });
+  }
+
+  void _extendWidget() {
+    setState(() {
+      alertRatio = 1;
+    });
+  }
+
+  void _shrinkWidget() {
+    setState(() {
+      alertRatio = 0.33;
     });
   }
 
@@ -153,6 +166,30 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   ),
                                 ),
                               ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                  ),
+                                  alignment: AlignmentDirectional.center,
+                                  value: selectedCategory,
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedCategory = newValue!;
+                                    });
+                                  },
+                                  items: upperCategories
+                                      .map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    },
+                                  ).toList(),
+                                ),
+                              ),
                               const Divider(
                                   thickness: 0.5, color: Color(0xffCDCDCD)),
                               Container(
@@ -207,23 +244,25 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   ))
                             ],
                           ),
-                          Column(
-                            children: [
-                              noticeCard(),
-                              noticeCard(),
-                              noticeCard(),
-                              noticeCard(),
-                              noticeCard(),
-                              noticeCard(),
-                            ],
-                          ),
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                noticeCard(),
+                                noticeCard(),
+                                noticeCard(),
+                                noticeCard(),
+                                noticeCard(),
+                              ],
+                            ),
+                          )
                         ],
                       )),
                   Positioned(
                     child: Visibility(
                         visible: _isWidgetVisible,
                         child: Container(
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height:
+                                MediaQuery.of(context).size.height * alertRatio,
                             decoration: ShapeDecoration(
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
@@ -269,8 +308,46 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                         Container(width: 20),
                                       ],
                                     )),
-                                alertCard(),
-                                alertCard(),
+                                Container(
+                                    child: Column(
+                                  children: [
+                                    alertCard(),
+                                    alertCard(),
+                                  ],
+                                )),
+                                Expanded(
+                                    child: GestureDetector(
+                                        onTap: alertRatio == 0.33
+                                            ? _extendWidget
+                                            : _shrinkWidget,
+                                        child: Container(
+                                            child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            alertRatio == 0.33
+                                                ? Icon(
+                                                    Icons.keyboard_arrow_down)
+                                                : Icon(Icons.keyboard_arrow_up),
+                                            Container(
+                                                margin:
+                                                    EdgeInsets.only(bottom: 8),
+                                                child: Text(
+                                                  alertRatio == 0.33
+                                                      ? "더보기"
+                                                      : "간략히",
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 12,
+                                                    fontFamily: 'Noto Sans KR',
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 0,
+                                                  ),
+                                                ))
+                                          ],
+                                        ))))
                               ],
                             ))),
                   ),
