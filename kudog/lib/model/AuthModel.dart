@@ -1,10 +1,10 @@
-class User {
+class LoginUser {
   String? email;
   String? password;
 
-  User({this.email, this.password});
+  LoginUser({this.email, this.password});
 
-  User.fromJson(Map<String, dynamic> json) {
+  LoginUser.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     password = json['password'];
   }

@@ -14,6 +14,7 @@ class ViewHomePageWidget extends StatefulWidget {
 class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  late List<Notice> noticeList;
 
   bool _isWidgetVisible = false;
   double alertRatio = 0.33;
@@ -37,6 +38,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   @override
   void initState() {
     super.initState();
+    Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
+    ;
   }
 
   void _showWidget() {
@@ -74,8 +77,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(
       builder: (context, noticeService, child) {
-        noticeService.getAllNotices(1);
-        List<Notice> noticeList = noticeService.noticeList;
+        noticeList = noticeService.noticeList;
         return Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Color(0xFFCE4040),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -16,6 +16,7 @@ class ViewPostDetailPageWidget extends StatefulWidget {
 class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isClicked = false;
+  late NoticeDetail _noticeDetail;
   void changeIcon() {
     setState(() {
       isClicked = !isClicked;
@@ -25,6 +26,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   void initState() {
     super.initState();
+    Provider.of<NoticeService>(context, listen: false).getNotice(widget.id);
   }
 
   @override
@@ -35,14 +37,72 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      noticeService.getNotice(widget.id);
-      NoticeDetail _noticeDetail = noticeService.noticeDetail;
-
+      _noticeDetail = noticeService.noticeDetail;
+      var document = parse(_noticeDetail.content);
+      String extractedText = parse(document.body!.text).documentElement!.text;
       return Scaffold(
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
-        body: SafeArea(
-          top: true,
+        bottomSheet: Container(
+            height: 66,
+            width: MediaQuery.sizeOf(context).width,
+            decoration: BoxDecoration(
+              color: Color(0xFFCE4040),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 4,
+                  color: Color(0x55000000),
+                  offset: Offset(0, 2),
+                )
+              ],
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                      child: ImageIcon(
+                        color: Color(0xffFFFFFF),
+                        AssetImage(
+                          "assets/images/icon_13.png",
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      changeIcon();
+                    },
+                    child: Container(
+                      child: ImageIcon(
+                        color: Color(0xffFFFFFF),
+                        AssetImage(
+                          isClicked
+                              ? "assets/images/icon_15.png"
+                              : "assets/images/icon_16.png",
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                    child: ImageIcon(
+                      color: Color(0xffFFFFFF),
+                      AssetImage(
+                        "assets/images/icon_14.png",
+                      ),
+                    ),
+                  ),
+                ])),
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
@@ -182,73 +242,12 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       Container(
                           padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                           child: SingleChildScrollView(
-                            child: Html(
-                              data: _noticeDetail.content,
-                            ),
+                            child: Text(extractedText),
                           )),
                     ],
                   ),
                 ),
               ),
-              Container(
-                  height: 66,
-                  width: MediaQuery.sizeOf(context).width,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFCE4040),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 4,
-                        color: Color(0x55000000),
-                        offset: Offset(0, 2),
-                      )
-                    ],
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
-                            child: ImageIcon(
-                              color: Color(0xffFFFFFF),
-                              AssetImage(
-                                "assets/images/icon_13.png",
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            changeIcon();
-                          },
-                          child: Container(
-                            child: ImageIcon(
-                              color: Color(0xffFFFFFF),
-                              AssetImage(
-                                isClicked
-                                    ? "assets/images/icon_15.png"
-                                    : "assets/images/icon_16.png",
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                          child: ImageIcon(
-                            color: Color(0xffFFFFFF),
-                            AssetImage(
-                              "assets/images/icon_14.png",
-                            ),
-                          ),
-                        ),
-                      ]))
             ],
           ),
         ),

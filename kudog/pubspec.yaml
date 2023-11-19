@@ -1,10 +1,10 @@
 name: kudog
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: '>=3.2.0-131.0.dev <4.0.0'
+  sdk: ">=3.2.0-131.0.dev <4.0.0"
 
 dependencies:
   flutter:
@@ -15,7 +15,6 @@ dependencies:
   http_parser: ^4.0.2
   flutter_html: ^3.0.0-alpha.6
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -23,7 +22,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  fonts: 
+  fonts:
     - family: NotoSans-Regular
       fonts:
         - asset: assets/fonts/NotoSans-Regular.ttf
@@ -32,4 +31,3 @@ flutter:
         - asset: assets/fonts/ReadexPro-Regular.ttf
   assets:
     - assets/images/
-        

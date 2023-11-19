@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:kudog/model/UserModel.dart';
+import 'package:kudog/model/AuthModel.dart';
 
 class SignInService extends ChangeNotifier {
   late UserToken userToken;
-  Future<void> SignIn(User user) async {
+  Future<void> SignIn(LoginUser user) async {
     Map<String, dynamic> data = user.toJson();
     try {
       Response response =

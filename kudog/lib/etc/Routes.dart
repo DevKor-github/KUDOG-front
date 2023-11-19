@@ -9,7 +9,7 @@ import 'package:kudog/pages/home/ViewSubscribePage.dart';
 
 var namedRoutes = {
   '/SelectCategoryPage': (context) => SelectCategoryPageWidget(),
-  '/SignInPage': (context) => SignInPageWidget(),
+  '/SignInPage': (context) => SignUpPageWidget(),
   '/ViewHomePage': (context) => ViewHomePageWidget(),
   '/ViewMyPage': (context) => ViewMyPageWidget(),
   '/ViewScrabPage': (context) => ViewScrabPageWidget(),
