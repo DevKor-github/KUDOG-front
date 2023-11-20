@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/auth/SignUpPage.dart';
+import 'package:kudog/pages/home/ViewMainPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignUpService.dart';
@@ -24,7 +24,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
-      home: SignUpPageWidget(),
+      home: ViewMainPageWidget(),
     );
   }
 }

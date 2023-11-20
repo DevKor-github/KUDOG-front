@@ -16,7 +16,6 @@ class ViewPostDetailPageWidget extends StatefulWidget {
 class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isClicked = false;
-  late NoticeDetail _noticeDetail;
   void changeIcon() {
     setState(() {
       isClicked = !isClicked;
@@ -37,9 +36,14 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      _noticeDetail = noticeService.noticeDetail;
-      var document = parse(_noticeDetail.content);
-      String extractedText = parse(document.body!.text).documentElement!.text;
+      NoticeDetail _noticeDetail = noticeService.noticeDetail;
+      var document;
+      String? extractedText;
+      if (_noticeDetail.id != null) {
+        document = parse(_noticeDetail.content);
+        extractedText = parse(document.body!.text).documentElement!.text;
+      }
+
       return Scaffold(
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
@@ -103,153 +107,163 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                   ),
                 ])),
         body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(25, 52, 25, 0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        width: 99,
-                        height: 19,
-                        child: Text(
-                          _noticeDetail.provider!,
-                          style: TextStyle(
-                            color: Color(0xFFCE4040),
-                            fontSize: 12,
-                            fontFamily: 'Noto Sans KR',
-                            fontWeight: FontWeight.w700,
-                            height: 0,
-                          ),
-                        ),
-                      ),
-                      Container(
-                          child: Text(
-                        _noticeDetail.title!,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                          height: 0,
-                        ),
-                      )),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                        child: Row(
+          child: noticeService.noticeDetail!.id == null
+              ? Container()
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.fromLTRB(25, 52, 25, 0),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                  height: 19.08,
-                                  child: Text(
-                                    _noticeDetail.writer!,
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                      color: Color(0xFF7E7E7E),
-                                      fontSize: 12,
-                                      fontFamily: 'Noto Sans KR',
-                                      fontWeight: FontWeight.w700,
-                                      height: 0,
-                                    ),
-                                  ),
+                            Container(
+                              width: 99,
+                              height: 19,
+                              child: Text(
+                                _noticeDetail.provider!,
+                                style: TextStyle(
+                                  color: Color(0xFFCE4040),
+                                  fontSize: 12,
+                                  fontFamily: 'Noto Sans KR',
+                                  fontWeight: FontWeight.w700,
+                                  height: 0,
                                 ),
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  width: 100,
-                                  height: 19.08,
-                                  child: Text(
-                                    _noticeDetail.date!,
-                                    style: TextStyle(
-                                      color: Color(0xFF7E7E7E),
-                                      fontSize: 12,
-                                      fontFamily: 'Noto Sans KR',
-                                      fontWeight: FontWeight.w500,
-                                      height: 0,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Container(
-                                    height: 19.08,
-                                    alignment: Alignment.topLeft,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        24, 0, 0, 0),
-                                    child: ImageIcon(
-                                      size: 14,
-                                      AssetImage("assets/images/icon_11.png"),
-                                      color: Color(0xFF7E7E7E),
-                                    )),
-                                Container(
-                                  height: 19.08,
-                                  alignment: Alignment.topLeft,
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      3, 0, 0, 0),
-                                  child: Text(
-                                    "${_noticeDetail.view!}",
-                                    style: TextStyle(
-                                      color: Color(0xFF7E7E7E),
-                                      fontSize: 12,
-                                      fontFamily: 'Noto Sans KR',
-                                      fontWeight: FontWeight.w500,
-                                      height: 0,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                    height: 19.08,
-                                    alignment: Alignment.topLeft,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        20, 0, 0, 0),
-                                    child: ImageIcon(
-                                      size: 14,
-                                      AssetImage("assets/images/icon_12.png"),
-                                      color: Color(0xFF7E7E7E),
-                                    )),
-                                Container(
-                                    height: 19.08,
-                                    alignment: Alignment.topLeft,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        3, 0, 0, 0),
-                                    child: Text(
-                                      "${_noticeDetail.scrapCount!}",
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                        color: Color(0xFF7E7E7E),
-                                        fontSize: 12,
-                                        fontFamily: 'Noto Sans KR',
-                                        fontWeight: FontWeight.w500,
-                                        height: 0,
+                            Container(
+                                child: Text(
+                              _noticeDetail.title!,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 24,
+                                fontFamily: 'Noto Sans KR',
+                                fontWeight: FontWeight.w700,
+                                height: 0,
+                              ),
+                            )),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                        height: 19.08,
+                                        child: Text(
+                                          _noticeDetail.writer!,
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(
+                                            color: Color(0xFF7E7E7E),
+                                            fontSize: 12,
+                                            fontFamily: 'Noto Sans KR',
+                                            fontWeight: FontWeight.w700,
+                                            height: 0,
+                                          ),
+                                        ),
                                       ),
-                                    )),
-                              ],
-                            )
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        width: 100,
+                                        height: 19.08,
+                                        child: Text(
+                                          _noticeDetail.date!,
+                                          style: TextStyle(
+                                            color: Color(0xFF7E7E7E),
+                                            fontSize: 12,
+                                            fontFamily: 'Noto Sans KR',
+                                            fontWeight: FontWeight.w500,
+                                            height: 0,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                          height: 19.08,
+                                          alignment: Alignment.topLeft,
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  24, 0, 0, 0),
+                                          child: ImageIcon(
+                                            size: 14,
+                                            AssetImage(
+                                                "assets/images/icon_11.png"),
+                                            color: Color(0xFF7E7E7E),
+                                          )),
+                                      Container(
+                                        height: 19.08,
+                                        alignment: Alignment.topLeft,
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            3, 0, 0, 0),
+                                        child: Text(
+                                          "${_noticeDetail.view!}",
+                                          style: TextStyle(
+                                            color: Color(0xFF7E7E7E),
+                                            fontSize: 12,
+                                            fontFamily: 'Noto Sans KR',
+                                            fontWeight: FontWeight.w500,
+                                            height: 0,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                          height: 19.08,
+                                          alignment: Alignment.topLeft,
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  20, 0, 0, 0),
+                                          child: ImageIcon(
+                                            size: 14,
+                                            AssetImage(
+                                                "assets/images/icon_12.png"),
+                                            color: Color(0xFF7E7E7E),
+                                          )),
+                                      Container(
+                                          height: 19.08,
+                                          alignment: Alignment.topLeft,
+                                          padding:
+                                              EdgeInsetsDirectional.fromSTEB(
+                                                  3, 0, 0, 0),
+                                          child: Text(
+                                            "${_noticeDetail.scrapCount!}",
+                                            textAlign: TextAlign.right,
+                                            style: TextStyle(
+                                              color: Color(0xFF7E7E7E),
+                                              fontSize: 12,
+                                              fontFamily: 'Noto Sans KR',
+                                              fontWeight: FontWeight.w500,
+                                              height: 0,
+                                            ),
+                                          )),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
+                                child: SingleChildScrollView(
+                                  child: Text(extractedText!),
+                                ))
                           ],
                         ),
                       ),
-                      Container(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
-                          child: SingleChildScrollView(
-                            child: Text(extractedText),
-                          )),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       );
     });

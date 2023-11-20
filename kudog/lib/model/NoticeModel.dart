@@ -25,7 +25,6 @@ class Notice {
 }
 
 class NoticeDetail {
-  //글 상세 정보
   int? id;
   String? title;
   String? content;

@@ -39,18 +39,15 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   void initState() {
     super.initState();
     Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
-    ;
   }
 
   void _showWidget() {
-    print(_isWidgetVisible);
     setState(() {
       _isWidgetVisible = true;
     });
   }
 
   void _hideWidget() {
-    print(_isWidgetVisible);
     setState(() {
       _isWidgetVisible = false;
     });
@@ -265,31 +262,45 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                 ],
                               ),
                               SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    noticeCard(
-                                        id: noticeList[0].id!,
-                                        title: noticeList[0].title!,
-                                        date: noticeList[0].date!),
-                                    noticeCard(
-                                        id: noticeList[1].id!,
-                                        title: noticeList[1].title!,
-                                        date: noticeList[1].date!),
-                                    noticeCard(
-                                        id: noticeList[2].id!,
-                                        title: noticeList[2].title!,
-                                        date: noticeList[2].date!),
-                                    noticeCard(
-                                        id: noticeList[3].id!,
-                                        title: noticeList[3].title!,
-                                        date: noticeList[3].date!),
-                                    noticeCard(
-                                        id: noticeList[4].id!,
-                                        title: noticeList[4].title!,
-                                        date: noticeList[4].date!),
-                                  ],
-                                ),
-                              )
+                                  child: noticeService.noticeList.length == 0
+                                      ? Column()
+                                      // : Column(
+                                      //     children: [
+                                      //       noticeCard(
+                                      //           id: noticeList[0].id!,
+                                      //           title: noticeList[0].title!,
+                                      //           date: noticeList[0].date!),
+                                      //       noticeCard(
+                                      //           id: noticeList[1].id!,
+                                      //           title: noticeList[1].title!,
+                                      //           date: noticeList[1].date!),
+                                      //       noticeCard(
+                                      //           id: noticeList[2].id!,
+                                      //           title: noticeList[2].title!,
+                                      //           date: noticeList[2].date!),
+                                      //       noticeCard(
+                                      //           id: noticeList[3].id!,
+                                      //           title: noticeList[3].title!,
+                                      //           date: noticeList[3].date!),
+                                      //       noticeCard(
+                                      //           id: noticeList[4].id!,
+                                      //           title: noticeList[4].title!,
+                                      //           date: noticeList[4].date!),
+                                      //     ],
+                                      //   ),
+                                      : ListView.builder(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: 6,
+                                          itemBuilder: (context, index) {
+                                            print(noticeList[index].title!);
+                                            return noticeCard(
+                                                id: noticeList[index].id!,
+                                                title: noticeList[index].title!,
+                                                date: noticeList[index].date!);
+                                          },
+                                        ))
                             ],
                           )),
                       Positioned(

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/Category.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
 import 'package:kudog/model/MailModel.dart';
+import 'package:kudog/pages/auth/SelectCategoryPage.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:provider/provider.dart';
 
@@ -14,8 +18,8 @@ class SignUpPageWidget extends StatefulWidget {
 
 class _SignUpPageWidgetState extends State<SignUpPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  String selectedValue1 = "1학년";
-  String selectedValue2 = "23학번";
+  String selectedGrade = "1학년";
+  String selectedId = "23학번";
   String selectedMajor = "컴퓨터학과";
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -24,14 +28,53 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
   TextEditingController pwController = TextEditingController();
   TextEditingController pwConfirmController = TextEditingController();
 
+  int _timerValue = 180; // 3분을 초로 표현
+  late Timer _timer;
+  bool _timerVisible = false;
+  bool _noticeVisible = false;
+  bool isSame = false;
+
   @override
   void initState() {
     super.initState();
+    Majors.sort((a, b) => a.compareTo(b));
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void startTimer() {
+    _noticeVisible = true;
+    const oneSecond = const Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSecond,
+      (Timer timer) {
+        setState(() {
+          if (_timerValue < 1) {
+            timer.cancel();
+            _timerVisible = false;
+          } else {
+            _timerValue -= 1;
+          }
+        });
+      },
+    );
+    _timerVisible = true;
+  }
+
+  String formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    String secondsStr = remainingSeconds.toString().padLeft(2, '0');
+    return '$minutesStr:$secondsStr';
+  }
+
+  void stopTimer() {
+    _timer.cancel();
+    _timerVisible = false;
   }
 
   @override
@@ -117,6 +160,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                   12, 0, 0, 0),
                                           child: ElevatedButton(
                                               onPressed: () {
+                                                startTimer();
                                                 SendMail mail = SendMail(
                                                     email:
                                                         emailController.text);
@@ -144,16 +188,29 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                               ))),
                                     ],
                                   ),
+                                  !signupService.isKorea
+                                      ? Message(
+                                          text: "이메일이 유효하지 않습니다.",
+                                          color: Color(0xFFCE4040),
+                                          visible: _timerVisible)
+                                      : Message(
+                                          text: '인증번호를 발송했습니다.',
+                                          color: Color(0xFF06C755),
+                                          visible: _timerVisible),
                                   Container(
                                       padding: EdgeInsets.only(top: 6),
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          EmailInputForm(
+                                          CodeInputForm(
+                                              visible: _timerVisible &&
+                                                  signupService.isKorea,
+                                              value: _timerValue,
                                               controller: codeController,
-                                              type: "인증번호",
-                                              label: "ⓘ 인증번호를 입력해주세요."),
+                                              label: "ⓘ 인증번호를 입력해 주세요",
+                                              isVerified:
+                                                  signupService.isVerified),
                                           Container(
                                               height: MediaQuery.of(context)
                                                       .size
@@ -167,6 +224,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                   .fromSTEB(12, 0, 0, 0),
                                               child: ElevatedButton(
                                                   onPressed: () {
+                                                    stopTimer();
                                                     VerifyMail mail =
                                                         VerifyMail(
                                                             email:
@@ -201,7 +259,20 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                             FontWeight.w500),
                                                   ))),
                                         ],
-                                      ))
+                                      )),
+                                  signupService.isSend
+                                      ? signupService.isVerified
+                                          ? Message(
+                                              text: '인증되었습니다.',
+                                              color: Color(0xFF06C755),
+                                              visible: _noticeVisible)
+                                          : Message(
+                                              text: '잘못된 인증번호입니다.',
+                                              color: Color(0xFFCE4040),
+                                              visible: _noticeVisible)
+                                      : Padding(
+                                          padding: EdgeInsets.all(0),
+                                        )
                                 ],
                               ),
                             ],
@@ -212,14 +283,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           controller: subscribeController,
                           type: "구독용 이메일",
                           label: "ⓘ 수신 받을 이메일을 입력해주세요"),
-                      InputForm(
-                        controller: subscribeController,
+                      PWInputForm(
+                        controller: pwController,
                         type: "비밀번호",
                         label: "ⓘ 6-16자 / 영문 소문자, 숫자 사용가능",
                       ),
-                      InputForm(
-                        controller: subscribeController,
-                        type: "",
+                      PWInputForm(
+                        controller: pwConfirmController,
+                        type: pwController.text,
                         label: "ⓘ 한 번 더 입력해주세요.",
                       ),
                       Column(
@@ -254,11 +325,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 setState(() {
                                   selectedMajor = newValue!;
                                 });
+                                print(selectedMajor);
                               },
-                              items: <String>[
-                                '컴퓨터학과',
-                                '데이터과학과'
-                              ].map<DropdownMenuItem<String>>((String value) {
+                              items: Majors.map<DropdownMenuItem<String>>(
+                                  (String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
@@ -319,24 +389,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
-                                      value: selectedValue2,
+                                      value: selectedId,
                                       onChanged: (String? newValue) {
                                         setState(() {
-                                          selectedValue2 = newValue!;
+                                          selectedId = newValue!;
                                         });
+                                        print(selectedId);
                                       },
-                                      items: <String>[
-                                        '14학번',
-                                        '15학번',
-                                        '16학번',
-                                        '17학번',
-                                        '18학번',
-                                        '19학번',
-                                        '20학번',
-                                        '21학번',
-                                        '22학번',
-                                        '23학번',
-                                      ].map<DropdownMenuItem<String>>(
+                                      items: Ids.map<DropdownMenuItem<String>>(
                                           (String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
@@ -387,21 +447,16 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
-                                      value: selectedValue1,
+                                      value: selectedGrade,
                                       onChanged: (String? newValue) {
                                         setState(() {
-                                          selectedValue1 = newValue!;
+                                          selectedGrade = newValue!;
                                         });
+                                        print(selectedGrade);
                                       },
-                                      items: <String>[
-                                        '1학년',
-                                        '2학년',
-                                        '3학년',
-                                        '4학년',
-                                        '5학년',
-                                        '6학년',
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String value) {
+                                      items:
+                                          Grades.map<DropdownMenuItem<String>>(
+                                              (String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
                                           child: Text(value),
@@ -440,10 +495,18 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                               subscribeController.text,
                                           portalEmail: emailController.text,
                                           password: pwController.text,
-                                          major: "컴퓨터학과",
-                                          studentId: "19",
-                                          grade: 3);
+                                          major: selectedMajor,
+                                          studentId: selectedId,
+                                          grade: int.parse(selectedGrade));
                                       signupService.SignUp(user);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SelectCategoryPageWidget(
+                                                    email: emailController.text,
+                                                    password: pwController.text,
+                                                  )));
                                     }
                                   : () {
                                       showDialog(
@@ -466,7 +529,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                     CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   Text(
-                                                    "이메일 인증 후 후원 글을 작성할 수 있습니다.",
+                                                    "이메일 인증 후 회원가입할 수 있습니다.",
                                                   ),
                                                 ],
                                               ),
@@ -512,6 +575,103 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
         ),
       );
     });
+  }
+}
+
+class CodeInputForm extends StatefulWidget {
+  const CodeInputForm(
+      {super.key,
+      required this.visible,
+      required this.value,
+      required this.controller,
+      required this.label,
+      required this.isVerified});
+  final bool visible;
+  final int value;
+  final TextEditingController controller;
+  final String label;
+  final bool isVerified;
+  @override
+  _CodeInputFormState createState() => _CodeInputFormState();
+}
+
+class _CodeInputFormState extends State<CodeInputForm> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    String secondsStr = remainingSeconds.toString().padLeft(2, '0');
+    return '$minutesStr:$secondsStr';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.only(left: 15),
+        height: MediaQuery.of(context).size.height * 0.06,
+        width: MediaQuery.of(context).size.width * 0.55,
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(width: 2, color: Color(0xFFCDCDCD)),
+            borderRadius: BorderRadius.circular(208),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.38,
+              child: TextFormField(
+                controller: widget.controller,
+                autofocus: true,
+                autofillHints: [AutofillHints.email],
+                obscureText: false,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  labelText: widget.label,
+                  labelStyle: TextStyle(
+                    fontFamily: 'Readex Pro',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: primaryText,
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+            widget.isVerified
+                ? Visibility(
+                    visible: widget.visible,
+                    child: Container(
+                      child: Text(
+                        formatTime(widget.value),
+                        style: TextStyle(
+                          color: Color(0xFFDA4949),
+                          fontSize: 14,
+                          fontFamily: 'Noto Sans KR',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  )
+                : Visibility(
+                    visible: widget.visible,
+                    child: Container(
+                        child: Image.asset("assets/images/verified.png",
+                            width: 14, height: 14, color: Color(0xff06C755))),
+                  ),
+          ],
+        ));
   }
 }
 
@@ -576,6 +736,35 @@ class EmailInputForm extends StatelessWidget {
         ),
         keyboardType: TextInputType.emailAddress,
       ),
+    );
+  }
+}
+
+class Message extends StatelessWidget {
+  const Message(
+      {super.key,
+      required this.text,
+      required this.color,
+      required this.visible});
+  final String text;
+  final Color color;
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: visible,
+      child: Container(
+          padding: EdgeInsets.fromLTRB(20, 4, 0, 2),
+          child: Text(
+            'ⓘ ' + text,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontFamily: 'Noto Sans KR',
+              fontWeight: FontWeight.w400,
+            ),
+          )),
     );
   }
 }
@@ -662,6 +851,125 @@ class InputForm extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
           ),
         ),
+      ],
+    );
+  }
+}
+
+class PWInputForm extends StatefulWidget {
+  const PWInputForm(
+      {super.key,
+      required this.controller,
+      required this.type,
+      required this.label});
+  final TextEditingController controller;
+  final String type;
+  final String label;
+
+  @override
+  _PWInputFormState createState() => _PWInputFormState();
+}
+
+class _PWInputFormState extends State<PWInputForm> {
+  bool isPassed = false;
+  bool isSame = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    isSame = widget.controller.text == widget.type;
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        widget.type == "비밀번호"
+            ? Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+                child: Text(
+                  widget.type,
+                  style: TextStyle(
+                    fontFamily: 'Readex Pro',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: secondaryText,
+                  ),
+                ),
+              )
+            : Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+              ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: TextFormField(
+            onChanged: (value) {
+              if (value == null) {
+                isPassed = false;
+              } else if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(value)) {
+                isPassed = true;
+              }
+            },
+            controller: widget.controller,
+            autofocus: true,
+            autofillHints: [AutofillHints.email],
+            obscureText: false,
+            decoration: InputDecoration(
+              labelText: widget.label,
+              labelStyle: TextStyle(
+                fontFamily: 'Readex Pro',
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: primaryText,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFCDCDCD),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: primary,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: alternate,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: alternate,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              filled: true,
+              fillColor: secondaryBackground,
+              contentPadding: EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ),
+        Message(
+            text: widget.type == "비밀번호"
+                ? '6-16자 영문 소문자, 숫자를 사용하세요.'
+                : '비밀번호가 일치하지 않습니다.',
+            color: Color(0xFFCE4040),
+            visible: widget.type == "비밀번호" ? !isPassed : !isSame)
       ],
     );
   }

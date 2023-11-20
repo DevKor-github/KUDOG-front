@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:kudog/model/NoticeModel.dart';
 
 class NoticeService extends ChangeNotifier {
-  late NoticeDetail noticeDetail; //가져오는 공지 - id로 인덱싱(API 호출)
+  NoticeDetail noticeDetail = NoticeDetail(); //가져오는 공지 - id로 인덱싱(API 호출)
   List<Notice> noticeList = []; //가져오는 모든 공지
 
-  Future<void> getAllNotices(int page) async {
+  void getAllNotices(int page) async {
     try {
       Response response = await Dio().get(
-        "http://54.180.85.164:3050/notice/list/bydate?page=1",
+        "http://54.180.85.164:3050/notice/list/bydate?page=${page}",
       );
 
       if (response.statusCode == 200) {
@@ -30,7 +30,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getNotice(int id) async {
+  Future<void> getNotice(int id) async {
     try {
       Response response = await Dio().get(
         "http://54.180.85.164:3050/notice/info/${id}",
@@ -46,5 +46,6 @@ class NoticeService extends ChangeNotifier {
       print("GET 요청 에러");
       print(e.toString());
     }
+    notifyListeners();
   }
 }
