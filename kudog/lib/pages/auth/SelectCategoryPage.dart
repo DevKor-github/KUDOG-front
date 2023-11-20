@@ -125,7 +125,7 @@ class _SelectCategoryPageWidgetState extends State<SelectCategoryPageWidget> {
                           onPressed: () {
                             LoginUser user = LoginUser(
                                 email: widget.email, password: widget.password);
-                            signInservice.SignIn(user);
+                            signInservice.Signin(user);
                             if (signInservice.successLogin) {
                               Navigator.push(
                                   context,

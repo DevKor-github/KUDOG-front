@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
-import 'package:kudog/model/MailModel.dart';
-import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart';
+import 'package:kudog/service/SignInService.dart';
 import 'package:provider/provider.dart';
-import 'package:charcode/ascii.dart';
-import 'package:charcode/html_entity.dart';
-import 'package:dio/dio.dart';
-
-
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key? key}) : super(key: key);
@@ -19,33 +13,9 @@ class LoginPageWidget extends StatefulWidget {
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final Dio _dio = Dio();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  Future<void> _login(String email, String password) async {
-    try {
-      final Map<String, dynamic> data = {
-        'email' : emailController.text,
-        'password' : passwordController.text,
-      };
-
-      final response = await _dio.post(
-        'http://54.180.85.164/login',
-        data: FormData.fromMap(data),
-      );
-
-      if (response.statusCode == 200) {
-        print('login success');
-      }
-      else {
-        print('fail : ${response.data}');
-      }
-    } catch (error) {
-        print('ERROR! : ${error}');
-    }
-  }
 
   @override
   void initState() {
@@ -61,43 +31,42 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SignUpService>(builder: (context, signupService, child) {
+    return Consumer<SignInService>(builder: (context, signInService, child) {
       return Scaffold(
         body: Stack(
           children: [
             Column(
               children: [
                 Container(
-                  height: 64,
-                  decoration:   BoxDecoration(
-                    color: Color(0xFFCE4040),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 88,
-                        margin: EdgeInsets.all(15),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/images/icon_6.png",
-                              width: 21.21,
-                              height: 21.34,
-                              color: Colors.white,
-                            ),
-                            Image.asset(
-                              "assets/images/icon_7.png",
-                              width: 36.79,
-                              height: 21.34,
-                              color: Colors.white,
-                            ),
-                          ],
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFCE4040),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 88,
+                          margin: EdgeInsets.all(15),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                "assets/images/icon_6.png",
+                                width: 21.21,
+                                height: 21.34,
+                                color: Colors.white,
+                              ),
+                              Image.asset(
+                                "assets/images/icon_7.png",
+                                width: 36.79,
+                                height: 21.34,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ),
+                      ],
+                    )),
                 Container(
                   padding: EdgeInsets.fromLTRB(60, 80, 30, 30),
                   child: Row(
@@ -122,7 +91,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
                             color: Color(0xFF7E7E7E),
-                            decoration: TextDecoration.underline, // 텍스트 주위에 선 추가
+                            decoration:
+                                TextDecoration.underline, // 텍스트 주위에 선 추가
                             decorationColor: Color(0xFFD9D9D9), // 텍스트 테두리 색상
                             decorationThickness: 0.2, // 텍스트 테두리 두께
                           ),
@@ -131,7 +101,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     ],
                   ),
                 ),
-
                 SizedBox(
                   width: 357,
                   height: 47,
@@ -183,8 +152,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           width: 62,
                           child: Image.asset('assets/images/icon_18.png'),
                         ),
-
-
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
@@ -195,34 +162,33 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
                                 color: Color(0xFFA4A4A4),
-
                               ),
                             ),
                             obscureText: true,
                             obscuringCharacter: '●',
                             style: TextStyle(color: Color(0xFFA4A4A4)),
-
                           ),
                         ),
                       ], // children
                     ),
                   ),
                 ),
-
-
                 SizedBox(height: 30),
-                Container(
-                  width: 357,
-                  height: 47,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFCE4040),
-                    borderRadius: BorderRadius.circular(58),
-                  ),
-                  child: GestureDetector(
-                    onTap: () {
-                      _login();
-                    }
+                GestureDetector(
+                  onTap: () {
+                    LoginUser user = LoginUser(
+                        email: emailController.text,
+                        password: passwordController.text);
+                    signInService.Signin(user);
+                  },
+                  child: Container(
+                    width: 357,
+                    height: 47,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFCE4040),
+                      borderRadius: BorderRadius.circular(58),
+                    ),
                     child: Text(
                       "로그인",
                       style: TextStyle(
@@ -247,22 +213,30 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  width: 357,
-                  height: 47,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(58),
-                    border: Border.all(color: Color(0xFFCE4040), width: 2),
-                  ),
-                  child: Text(
-                    "회원가입",
-                    style: TextStyle(
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: Color(0xFFCE4040),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SignUpPageWidget()));
+                  },
+                  child: Container(
+                    width: 357,
+                    height: 47,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(58),
+                      border: Border.all(color: Color(0xFFCE4040), width: 2),
+                    ),
+                    child: Text(
+                      "회원가입",
+                      style: TextStyle(
+                        fontFamily: 'Noto Sans KR',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: Color(0xFFCE4040),
+                      ),
                     ),
                   ),
                 ),
@@ -278,10 +252,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     ),
                   ),
                 ),
-
               ],
             )
-
           ],
         ),
       );

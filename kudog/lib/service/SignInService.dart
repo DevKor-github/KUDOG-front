@@ -6,11 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SignInService extends ChangeNotifier {
   late UserToken userToken;
   bool successLogin = false;
-  Future<void> SignIn(LoginUser user) async {
-    SharedPreferences sharedPrefernce = await SharedPreferences.getInstance();
+  void Signin(LoginUser user) async {
+    // SharedPreferences sharedPrefernce = await SharedPreferences.getInstance();
 
     Map<String, dynamic> data = user.toJson();
     try {
+      print("aa");
       Response response =
           await Dio().post("http://54.180.85.164:3050/auth/login", data: data);
       if (response.statusCode == 200) {
@@ -18,8 +19,8 @@ class SignInService extends ChangeNotifier {
 
         successLogin = true;
         userToken = UserToken.fromJson(response.data);
-        sharedPrefernce.setString("access_token", userToken.accessToken!);
-        sharedPrefernce.setString("refresh_token", userToken.refreshToken!);
+        // sharedPrefernce.setString("access_token", userToken.accessToken!);
+        // sharedPrefernce.setString("refresh_token", userToken.refreshToken!);
       } else {
         print("POST 요청 실패");
         print("Status Code : ${response.statusCode}");
