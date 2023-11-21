@@ -11,8 +11,6 @@ String selectedMajor = '컴퓨터학과'; // 기본값 설정
 String selectedValue2 = '21학번'; // 기본값 설정
 String selectedValue1 = '2학년'; // 기본값 설정
 
-
-
 class ChangemyinfoPageWidget extends StatefulWidget {
   const ChangemyinfoPageWidget({Key? key}) : super(key: key);
 
