@@ -5,8 +5,7 @@ import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 
 class ViewHomePageWidget extends StatefulWidget {
-  const ViewHomePageWidget({Key? key}) : super(key: key);
-
+  const ViewHomePageWidget({super.key});
   @override
   _ViewHomePageWidgetState createState() => _ViewHomePageWidgetState();
 }

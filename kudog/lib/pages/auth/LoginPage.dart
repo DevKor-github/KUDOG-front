@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
+import 'package:kudog/pages/home/ViewMainPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key? key}) : super(key: key);
@@ -20,12 +23,11 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -33,6 +35,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   Widget build(BuildContext context) {
     return Consumer<SignInService>(builder: (context, signInService, child) {
       return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             Column(
@@ -118,7 +121,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           child: Image.asset('assets/images/icon_17.png'),
                         ),
                         Expanded(
-                          child: TextField(
+                          child: TextFormField(
+                            controller: emailController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "example@korea.ac.kr",
@@ -153,7 +157,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           child: Image.asset('assets/images/icon_18.png'),
                         ),
                         Expanded(
-                          child: TextField(
+                          child: TextFormField(
+                            controller: passwordController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "비밀번호",
@@ -174,12 +179,60 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   ),
                 ),
                 SizedBox(height: 30),
-                GestureDetector(
-                  onTap: () {
+                InkWell(
+                  onTap: () async {
                     LoginUser user = LoginUser(
                         email: emailController.text,
                         password: passwordController.text);
+
                     signInService.Signin(user);
+                    if (signInService.successLogin) {
+                      SharedPreferences sharedPreferences =
+                          await SharedPreferences.getInstance();
+                      print("로그인 :" +
+                          sharedPreferences.getString("access_token")!);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ViewMainPageWidget()));
+                    } else {
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              title: Column(
+                                children: <Widget>[
+                                  Text("로그인 실패"),
+                                ],
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "아이디와 비밀번호를 확인해주십시오.",
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.all(20.0),
+                                    foregroundColor: primary,
+                                    textStyle: const TextStyle(fontSize: 20),
+                                  ),
+                                  child: Text("확인"),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                          });
+                    }
                   },
                   child: Container(
                     width: 357,

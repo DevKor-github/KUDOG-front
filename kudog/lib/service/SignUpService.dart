@@ -10,8 +10,8 @@ class SignUpService extends ChangeNotifier {
   Future<void> SignUp(SignUpUser user) async {
     Map<String, dynamic> data = user.toJson();
     try {
-      Response response =
-          await Dio().post("http://54.180.85.164:3050/auth/signup", data: data);
+      Response response = await Dio()
+          .post("https://api.kudog.devkor.club/auth/signup", data: data);
       if (response.statusCode == 200) {
         print("POST 요청 성공");
       } else {
@@ -28,7 +28,7 @@ class SignUpService extends ChangeNotifier {
     Map<String, dynamic> data = mail.toJson();
     try {
       Response response = await Dio()
-          .post("http://54.180.85.164:3050/mail/verify/send", data: data);
+          .post("https://api.kudog.devkor.club/mail/verify/send", data: data);
       if (response.statusCode == 200) {
         isSend = true;
         isKorea = true;
@@ -49,7 +49,7 @@ class SignUpService extends ChangeNotifier {
     Map<String, dynamic> data = mail.toJson();
     try {
       Response response = await Dio()
-          .post("http://54.180.85.164:3050/mail/verify/check", data: data);
+          .post("https://api.kudog.devkor.club/mail/verify/check", data: data);
       if (response.statusCode == 200) {
         print("POST 요청 성공");
         isVerified = true;

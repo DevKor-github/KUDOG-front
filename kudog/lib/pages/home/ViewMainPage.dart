@@ -40,7 +40,6 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             boxShadow: <BoxShadow>[
-              // 그림자효과
               BoxShadow(
                 color: Colors.grey,
                 blurRadius: 10,

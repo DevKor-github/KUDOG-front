@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/etc/TextStyles.dart';
 import 'package:kudog/model/AuthModel.dart';
-import 'package:kudog/pages/home/ViewHomePage.dart';
+import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:provider/provider.dart';
 
@@ -131,7 +131,7 @@ class _SelectCategoryPageWidgetState extends State<SelectCategoryPageWidget> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ViewHomePageWidget())); //로그인 페이지로 가도록 수정
+                                          LoginPageWidget())); //로그인 페이지로 가도록 수정
                             }
                           },
                           style: ElevatedButton.styleFrom(
