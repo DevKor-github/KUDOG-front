@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:kudog/pages/auth/ChangepwPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
+=======
+>>>>>>> 267a1dd99a2cc8ad7a1cc5fd16f0fb780d386205
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/pages/auth/ChangepwPage.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -23,7 +26,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+<<<<<<< HEAD
       title: "Changepw",
+=======
+      title: "Kudog",
+>>>>>>> 267a1dd99a2cc8ad7a1cc5fd16f0fb780d386205
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
