@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/pages/auth/ChangepwPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/pages/auth/ChangepwPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignUpService.dart';
@@ -21,11 +23,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: "Login",
+      title: "Changepw",
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
-      home: LoginPageWidget(),
+      home: ChangepwPageWidget(),
     );
   }
 }
