@@ -1,19 +1,13 @@
-import 'package:kudog/pages/ViewHomePage.dart';
-import 'package:kudog/pages/ViewHotPage.dart';
-import 'package:kudog/pages/ViewMainPage.dart';
-import 'package:kudog/pages/ViewMyPage.dart';
-import 'package:kudog/pages/ViewScrabPage.dart';
-import 'package:kudog/pages/ViewSubscribePage.dart';
-import 'package:kudog/pages/auth/SelectCategoryPage.dart';
-import 'package:kudog/pages/auth/SignInPage.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart';
+import 'package:kudog/pages/home/ViewHotPage.dart';
+import 'package:kudog/pages/home/ViewMyPage.dart';
+import 'package:kudog/pages/home/ViewScrabPage.dart';
+import 'package:kudog/pages/home/ViewSubscribePage.dart';
 
 var namedRoutes = {
-  '/SelectCategoryPage': (context) => SelectCategoryPageWidget(),
-  '/SignInPage': (context) => SignInPageWidget(),
-  '/ViewHomePage': (context) => ViewHomePageWidget(),
+  '/SignInPage': (context) => SignUpPageWidget(),
   '/ViewMyPage': (context) => ViewMyPageWidget(),
   '/ViewScrabPage': (context) => ViewScrabPageWidget(),
-  '/ViewMainPage': (context) => ViewMainPageWidget(),
   '/ViewHotPage': (context) => ViewHotPageWidget(),
   '/ViewSubscribePage': (context) => ViewSubscribePageWidget()
 };
