@@ -33,6 +33,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
       ViewScrabPageWidget(),
       ViewMyPageWidget()
     ];
+
     return Scaffold(
         body: SafeArea(
           child: _widgetOptions.elementAt(_selectedIndex),

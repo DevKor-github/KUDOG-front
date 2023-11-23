@@ -30,36 +30,6 @@ class SignInService extends ChangeNotifier {
       print(e.toString());
     }
   }
-
-  void SignOut() async {
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    try {
-      String? token = sharedPreference.getString("access_token");
-      Response response = await Dio().delete(
-        "https://api.kudog.devkor.club/auth/logout",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print('DELETE 요청 성공');
-        sharedPreference.remove("access_token");
-        sharedPreference.remove("refresh_token");
-      } else {
-        print('DELETE 요청 실패');
-        print('Status Code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('DELETE 요청 에러');
-      print(e.toString());
-    }
-
-    notifyListeners();
-  }
 }
 
 class UserLoginProvider with ChangeNotifier {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
+import 'package:kudog/pages/auth/FindPwPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
 import 'package:kudog/service/SignInService.dart';
@@ -294,17 +295,25 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Container(
-                  child: Text(
-                    "비밀번호 찾기",
-                    style: TextStyle(
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                      color: Color(0xFFD33434),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FindpwPageWidget()));
+                  },
+                  child: Container(
+                    child: Text(
+                      "비밀번호 찾기",
+                      style: TextStyle(
+                        fontFamily: 'Noto Sans KR',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                        color: Color(0xFFD33434),
+                      ),
                     ),
                   ),
-                ),
+                )
               ],
             )
           ],

@@ -37,7 +37,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   @override
   void initState() {
     super.initState();
-    Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
+    Provider.of<NoticeService>(context, listen: false).getAllNotices();
   }
 
   void _showWidget() {
@@ -73,7 +73,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(
       builder: (context, noticeService, child) {
-        noticeList = noticeService.noticeList;
+        noticeList = noticeService.noticeList.notices!;
         return Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Color(0xFFCE4040),
@@ -261,7 +261,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                 ],
                               ),
                               SingleChildScrollView(
-                                  child: noticeService.noticeList.length == 0
+                                  child: noticeService
+                                              .noticeList.notices!.length ==
+                                          0
                                       ? Column()
                                       // : Column(
                                       //     children: [
