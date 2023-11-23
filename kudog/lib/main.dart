@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,6 +15,8 @@ void main() {
     ChangeNotifierProvider(create: (context) => SignInService()),
     ChangeNotifierProvider(create: (context) => SignUpService()),
     ChangeNotifierProvider(create: (context) => ChangePwService()),
+    ChangeNotifierProvider(create: (context) => UserInfoService()),
+    ChangeNotifierProvider(create: (context) => CategoryService()),
   ], child: const MainApp()));
 }
 

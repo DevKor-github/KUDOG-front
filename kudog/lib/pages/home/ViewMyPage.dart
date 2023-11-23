@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/model/UserModel.dart';
+import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
 
 class ViewMyPageWidget extends StatefulWidget {
@@ -25,7 +26,10 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SignUpService>(builder: (context, signupService, child) {
+    return Consumer<UserInfoService>(
+        builder: (context, userInfoService, child) {
+      userInfoService.getUserInfo();
+      User userInfo = userInfoService.user;
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
         body: SingleChildScrollView(
@@ -110,7 +114,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "홍길동",
+                            userInfo.name!,
                             style: TextStyle(
                               fontFamily: "Noto Sans KR",
                               fontSize: 25,
