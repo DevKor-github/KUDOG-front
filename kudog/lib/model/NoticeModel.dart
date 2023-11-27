@@ -96,6 +96,7 @@ class NoticeList {
         notices!.add(new Notice.fromJson(v));
       });
     }
+
     page = json['page'];
     totalNotice = json['totalNotice'];
     totalPage = json['totalPage'];

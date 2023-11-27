@@ -14,15 +14,18 @@ class ViewHomePageWidget extends StatefulWidget {
 class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  late List<Notice> noticeList;
+  List<Notice> noticeList = [];
 
   bool _isWidgetVisible = false;
   double alertRatio = 0.33;
   List<bool> iconStates = [false, false, false];
-  List<String> upperCategories = [""];
-  List<String> lowerCategories = ["학부 공지사항", "대학원", "진로정보", "채용정보"];
-  List<bool> lowerStates = [false, false, false, false];
-  String? selectedCategory = "정보대학";
+  List<String> upperCategories = ["전체"];
+  List<String> lowerCategories = [];
+  List<int> lowerCategoryIds = [];
+  List<bool> lowerStates = List.filled(20, false);
+  String? selectedCategory = "전체";
+  TextEditingController _searchController = TextEditingController();
+  bool isSearch = false; //임시 : 검색 버전인지 아닌지 구별하는 변수
 
   void changeIcon(int index) {
     setState(() {
@@ -30,9 +33,18 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void changeCategory(int index) {
+  void selectOrReleaseLower(int index) {
     setState(() {
-      lowerStates[index] = !lowerStates[index];
+      if (lowerStates[index] == true) {
+        lowerStates[index] = false;
+      } else {
+        lowerStates[index] = true;
+        for (int i = 0; i < lowerStates.length; i++) {
+          if (index != i) {
+            lowerStates[i] = false;
+          }
+        }
+      }
     });
   }
 
@@ -41,8 +53,19 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     super.initState();
     Provider.of<NoticeService>(context, listen: false).getAllNotices();
     Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
-    Provider.of<NoticeService>(context, listen: false)
-        .getUpperCategoryNotice(1, 0);
+
+    lowerCategories = [];
+    lowerStates = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ];
   }
 
   void _showWidget() {
@@ -78,160 +101,202 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
       builder: (context, categoryService, noticeService, child) {
-        upperCategories = categoryService.upperCategoryList;
-        noticeList = noticeService.selectedNoticeList.notices!;
+        print(noticeList);
+        upperCategories = ["전체"] + categoryService.upperCategoryList;
+        lowerCategories = categoryService.lowerCategoryList;
+        lowerCategoryIds = categoryService.lowerCategoryIdList;
+        print(isSearch);
+        noticeList = isSearch
+            ? noticeService.searchedNoticeList.notices!
+            : (selectedCategory == "전체"
+                ? noticeService.noticeList.notices!
+                : noticeService
+                    .selectedNoticeList.notices!); //현재 화면에 보여지는 notice들
 
-        int selectedIndex = upperCategories.indexOf(selectedCategory!);
-
-        return upperCategories == []
-            ? Column()
-            : Scaffold(
-                resizeToAvoidBottomInset: false,
-                backgroundColor: Color(0xFFCE4040),
-                body: Stack(children: [
-                  Column(
-                    children: [
-                      Container(
-                          height: 64,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFCE4040),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                width: 88,
-                                margin: EdgeInsets.all(15),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/icon_6.png",
-                                      width: 21.21,
-                                      height: 21.34,
-                                      color: Colors.white,
-                                    ),
-                                    Image.asset(
-                                      "assets/images/icon_7.png",
-                                      width: 36.79,
-                                      height: 21.34,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Text(
-                                '홈',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 19,
-                                  fontFamily: 'Noto Sans KR',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Container(
-                                alignment: Alignment.centerRight,
-                                width: 88,
-                                margin: EdgeInsets.all(15),
-                                child: InkWell(
-                                  onTap: _showWidget,
-                                  child: Image.asset(
-                                    "assets/images/icon_8.png",
-                                    width: 36.79,
-                                    height: 21.34,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )),
-                      Expanded(
-                        child: Stack(children: [
+        int selectedIndex = upperCategories.indexOf(selectedCategory!) + 1;
+        return Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: Color(0xFFCE4040),
+            body: Stack(children: [
+              Column(
+                children: [
+                  Container(
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFCE4040),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Container(
-                              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                              decoration: ShapeDecoration(
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30),
-                                  ),
+                            width: 88,
+                            margin: EdgeInsets.all(15),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  "assets/images/icon_6.png",
+                                  width: 21.21,
+                                  height: 21.34,
+                                  color: Colors.white,
                                 ),
+                                Image.asset(
+                                  "assets/images/icon_7.png",
+                                  width: 36.79,
+                                  height: 21.34,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '홈',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                              fontFamily: 'Noto Sans KR',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerRight,
+                            width: 88,
+                            margin: EdgeInsets.all(15),
+                            child: InkWell(
+                              onTap: _showWidget,
+                              child: Image.asset(
+                                "assets/images/icon_8.png",
+                                width: 36.79,
+                                height: 21.34,
+                                color: Colors.white,
                               ),
-                              child: Column(
+                            ),
+                          ),
+                        ],
+                      )),
+                  Expanded(
+                    child: Stack(children: [
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30),
+                              ),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Column(
                                 children: [
-                                  Column(
-                                    children: [
-                                      Container(
-                                        height: 70,
-                                        padding: const EdgeInsets.fromLTRB(
-                                            20, 10, 20, 10),
-                                        child: const TextField(
-                                          decoration: InputDecoration(
-                                            labelText: '검색어를 입력하세요',
-                                            labelStyle: TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xFFD9D9D9)),
-                                            contentPadding:
-                                                EdgeInsets.all(24.0),
-                                            suffixIcon: Icon(Icons.search),
-                                            border: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Color(0xff999999),
-                                                  width: 2.0),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(25.0)),
-                                            ),
-                                          ),
+                                  Container(
+                                    height: 70,
+                                    padding: const EdgeInsets.fromLTRB(
+                                        20, 10, 20, 10),
+                                    child: TextField(
+                                      controller: _searchController,
+                                      decoration: InputDecoration(
+                                        labelText: '검색어를 입력하세요',
+                                        labelStyle: TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFFD9D9D9)),
+                                        contentPadding: EdgeInsets.all(24.0),
+                                        suffixIcon: IconButton(
+                                            icon: Icon(Icons.search),
+                                            onPressed: () {
+                                              setState(() {
+                                                isSearch = true;
+                                                String searchTerm =
+                                                    _searchController.text;
+                                                noticeService
+                                                    .searchNotices(searchTerm);
+                                                noticeList = noticeService
+                                                    .searchedNoticeList
+                                                    .notices!;
+                                              });
+                                            }),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Color(0xff999999),
+                                              width: 2.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(25.0)),
                                         ),
                                       ),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        child: DropdownButtonFormField<String>(
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                          ),
-                                          alignment:
-                                              AlignmentDirectional.center,
-                                          value: selectedCategory,
-                                          onChanged: (String? newValue) {
-                                            print(newValue!);
-                                            selectedCategory = newValue!;
-                                            selectedIndex = upperCategories
-                                                .indexOf(selectedCategory!);
-                                            noticeService
-                                                .getUpperCategoryNotice(
-                                                    1, selectedIndex);
-                                            noticeList = noticeService
-                                                .selectedNoticeList.notices!;
-                                          },
-                                          items: upperCategories
-                                              .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              );
-                                            },
-                                          ).toList(),
-                                        ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: DropdownButtonFormField<String>(
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
                                       ),
-                                      const Divider(
-                                          thickness: 0.5,
-                                          color: Color(0xffCDCDCD)),
-                                      Container(
+                                      alignment: AlignmentDirectional.center,
+                                      value: selectedCategory,
+                                      onChanged: (String? newValue) {
+                                        isSearch = false;
+                                        _searchController.text = "";
+                                        selectedCategory = newValue!;
+                                        selectedIndex = upperCategories
+                                            .indexOf(selectedCategory!);
+                                        noticeService.getUpperCategoryNotice(
+                                            1, selectedIndex);
+                                        categoryService.getLowerCategoryList(
+                                            selectedIndex);
+                                        lowerCategories =
+                                            categoryService.lowerCategoryList;
+                                        lowerCategoryIds =
+                                            categoryService.lowerCategoryIdList;
+
+                                        noticeList = noticeService
+                                            .selectedNoticeList.notices!;
+                                        for (int i = 0;
+                                            i < lowerStates.length;
+                                            i++) {
+                                          lowerStates[i] = false;
+                                        }
+                                      },
+                                      items: upperCategories
+                                          .map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        },
+                                      ).toList(),
+                                    ),
+                                  ),
+                                  const Divider(
+                                      thickness: 0.5, color: Color(0xffCDCDCD)),
+                                  lowerCategories != []
+                                      ? Container(
                                           height: 44,
                                           child: ListView.builder(
                                             padding: EdgeInsets.fromLTRB(
                                                 24, 0, 0, 0),
                                             scrollDirection: Axis.horizontal,
-                                            itemCount: lowerStates.length,
+                                            itemCount: lowerCategories.length,
                                             itemBuilder: (context, index) {
                                               return GestureDetector(
                                                   onTap: () {
-                                                    changeCategory(index);
+                                                    _searchController.text = "";
+                                                    isSearch = false;
+                                                    if (!lowerStates[index]) {
+                                                      selectOrReleaseLower(
+                                                          index);
+                                                      noticeService
+                                                          .getLowerCategoryNotice(
+                                                              1,
+                                                              lowerCategoryIds[
+                                                                  index]); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
+                                                      noticeList = noticeService
+                                                          .selectedNoticeList
+                                                          .notices!;
+                                                    }
                                                   },
                                                   child: Container(
                                                       margin:
@@ -290,140 +355,136 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                       )));
                                             },
                                           ))
-                                    ],
-                                  ),
-                                  Expanded(
-                                      child: noticeService
-                                                  .noticeList.notices!.length ==
-                                              0
-                                          ? Column()
-                                          : ListView.builder(
-                                              padding: EdgeInsets.zero,
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.vertical,
-                                              itemCount: noticeList.length,
-                                              itemBuilder: (context, index) {
-                                                print(noticeList[index].title!);
-                                                return noticeCard(
-                                                    id: noticeList[index].id!,
-                                                    title: noticeList[index]
-                                                        .title!,
-                                                    date: noticeList[index]
-                                                        .date!);
-                                              },
-                                            ))
+                                      : Container(
+                                          height: 44,
+                                        )
                                 ],
-                              )),
-                          Positioned(
-                            child: Visibility(
-                                visible: _isWidgetVisible,
-                                child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        alertRatio,
-                                    decoration: ShapeDecoration(
-                                      color: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 2, color: Color(0xFFCDCDCD)),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                            height: 18,
-                                            margin: EdgeInsets.fromLTRB(
-                                                30, 23, 30, 30),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                              ),
+                              Expanded(
+                                  child: noticeService
+                                              .noticeList.notices!.length ==
+                                          0
+                                      ? Column()
+                                      : ListView.builder(
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount: noticeList.length,
+                                          itemBuilder: (context, index) {
+                                            return noticeCard(
+                                                notice: noticeList[index]);
+                                          },
+                                        ))
+                            ],
+                          )),
+                      Positioned(
+                        child: Visibility(
+                            visible: _isWidgetVisible,
+                            child: Container(
+                                height: MediaQuery.of(context).size.height *
+                                    alertRatio,
+                                decoration: ShapeDecoration(
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        width: 2, color: Color(0xFFCDCDCD)),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        height: 18,
+                                        margin:
+                                            EdgeInsets.fromLTRB(30, 23, 30, 30),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            GestureDetector(
+                                                onTap: _hideWidget,
+                                                child: Image.asset(
+                                                    "assets/images/close.png")),
+                                            Container(
+                                                child: Row(
                                               children: [
-                                                GestureDetector(
-                                                    onTap: _hideWidget,
-                                                    child: Image.asset(
-                                                        "assets/images/close.png")),
+                                                Image.asset(
+                                                    "assets/images/alarm.png"),
                                                 Container(
-                                                    child: Row(
-                                                  children: [
-                                                    Image.asset(
-                                                        "assets/images/alarm.png"),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 4),
-                                                      child: Text(
-                                                        '알림',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 19,
-                                                          fontFamily:
-                                                              'Noto Sans KR',
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          height: 0,
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                )),
-                                                Container(width: 20),
+                                                  margin:
+                                                      EdgeInsets.only(left: 4),
+                                                  child: Text(
+                                                    '알림',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 19,
+                                                      fontFamily:
+                                                          'Noto Sans KR',
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      height: 0,
+                                                    ),
+                                                  ),
+                                                )
                                               ],
                                             )),
-                                        Container(
-                                            child: Column(
-                                          children: [
-                                            alertCard(),
-                                            alertCard(),
+                                            Container(width: 20),
                                           ],
                                         )),
-                                        Expanded(
-                                            child: GestureDetector(
-                                                onTap: alertRatio == 0.33
-                                                    ? _extendWidget
-                                                    : _shrinkWidget,
-                                                child: Container(
-                                                    child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    alertRatio == 0.33
-                                                        ? Icon(Icons
-                                                            .keyboard_arrow_down)
-                                                        : Icon(Icons
-                                                            .keyboard_arrow_up),
-                                                    Container(
-                                                        margin: EdgeInsets.only(
-                                                            bottom: 8),
-                                                        child: Text(
-                                                          alertRatio == 0.33
-                                                              ? "더보기"
-                                                              : "간략히",
-                                                          style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 12,
-                                                            fontFamily:
-                                                                'Noto Sans KR',
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            height: 0,
-                                                          ),
-                                                        ))
-                                                  ],
-                                                ))))
+                                    Container(
+                                        child: Column(
+                                      children: [
+                                        alertCard(),
+                                        alertCard(),
                                       ],
-                                    ))),
-                          ),
-                        ]),
-                      )
+                                    )),
+                                    Expanded(
+                                        child: GestureDetector(
+                                            onTap: alertRatio == 0.33
+                                                ? _extendWidget
+                                                : _shrinkWidget,
+                                            child: Container(
+                                                child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                alertRatio == 0.33
+                                                    ? Icon(Icons
+                                                        .keyboard_arrow_down)
+                                                    : Icon(Icons
+                                                        .keyboard_arrow_up),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        bottom: 8),
+                                                    child: Text(
+                                                      alertRatio == 0.33
+                                                          ? "더보기"
+                                                          : "간략히",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 12,
+                                                        fontFamily:
+                                                            'Noto Sans KR',
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 0,
+                                                      ),
+                                                    ))
+                                              ],
+                                            ))))
+                                  ],
+                                ))),
+                      ),
+                    ]),
+                  )
 
-                      //
-                    ],
-                  ),
-                ]));
+                  //
+                ],
+              ),
+            ]));
       },
     );
   }
@@ -473,24 +534,25 @@ class alertCard extends StatelessWidget {
 }
 
 class noticeCard extends StatefulWidget {
-  const noticeCard(
-      {super.key, required this.id, required this.title, required this.date});
-  final int id;
-  final String title;
-  final String date;
-
+  const noticeCard({super.key, required this.notice});
+  final Notice notice;
   @override
   _noticeCardState createState() => _noticeCardState();
 }
 
-class _noticeCardState extends State<noticeCard> {
+class _noticeCardState extends State<noticeCard>
+    with AutomaticKeepAliveClientMixin {
   bool iconState = false;
 
   void changeIcon() {
     setState(() {
+      widget.notice.scrapped = !widget.notice.scrapped!;
       iconState = !iconState;
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -504,64 +566,70 @@ class _noticeCardState extends State<noticeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ViewPostDetailPageWidget(id: widget.id)));
-      },
-      child: Container(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                          height: 0,
+    return Consumer<NoticeService>(
+      builder: (context, noticeService, child) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ViewPostDetailPageWidget(id: widget.notice.id!)));
+          },
+          child: Container(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.75,
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: Text(
+                            widget.notice.title!,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontFamily: 'Noto Sans KR',
+                              fontWeight: FontWeight.w700,
+                              height: 0,
+                            ),
+                          ),
                         ),
+                        GestureDetector(
+                            onTap: () {
+                              changeIcon();
+                              noticeService.scrapNotice(widget.notice.id!);
+                            },
+                            child: ImageIcon(
+                              AssetImage(widget.notice.scrapped!
+                                  ? "assets/images/icon_9.png"
+                                  : "assets/images/icon_10.png"),
+                              color: Color(0xFFCE4040),
+                            ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: Text(
+                      widget.notice.date!,
+                      style: TextStyle(
+                        color: Color(0xFF7E7E7E),
+                        fontSize: 10,
+                        fontFamily: 'Noto Sans KR',
+                        fontWeight: FontWeight.w400,
+                        height: 0,
                       ),
                     ),
-                    GestureDetector(
-                        onTap: () {
-                          changeIcon();
-                        },
-                        child: ImageIcon(
-                          AssetImage(iconState
-                              ? "assets/images/icon_9.png"
-                              : "assets/images/icon_10.png"),
-                          color: Color(0xFFCE4040),
-                        ))
-                  ],
-                ),
-              ),
-              Container(
-                child: Text(
-                  widget.date,
-                  style: TextStyle(
-                    color: Color(0xFF7E7E7E),
-                    fontSize: 10,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
                   ),
-                ),
-              ),
-            ],
-          )),
+                ],
+              )),
+        );
+      },
     );
   }
 }
