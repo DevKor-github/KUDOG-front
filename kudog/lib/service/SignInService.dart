@@ -57,7 +57,3 @@ class UserLoginProvider with ChangeNotifier {
     _UserloginState = false;
   }
 }
-//로그인 페이지에서 사용
-// Provider.of<UserLoginProvider>(context,
-//                                     listen: false)
-//                                 .setUserLoginStateTrue();

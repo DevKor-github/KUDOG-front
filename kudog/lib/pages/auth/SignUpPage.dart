@@ -188,15 +188,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                               ))),
                                     ],
                                   ),
-                                  !signupService.isKorea
-                                      ? Message(
-                                          text: "이메일이 유효하지 않습니다.",
-                                          color: Color(0xFFCE4040),
-                                          visible: _timerVisible)
-                                      : Message(
-                                          text: '인증번호를 발송했습니다.',
-                                          color: Color(0xFF06C755),
-                                          visible: _timerVisible),
+                                  Message(
+                                      text: signupService.firstAnswer,
+                                      color: signupService.firstId == 1
+                                          ? Color(0xFF06C755)
+                                          : Color(0xFFCE4040),
+                                      visible: _timerVisible),
                                   Container(
                                       padding: EdgeInsets.only(top: 6),
                                       child: Row(
@@ -205,12 +202,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                         children: [
                                           CodeInputForm(
                                               visible: _timerVisible &&
-                                                  signupService.isKorea,
+                                                  signupService.firstId == 1,
                                               value: _timerValue,
                                               controller: codeController,
                                               label: "ⓘ 인증번호를 입력해 주세요",
                                               isVerified:
-                                                  signupService.isVerified),
+                                                  signupService.secondId == 1),
                                           Container(
                                               height: MediaQuery.of(context)
                                                       .size
@@ -261,15 +258,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                         ],
                                       )),
                                   signupService.isSend
-                                      ? signupService.isVerified
-                                          ? Message(
-                                              text: '인증되었습니다.',
-                                              color: Color(0xFF06C755),
-                                              visible: _noticeVisible)
-                                          : Message(
-                                              text: '잘못된 인증번호입니다.',
-                                              color: Color(0xFFCE4040),
-                                              visible: _noticeVisible)
+                                      ? Message(
+                                          text: signupService.secondAnswer,
+                                          color: signupService.secondId == 1
+                                              ? Color(0xFF06C755)
+                                              : Color(0xFFCE4040),
+                                          visible: _noticeVisible)
                                       : Padding(
                                           padding: EdgeInsets.all(0),
                                         )
