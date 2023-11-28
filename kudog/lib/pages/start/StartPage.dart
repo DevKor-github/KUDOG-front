@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
@@ -26,8 +27,8 @@ class _StartPageWidgetState extends State<StartPageWidget> {
     accessToken = sharedPreferences.getString("access_token");
     refreshToken = sharedPreferences.getString("refresh_token");
     if (accessToken != "" && refreshToken != "") {
-      bool isLoggedIn = _validateTokens();
-      if (isLoggedIn) {
+      Future<bool> isLoggedIn = _validateTokens();
+      if (await isLoggedIn) {
         Future.delayed(Duration(seconds: 2), () {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => ViewMainPageWidget()));
@@ -41,9 +42,29 @@ class _StartPageWidgetState extends State<StartPageWidget> {
     }
   }
 
-  bool _validateTokens() {
-    //임시 : 토큰 유효성 검사 필요
-    return true;
+  Future<bool> _validateTokens() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    accessToken = sharedPreferences.getString("access_token");
+    try {
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/users/info",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      if (response.statusCode == 401) {
+        return false;
+      } else if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
