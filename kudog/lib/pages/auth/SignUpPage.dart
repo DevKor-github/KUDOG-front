@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kudog/etc/Category.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
-import 'package:kudog/model/MailModel.dart';
-import 'package:kudog/pages/auth/SelectCategoryPage.dart';
+import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:provider/provider.dart';
 
@@ -161,10 +160,11 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                           child: ElevatedButton(
                                               onPressed: () {
                                                 startTimer();
-                                                SendMail mail = SendMail(
-                                                    email:
-                                                        emailController.text);
-                                                signupService.SendEmail(mail);
+                                                // SendMail mail = SendMail(
+                                                //     email:
+                                                //         emailController.text);
+                                                signupService.SendEmail(
+                                                    emailController.text);
                                               },
                                               style: ElevatedButton.styleFrom(
                                                 side: const BorderSide(
@@ -201,13 +201,15 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           CodeInputForm(
-                                              visible: _timerVisible &&
-                                                  signupService.firstId == 1,
+                                              // visible: _timerVisible &&
+                                              //     signupService.firstId == 1,
+                                              visible:
+                                                  signupService.secondId == 1,
                                               value: _timerValue,
                                               controller: codeController,
                                               label: "ⓘ 인증번호를 입력해 주세요",
                                               isVerified:
-                                                  signupService.secondId == 1),
+                                                  signupService.firstId == 1),
                                           Container(
                                               height: MediaQuery.of(context)
                                                       .size
@@ -221,16 +223,71 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                   .fromSTEB(12, 0, 0, 0),
                                               child: ElevatedButton(
                                                   onPressed: () {
-                                                    stopTimer();
-                                                    VerifyMail mail =
-                                                        VerifyMail(
-                                                            email:
-                                                                emailController
-                                                                    .text,
-                                                            code: codeController
-                                                                .text);
-                                                    signupService.VerifyEmail(
-                                                        mail);
+                                                    if (signupService.firstId ==
+                                                        1) {
+                                                      stopTimer();
+
+                                                      signupService.VerifyEmail(
+                                                          emailController.text,
+                                                          codeController.text);
+                                                    } else {
+                                                      showDialog(
+                                                          context: context,
+                                                          barrierDismissible:
+                                                              false,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.0)),
+                                                              title: Column(
+                                                                children: <Widget>[
+                                                                  Text(
+                                                                      "인증 번호 전송 필요"),
+                                                                ],
+                                                              ),
+                                                              content: Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: <Widget>[
+                                                                  Text(
+                                                                    "인증 번호가 전송되지 않았습니다.",
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  style: TextButton
+                                                                      .styleFrom(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            20.0),
+                                                                    foregroundColor:
+                                                                        primary,
+                                                                    textStyle: const TextStyle(
+                                                                        fontSize:
+                                                                            20),
+                                                                  ),
+                                                                  child: Text(
+                                                                      "확인"),
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                ),
+                                                              ],
+                                                            );
+                                                          });
+                                                    }
                                                   },
                                                   style:
                                                       ElevatedButton.styleFrom(
@@ -306,6 +363,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                             margin: EdgeInsetsDirectional.fromSTEB(6, 4, 6, 4),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -313,13 +371,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                               borderRadius: BorderRadius.circular(24.0),
                             ),
                             child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: selectedMajor,
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   selectedMajor = newValue!;
                                 });
-                                print(selectedMajor);
                               },
                               items: Majors.map<DropdownMenuItem<String>>(
                                   (String value) {
@@ -330,16 +389,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                               }).toList(),
                               itemHeight: 50,
                               style: TextStyle(
+                                color: Colors.black,
                                 fontFamily: 'Readex Pro',
                                 fontSize: 12,
                               ),
-                              icon: Align(
-                                alignment: Alignment.topRight,
-                                child: Icon(
-                                  Icons.keyboard_arrow_up,
-                                  color: secondaryText,
-                                  size: 24,
-                                ),
+                              icon: Icon(
+                                Icons.keyboard_arrow_up,
+                                color: secondaryText,
+                                size: 24,
                               ),
                               dropdownColor: secondaryBackground,
                               elevation: 2,
@@ -375,6 +432,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   ),
                                   Container(
                                     width: 160,
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                     margin: EdgeInsetsDirectional.fromSTEB(
                                         6, 4, 6, 12),
                                     decoration: BoxDecoration(
@@ -383,12 +441,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
+                                      isExpanded: true,
                                       value: selectedId,
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedId = newValue!;
                                         });
-                                        print(selectedId);
                                       },
                                       items: Ids.map<DropdownMenuItem<String>>(
                                           (String value) {
@@ -399,6 +457,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       }).toList(),
                                       itemHeight: 50,
                                       style: TextStyle(
+                                        color: Colors.black,
                                         fontFamily: 'Readex Pro',
                                         fontSize: 12,
                                       ),
@@ -433,6 +492,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   ),
                                   Container(
                                     width: 160,
+                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                     margin: EdgeInsetsDirectional.fromSTEB(
                                         6, 4, 6, 12),
                                     decoration: BoxDecoration(
@@ -441,12 +501,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
+                                      isExpanded: true,
                                       value: selectedGrade,
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedGrade = newValue!;
                                         });
-                                        print(selectedGrade);
                                       },
                                       items:
                                           Grades.map<DropdownMenuItem<String>>(
@@ -458,6 +518,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       }).toList(),
                                       itemHeight: 50,
                                       style: TextStyle(
+                                        color: Colors.black,
                                         fontFamily: 'Readex Pro',
                                         fontSize: 12,
                                       ),
@@ -481,7 +542,14 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           height: MediaQuery.of(context).size.height * 0.05,
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: ElevatedButton(
-                              onPressed: signupService.isVerified
+                              onPressed: signupService.secondId == 1 &&
+                                      nameController.text != "" &&
+                                      subscribeController.text != "" &&
+                                      emailController.text != "" &&
+                                      pwController.text != "" &&
+                                      selectedMajor != "" &&
+                                      selectedId != "" &&
+                                      selectedGrade != "" //모든 정보를 다 기입해야 회원가입
                                   ? () {
                                       SignUpUser user = SignUpUser(
                                           name: nameController.text,
@@ -491,16 +559,13 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                           password: pwController.text,
                                           major: selectedMajor,
                                           studentId: selectedId,
-                                          grade: int.parse(selectedGrade));
+                                          grade: int.parse(selectedGrade[0]));
                                       signupService.SignUp(user);
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  SelectCategoryPageWidget(
-                                                    email: emailController.text,
-                                                    password: pwController.text,
-                                                  )));
+                                                  LoginPageWidget()));
                                     }
                                   : () {
                                       showDialog(
@@ -514,7 +579,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                           10.0)),
                                               title: Column(
                                                 children: <Widget>[
-                                                  Text("이메일 인증 필요"),
+                                                  Text("정보 미기입"),
                                                 ],
                                               ),
                                               content: Column(
@@ -523,7 +588,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                     CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   Text(
-                                                    "이메일 인증 후 회원가입할 수 있습니다.",
+                                                    "모든 정보를 입력하시기 바랍니다..",
                                                   ),
                                                 ],
                                               ),
@@ -751,7 +816,7 @@ class Message extends StatelessWidget {
       child: Container(
           padding: EdgeInsets.fromLTRB(20, 4, 0, 2),
           child: Text(
-            'ⓘ ' + text,
+            text,
             style: TextStyle(
               color: color,
               fontSize: 11,

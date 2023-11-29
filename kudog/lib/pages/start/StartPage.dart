@@ -56,8 +56,10 @@ class _StartPageWidgetState extends State<StartPageWidget> {
         ),
       );
       if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
         return false;
       } else if (response.statusCode == 200) {
+        print("자동 로그인 성공");
         return true;
       } else {
         return false;
