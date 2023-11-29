@@ -101,11 +101,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
       builder: (context, categoryService, noticeService, child) {
-        print(noticeList);
         upperCategories = ["전체"] + categoryService.upperCategoryList;
         lowerCategories = categoryService.lowerCategoryList;
         lowerCategoryIds = categoryService.lowerCategoryIdList;
-        print(isSearch);
         noticeList = isSearch
             ? noticeService.searchedNoticeList.notices!
             : (selectedCategory == "전체"

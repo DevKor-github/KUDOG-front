@@ -80,7 +80,6 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
       "subscribeIds": subscribeIds,
       "unsubscribeIds": unsubscribeIds,
     };
-    print("requestBody: $requestBody");
 
     try {
       SharedPreferences sharedPreferences =

@@ -190,8 +190,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     if (signInService.successLogin) {
                       SharedPreferences sharedPreferences =
                           await SharedPreferences.getInstance();
-                      print("로그인 :" +
-                          sharedPreferences.getString("access_token")!);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
