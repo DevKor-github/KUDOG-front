@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
+import 'package:kudog/pages/auth/ChangeMyInfoPage.dart';
 import 'package:kudog/pages/auth/ChangepwPage.dart';
+import 'package:kudog/pages/auth/SelectCategoryPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
-=======
->>>>>>> 267a1dd99a2cc8ad7a1cc5fd16f0fb780d386205
 import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/pages/auth/FindPwPage.dart';
 import 'package:kudog/pages/auth/ChangepwPage.dart';
+import 'package:kudog/pages/home/FixSubscribePage.dart';
+import 'package:kudog/pages/home/ViewMyPage.dart';
+import 'package:kudog/pages/home/ViewSubscribePage.dart';
+import 'package:kudog/pages/home/ViewMainPage.dart';
+import 'package:kudog/pages/home/ViewScrabPage.dart';
+import 'package:kudog/service/CategoryService.dart';
+import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -17,6 +25,9 @@ void main() {
     ChangeNotifierProvider(create: (context) => NoticeService()),
     ChangeNotifierProvider(create: (context) => SignInService()),
     ChangeNotifierProvider(create: (context) => SignUpService()),
+    ChangeNotifierProvider(create: (context) => ChangePwService()),
+    ChangeNotifierProvider(create: (context) => UserInfoService()),
+    ChangeNotifierProvider(create: (context) => CategoryService()),
   ], child: const MainApp()));
 }
 
@@ -26,15 +37,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-<<<<<<< HEAD
-      title: "Changepw",
-=======
       title: "Kudog",
->>>>>>> 267a1dd99a2cc8ad7a1cc5fd16f0fb780d386205
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
-      home: ChangepwPageWidget(),
+      home: FixSubscribePageWidget(),
     );
   }
 }

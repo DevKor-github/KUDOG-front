@@ -7,20 +7,20 @@ class SignInService extends ChangeNotifier {
   late UserToken userToken;
   bool successLogin = false;
   void Signin(LoginUser user) async {
-    // SharedPreferences sharedPrefernce = await SharedPreferences.getInstance();
-
+    SharedPreferences sharedPrefernce = await SharedPreferences.getInstance();
     Map<String, dynamic> data = user.toJson();
     try {
-      print("aa");
-      Response response =
-          await Dio().post("http://54.180.85.164:3050/auth/login", data: data);
-      if (response.statusCode == 200) {
+      Response response = await Dio()
+          .post("https://api.kudog.devkor.club/auth/login", data: data);
+
+      if (response.statusCode == 201) {
         print("POST 요청 성공");
 
         successLogin = true;
         userToken = UserToken.fromJson(response.data);
-        // sharedPrefernce.setString("access_token", userToken.accessToken!);
-        // sharedPrefernce.setString("refresh_token", userToken.refreshToken!);
+        sharedPrefernce.setString("access_token", userToken.accessToken!);
+        sharedPrefernce.setString("refresh_token", userToken.refreshToken!);
+        print("로그인 함수: " + sharedPrefernce.getString("access_token")!);
       } else {
         print("POST 요청 실패");
         print("Status Code : ${response.statusCode}");
