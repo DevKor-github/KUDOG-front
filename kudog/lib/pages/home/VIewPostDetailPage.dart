@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
-  const ViewPostDetailPageWidget({super.key, required this.id});
-  final int id;
+  const ViewPostDetailPageWidget({super.key, required this.notice});
+  final Notice notice;
   @override
   _ViewPostDetailPageWidgetState createState() =>
       _ViewPostDetailPageWidgetState();
@@ -15,17 +15,25 @@ class ViewPostDetailPageWidget extends StatefulWidget {
 
 class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  WebViewController? _webViewController;
+
   bool isClicked = false;
-  void changeIcon() {
+  void scrapOrNot() {
     setState(() {
+      widget.notice.scrapped = !widget.notice.scrapped!;
       isClicked = !isClicked;
+      NoticeService().scrapNotice(widget.notice.id!);
     });
   }
 
   @override
   void initState() {
+    _webViewController = WebViewController()
+      ..loadRequest(Uri.parse('https://youtube.com'))
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
     super.initState();
-    Provider.of<NoticeService>(context, listen: false).getNotice(widget.id);
+    Provider.of<NoticeService>(context, listen: false)
+        .getNotice(widget.notice.id!);
   }
 
   @override
@@ -37,12 +45,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
       NoticeDetail _noticeDetail = noticeService.noticeDetail;
-      var document;
-      String? extractedText;
-      if (_noticeDetail.id != null) {
-        document = parse(_noticeDetail.content);
-        extractedText = parse(document.body!.text).documentElement!.text;
-      }
 
       return Scaffold(
         key: scaffoldKey,
@@ -83,13 +85,14 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      changeIcon();
+                      scrapOrNot();
+                      noticeService.scrapNotice(widget.notice.id!);
                     },
                     child: Container(
                       child: ImageIcon(
                         color: Color(0xffFFFFFF),
                         AssetImage(
-                          isClicked
+                          widget.notice.scrapped!
                               ? "assets/images/icon_15.png"
                               : "assets/images/icon_16.png",
                         ),
@@ -256,8 +259,13 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                 child: SingleChildScrollView(
-                                  child: Text(extractedText!),
-                                ))
+                                    child: Container(
+                                  width: MediaQuery.of(context).size.width * 2,
+                                  height:
+                                      MediaQuery.of(context).size.height * 10,
+                                  child: WebViewWidget(
+                                      controller: _webViewController!),
+                                )))
                           ],
                         ),
                       ),

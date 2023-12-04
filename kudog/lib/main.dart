@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/auth/SignUpPage.dart';
+import 'package:kudog/pages/start/StartPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -9,6 +9,7 @@ import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   // runApp(const MainApp());
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => NoticeService()),
@@ -30,7 +31,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
-      home: SignUpPageWidget(),
+      home: StartPageWidget(),
     );
   }
 }

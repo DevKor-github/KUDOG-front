@@ -26,7 +26,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   String? selectedCategory = "전체";
   TextEditingController _searchController = TextEditingController();
   bool isSearch = false; //임시 : 검색 버전인지 아닌지 구별하는 변수
-
+  NoticeService noticeService = NoticeService();
   void changeIcon(int index) {
     setState(() {
       iconStates[index] = !iconStates[index];
@@ -572,7 +572,7 @@ class _noticeCardState extends State<noticeCard>
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ViewPostDetailPageWidget(id: widget.notice.id!)));
+                        ViewPostDetailPageWidget(notice: widget.notice)));
           },
           child: Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 15),

@@ -979,7 +979,8 @@ class _PWInputFormState extends State<PWInputForm> {
             controller: widget.controller,
             autofocus: true,
             autofillHints: [AutofillHints.email],
-            obscureText: false,
+            obscureText: true,
+            obscuringCharacter: "*",
             decoration: InputDecoration(
               labelText: widget.label,
               labelStyle: TextStyle(

@@ -16,6 +16,7 @@ dependencies:
   flutter_html: ^3.0.0-alpha.6
   shared_preferences: any
   flutter_secure_storage: ^5.0.2
+  webview_flutter: ^4.0.2
 
 dev_dependencies:
   flutter_test:

@@ -30,7 +30,6 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         noticeList = NoticeList.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -47,11 +46,12 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getNotice(int id) async {
+  void getNotice(int id) async {
     //단일 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
+
       String? token = sharedPreferences.getString("access_token");
       Response response = await Dio().get(
         "https://api.kudog.devkor.club/notice/info/${id}",
@@ -62,10 +62,11 @@ class NoticeService extends ChangeNotifier {
           },
         ),
       );
+
       if (response.statusCode == 200) {
         print("GET 요청 성공");
+
         noticeDetail = NoticeDetail.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -102,7 +103,6 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         selectedNoticeList = SelectedNoticeList.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -141,7 +141,6 @@ class NoticeService extends ChangeNotifier {
         print("GET 요청 성공");
 
         selectedNoticeList = SelectedNoticeList.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -178,7 +177,6 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         scrappedNoticeList = NoticeList.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -262,7 +260,6 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         searchedNoticeList = NoticeList.fromJson(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
