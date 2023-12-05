@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:provider/provider.dart';
 import 'package:kudog/model/AuthModel.dart';
-import 'package:kudog/model/MailModel.dart';
-import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/service/UserInfoService.dart';
 import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/UserModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String selectedMajor = '컴퓨터학과'; // 기본값 설정
 String selectedValue2 = '21학번'; // 기본값 설정
@@ -21,6 +22,14 @@ class ChangemyinfoPageWidget extends StatefulWidget {
 class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final Dio _dio = Dio();
+
+  late String name;
+  late String email;
+  late String subscribeEmail;
+  late String major;
+  late String studentId;
+  late int grade;
+
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController codeController = TextEditingController();
@@ -32,6 +41,8 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
   @override
   void initState() {
     super.initState();
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+    _fetchUserInfo();
   }
 
   @override
@@ -39,9 +50,90 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
     super.dispose();
   }
 
+  void _fetchUserInfo() async {
+    try {
+      SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+      print(token);
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/users/info",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      Map<String, dynamic> userInfo = response.data;
+      setState(() {
+        name = userInfo['name'];
+        email = userInfo['portalEmail'];
+        subscribeEmail = userInfo['subscriberEmail'];
+        major = userInfo['major'];
+        studentId = userInfo['studentId'];
+        grade = userInfo['grade'];
+
+        nameController.text = name;
+        emailController.text = email;
+        subscribeController.text = subscribeEmail;
+      });
+    } catch (e) {
+      print('GET 에러: $e');
+    }
+  }
+
+  Future<void> updateUserInfo() async {
+    try {
+      SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+      print(token);
+      print({
+        "name": nameController.text,
+        "studentId": selectedValue2,
+        "grade": int.parse(selectedValue1.substring(0, 1)),
+        "major": selectedMajor,
+        "subscriberEmail": subscribeController.text,
+        "portalEmail": emailController.text,
+      });
+      final response = await _dio.put(
+        'https://api.kudog.devkor.club/users/info',
+        data: {
+          "name": nameController.text,
+          "studentId": selectedValue2,
+          "grade": int.parse(selectedValue1.substring(0, 1)),
+          "major": selectedMajor,
+          "subscriberEmail": subscribeController.text,
+          "portalEmail": emailController.text,
+        },
+
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        }),
+      );
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (error) {
+      print("PUT 요청 에러");
+      print(error.toString());
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<SignUpService>(builder: (context, signupService, child) {
+    return Consumer2<SignUpService, UserInfoService>(builder: (context, signupService, userInfoService, child) {
+      User userInfo = userInfoService.user;
       return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -118,6 +210,7 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                         margin: EdgeInsetsDirectional.fromSTEB(6, 4, 6, 4),
                         decoration: BoxDecoration(
                           border:
@@ -304,7 +397,7 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                   Container(
                     width: 357,
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: updateUserInfo,
                         style: ElevatedButton.styleFrom(
                           side: const BorderSide(
                             width: 1.0,

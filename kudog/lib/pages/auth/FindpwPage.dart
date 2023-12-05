@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/pages/auth/ChangeMyInfoPage.dart';
 import 'package:kudog/pages/auth/ChangePwPage.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'package:kudog/etc/Colors.dart';
 
 class FindpwPageWidget extends StatefulWidget {
   const FindpwPageWidget({Key? key}) : super(key: key);
@@ -14,8 +16,11 @@ class FindpwPageWidget extends StatefulWidget {
 class _FindpwPageWidgetState extends State<FindpwPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController _codeController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
   bool _showTimer = false;
   int _timerCount = 180;
+  String userEmail = "";
 
   @override
   void initState() {
@@ -91,6 +96,7 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                     ),
                   ),
                 ),
+
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -112,6 +118,7 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                                 children: [
                                   Expanded(
                                     child: TextField(
+                                      controller: emailController,
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: "ⓘ 학교 이메일로 입력해 주세요",
@@ -138,8 +145,10 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                             setState(() {
                               _showTimer = true;
                               _timerCount = 180;
+                              userEmail = emailController.text;
                             });
                             startTimer();
+                            changePwService.RequestCode(emailController.text);
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -148,15 +157,16 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                               borderRadius: BorderRadius.circular(58),
                               border: Border.all(color: Color(0xFFCE4040), width: 2),
                             ),
-                            child: Text(
-                              "인증번호 받기",
-                              style: TextStyle(
-                                fontFamily: 'Noto Sans KR',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: Color(0xFFCE4040),
+                              child: Text(
+                                "인증번호 받기",
+                                style: TextStyle(
+                                  fontFamily: 'Noto Sans KR',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: Color(0xFFCE4040),
+                                ),
                               ),
-                            ),
+
                           ),
                         ),
                       ),
@@ -212,8 +222,16 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                                 children: [
                                   Expanded(
                                     child: TextField(
+                                      controller: _codeController,
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
+                                        hintText: "ⓘ 인증번호를 입력해주세요",
+                                        hintStyle: TextStyle(
+                                          fontFamily: 'Noto Sans KR',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 13,
+                                          color: Color(0xFFA4A4A4),
+                                        )
                                       ),
                                     ),
                                   ),
@@ -237,7 +255,15 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                         width: 111,
                         height: 47,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            changePwService.VerifyCode(_codeController.text);
+                            if (changePwService.isVerified) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ChangepwPageWidget(email: userEmail),
+                              ));
+                            }
+
+                          },
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(

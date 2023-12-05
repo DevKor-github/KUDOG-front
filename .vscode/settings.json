@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "C:/Users/cdsjw/KUDOG-front/kudog/linux"
+  "cmake.sourceDirectory": "C:/Users/cdsjw/KUDOG-front/kudog/linux",
+  "files.watcherExclude": {
+    "**/target": true
+  }
 }

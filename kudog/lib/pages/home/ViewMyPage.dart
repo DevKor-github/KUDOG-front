@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/model/UserModel.dart';
+import 'package:kudog/pages/auth/ChangePwPage.dart';
 import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
+import 'package:kudog/service/SignOutService.dart';
+import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/pages/auth/ChangeMyInfoPage.dart';
 
 class ViewMyPageWidget extends StatefulWidget {
   const ViewMyPageWidget({Key? key}) : super(key: key);
@@ -17,6 +21,8 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   @override
   void initState() {
     super.initState();
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+    Provider.of<SignOutService>(context, listen: false).SignOut();
   }
 
   @override
@@ -26,9 +32,8 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserInfoService>(
-        builder: (context, userInfoService, child) {
-      userInfoService.getUserInfo();
+    return Consumer2<UserInfoService, SignOutService>(
+        builder: (context, userInfoService, signOutService, child) {
       User userInfo = userInfoService.user;
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
@@ -125,12 +130,18 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                     border: Border.all(color: Color(0xFFA4A4A4), width: 1),
                                   ),
                                   padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
-                                  child: Text(
-                                    "편집",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      fontFamily: "Noto Sans KR",
+                                  child: InkWell(
+                                    onTap : () {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(builder: (context) => ChangemyinfoPageWidget()));
+                                    },
+                                    child: Text(
+                                      "편집",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                        fontFamily: "Noto Sans KR",
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -233,20 +244,26 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 67 / 788,
                         padding: EdgeInsets.only(left: 24, right: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "로그아웃",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 20,
-                                fontFamily: "Noto Sans KR",
-                                color: Color(0xFF444444),
+                        child: InkWell(
+                          onTap: () {
+                            signOutService.SignOut();
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => LoginPageWidget()));                          },//Pop 반복
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "로그아웃",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 20,
+                                  fontFamily: "Noto Sans KR",
+                                  color: Color(0xFF444444),
+                                ),
                               ),
-                            ),
-                            Icon(Icons.keyboard_arrow_right)
-                          ],
+                              Icon(Icons.keyboard_arrow_right),
+                            ],
+                          ),
                         ),
                       ),
 

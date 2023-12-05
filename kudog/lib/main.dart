@@ -7,17 +7,21 @@ import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/pages/auth/FindPwPage.dart';
 import 'package:kudog/pages/auth/ChangepwPage.dart';
 import 'package:kudog/pages/home/FixSubscribePage.dart';
+import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/home/ViewMyPage.dart';
 import 'package:kudog/pages/home/ViewSubscribePage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
 import 'package:kudog/pages/home/ViewScrabPage.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:kudog/service/UserInfoService.dart';
+import 'package:kudog/service/SignOutService.dart';
 import 'package:provider/provider.dart';
+import 'package:kudog/pages/start/StartPage.dart';
 
 void main() {
   // runApp(const MainApp());
@@ -28,6 +32,7 @@ void main() {
     ChangeNotifierProvider(create: (context) => ChangePwService()),
     ChangeNotifierProvider(create: (context) => UserInfoService()),
     ChangeNotifierProvider(create: (context) => CategoryService()),
+    ChangeNotifierProvider(create: (context) => SignOutService()),
   ], child: const MainApp()));
 }
 
@@ -41,7 +46,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // routes: namedRoutes,
       // initialRoute: "/ViewMainPage",
-      home: FixSubscribePageWidget(),
+      home: StartPageWidget(),
     );
   }
 }

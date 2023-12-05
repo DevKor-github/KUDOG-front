@@ -12,7 +12,7 @@ class ViewMainPageWidget extends StatefulWidget {
 }
 
 class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 2;
   @override
   void initState() {
     super.initState();

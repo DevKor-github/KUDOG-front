@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:kudog/pages/home/FixSubscribePage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/CategoryService.dart';
@@ -182,10 +183,17 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                "assets/images/Categoryadd.png",
-                                width: 36.79,
-                                height: 40,
+                              child: ElevatedButton(
+                                onPressed: (){Navigator.push( context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FixSubscribePageWidget(),
+                                    )
+                                );},
+                                child: Image.asset(
+                                  "assets/images/Categoryadd.png",
+                                  width: 36.79,
+                                  height: 40,
+                                ),
                               ),
                             ),
 
@@ -217,11 +225,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                   itemBuilder: (context, index) {
                                     print(filteredNoticeList[index].title!);
                                     return noticeCard(
-                                        id: filteredNoticeList[index].id!,
-                                        title: filteredNoticeList[index]
-                                            .title!,
-                                        date: filteredNoticeList[index]
-                                            .date!);
+                                        notice: noticeList[index]);
                                   },
                                 ))
                       ],
