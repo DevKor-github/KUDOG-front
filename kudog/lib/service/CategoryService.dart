@@ -30,7 +30,6 @@ class CategoryService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         for (Map<String, dynamic> item in response.data) {
-          print("AA");
           UpperCategory upperCategory = UpperCategory.fromJson(item);
           upperCategoryList.add(upperCategory.name!);
         }
@@ -78,7 +77,8 @@ class CategoryService extends ChangeNotifier {
           lowerCategoryList.add(lowerCategory.name!);
           lowerCategoryIdList.add(lowerCategory.id!);
         }
-        return;
+        print('카테고리서비스 : ${lowerCategoryList}');
+        lowerCategoryList = lowerCategoryList;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();

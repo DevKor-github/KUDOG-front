@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:kudog/pages/home/ViewMyPage.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:provider/provider.dart';
 import 'package:kudog/model/AuthModel.dart';
@@ -7,10 +8,8 @@ import 'package:kudog/service/UserInfoService.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/UserModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kudog/etc/Category.dart';
 
-String selectedMajor = '컴퓨터학과'; // 기본값 설정
-String selectedValue2 = '21학번'; // 기본값 설정
-String selectedValue1 = '2학년'; // 기본값 설정
 
 class ChangemyinfoPageWidget extends StatefulWidget {
   const ChangemyinfoPageWidget({Key? key}) : super(key: key);
@@ -21,14 +20,16 @@ class ChangemyinfoPageWidget extends StatefulWidget {
 
 class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<_PWInputFormState> pwInputFormKey = GlobalKey<_PWInputFormState>();
+
   final Dio _dio = Dio();
+  String selectedMajor = ''; // 기본값 설정
+  String selectedGrade = ''; // 기본값 설정
+  String selectedId = ''; // 기본값 설정
 
   late String name;
   late String email;
   late String subscribeEmail;
-  late String major;
-  late String studentId;
-  late int grade;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -37,12 +38,16 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
   TextEditingController pwController = TextEditingController();
   TextEditingController pwConfirmController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
-    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
-    _fetchUserInfo();
+    User userInfo = Provider.of<UserInfoService>(context, listen: false).user;
+
+    Majors.sort((a, b) => a.compareTo(b));
+    selectedMajor = userInfo.major ?? '';
+    print(selectedMajor);
+    selectedId = userInfo.studentId ?? '';
+    selectedGrade = '${userInfo.grade?.toString()}학년' ?? '1';
   }
 
   @override
@@ -50,43 +55,89 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
     super.dispose();
   }
 
-  void _fetchUserInfo() async {
+  Future<void> updateUserInfo() async {
     try {
-      SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("access_token");
-      print(token);
 
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/users/info",
-        options: Options(
-          headers: {
+      if (pwController.text != '' && pwConfirmController.text != '') {
+        bool isPassed = pwInputFormKey.currentState?.isPassed ?? false;
+        bool isSame = pwInputFormKey.currentState?.isSame ?? false;
+
+        if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(pwController.text) && pwController.text == pwConfirmController.text) {
+          final response = await _dio.put(
+            'https://api.kudog.devkor.club/users/info',
+            data: {
+              "name": nameController.text,
+              "studentId": selectedId,
+              "grade": int.parse(selectedGrade.substring(0, 1)),
+              "major": selectedMajor,
+              "subscriberEmail": subscribeController.text,
+              "portalEmail": emailController.text,
+              "password": pwController.text,
+            },
+            options: Options(headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            }),
+          );
+          if (response.statusCode == 200) {
+            print("PUT 요청 성공");
+            Navigator.pop(context);
+            Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+          } else {
+            print("PUT 요청 실패");
+            print("Status Code : ${response.statusCode}");
+          }
+        } else {
+          print("비밀번호 유효성 또는 일치하지 않음");
+          print("비번${pwController.text}");
+          print("비번확인${pwConfirmController.text}");
+        }
+      } else {
+        final response = await _dio.put(
+          'https://api.kudog.devkor.club/users/info',
+          data: {
+            "name": nameController.text,
+            "studentId": selectedId,
+            "grade": int.parse(selectedGrade.substring(0, 1)),
+            "major": selectedMajor,
+            "subscriberEmail": subscribeController.text,
+            "portalEmail": emailController.text,
+          },
+          options: Options(headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
-          },
-        ),
-      );
+          }),
+        );
+        if (response.statusCode == 200) {
+          print("PUT 요청 성공");
+          Navigator.pop(context);
+          Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+        } else {
+          print("PUT 요청 실패");
+          print("Status Code : ${response.statusCode}");
+        }
+      }
 
-      Map<String, dynamic> userInfo = response.data;
-      setState(() {
-        name = userInfo['name'];
-        email = userInfo['portalEmail'];
-        subscribeEmail = userInfo['subscriberEmail'];
-        major = userInfo['major'];
-        studentId = userInfo['studentId'];
-        grade = userInfo['grade'];
-
-        nameController.text = name;
-        emailController.text = email;
-        subscribeController.text = subscribeEmail;
+      print({
+        "name": nameController.text,
+        "studentId": selectedId,
+        "grade": int.parse(selectedGrade.substring(0, 1)),
+        "major": selectedMajor,
+        "subscriberEmail": subscribeController.text,
+        "portalEmail": emailController.text,
       });
-    } catch (e) {
-      print('GET 에러: $e');
+    } catch (error) {
+      print("PUT 요청 에러");
+      print(error.toString());
     }
   }
 
-  Future<void> updateUserInfo() async {
+
+
+
+  /*Future<void> updateUserInfo() async {
     try {
       SharedPreferences sharedPreferences =
       await SharedPreferences.getInstance();
@@ -95,8 +146,8 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
       print(token);
       print({
         "name": nameController.text,
-        "studentId": selectedValue2,
-        "grade": int.parse(selectedValue1.substring(0, 1)),
+        "studentId": selectedId,
+        "grade": int.parse(selectedGrade.substring(0, 1)),
         "major": selectedMajor,
         "subscriberEmail": subscribeController.text,
         "portalEmail": emailController.text,
@@ -105,11 +156,12 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
         'https://api.kudog.devkor.club/users/info',
         data: {
           "name": nameController.text,
-          "studentId": selectedValue2,
-          "grade": int.parse(selectedValue1.substring(0, 1)),
+          "studentId": selectedId,
+          "grade": int.parse(selectedGrade.substring(0, 1)),
           "major": selectedMajor,
           "subscriberEmail": subscribeController.text,
           "portalEmail": emailController.text,
+          "password":
         },
 
         options: Options(headers: {
@@ -119,6 +171,8 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
       );
       if (response.statusCode == 200) {
         print("PUT 요청 성공");
+        Navigator.pop(context);
+        Provider.of<UserInfoService>(context, listen: false).getUserInfo();
       } else {
         print("PUT 요청 실패");
         print("Status Code : ${response.statusCode}");
@@ -127,13 +181,26 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
       print("PUT 요청 에러");
       print(error.toString());
     }
-  }
+
+    print({
+      "name": nameController.text,
+      "studentId": selectedId,
+      "grade": int.parse(selectedGrade.substring(0, 1)),
+      "major": selectedMajor,
+      "subscriberEmail": subscribeController.text,
+      "portalEmail": emailController.text,
+    });
+  }*/
 
 
   @override
   Widget build(BuildContext context) {
     return Consumer2<SignUpService, UserInfoService>(builder: (context, signupService, userInfoService, child) {
       User userInfo = userInfoService.user;
+      nameController.text = userInfo.name ?? '';
+      emailController.text = userInfo.portalEmail ?? '';
+      subscribeController.text = userInfo.subscriberEmail ?? '';
+
       return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -178,6 +245,7 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                           type: "구독용 이메일",
                           label: "ⓘ 수신 받을 이메일을 입력해주세요"),
                       PWInputForm(
+                        key: pwInputFormKey,
                         controller: pwController,
                         type: "비밀번호",
                         label: "ⓘ 6-16자 / 영문 소문자, 숫자 사용가능",
@@ -192,19 +260,21 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                     ],
 
                   ),
+
                   Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+                        padding:
+                        EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                         child: Text(
                           '학과',
                           style: TextStyle(
-                            fontFamily: 'Noto Sans KR',
-                            fontSize: 15,
+                            fontFamily: 'Readex Pro',
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF7E7E7E),
+                            color: secondaryText,
                           ),
                         ),
                       ),
@@ -213,38 +283,39 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                         margin: EdgeInsetsDirectional.fromSTEB(6, 4, 6, 4),
                         decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Color(0xFFCDCDCD), width: 2.0),
+                          border: Border.all(
+                              color: Color(0xFFCDCDCD), width: 2.0),
                           borderRadius: BorderRadius.circular(24.0),
                         ),
                         child: DropdownButton<String>(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                          isExpanded: true,
+                          value: selectedMajor,
+                          padding:
+                          EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedMajor = newValue!;
                             });
                           },
-                          items: <String>['컴퓨터학과', '데이터과학과']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          items: Majors.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
                           itemHeight: 50,
                           style: TextStyle(
-                            fontFamily: 'Noto Sans KR',
-                            fontSize: 16,
+                            color: Colors.black,
+                            fontFamily: 'Readex Pro',
+                            fontSize: 12,
                           ),
-                          icon: Align(
-                            alignment: Alignment.topRight,
-                            child: Icon(
-                              Icons.keyboard_arrow_up,
-                              color: Color(0xFF7E7E7E),
-                              size: 24,
-                            ),
+                          icon: Icon(
+                            Icons.keyboard_arrow_up,
+                            color: secondaryText,
+                            size: 24,
                           ),
-                          dropdownColor: Color(0xFFFFFFFF),
+                          dropdownColor: secondaryBackground,
                           elevation: 2,
                         ),
                       ),
@@ -269,58 +340,50 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                                 child: Text(
                                   '학번',
                                   style: TextStyle(
-                                    fontFamily: 'Noto Sans KR',
-                                    fontSize: 15,
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFF7E7E7E),
+                                    color: secondaryText,
                                   ),
                                 ),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                margin:
-                                    EdgeInsetsDirectional.fromSTEB(6, 4, 6, 12),
+                                width: 160,
+                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                margin: EdgeInsetsDirectional.fromSTEB(
+                                    6, 4, 6, 12),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Color(0xFFCDCDCD), width: 2.0),
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),
                                 child: DropdownButton<String>(
-                                  value: selectedValue2,
+                                  isExpanded: true,
+                                  value: selectedId,
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      selectedValue2 = newValue!;
+                                      selectedId = newValue!;
                                     });
                                   },
-                                  items: <String>[
-                                    '14학번',
-                                    '15학번',
-                                    '16학번',
-                                    '17학번',
-                                    '18학번',
-                                    '19학번',
-                                    '20학번',
-                                    '21학번',
-                                    '22학번',
-                                    '23학번',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
+                                  items: Ids.map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
                                   itemHeight: 50,
                                   style: TextStyle(
-                                    fontFamily: 'Noto Sans KR',
-                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 12,
                                   ),
                                   icon: Icon(
                                     Icons.keyboard_arrow_up,
-                                    color: Color(0xFF7E7E7E),
+                                    color: secondaryText,
                                     size: 24,
                                   ),
-                                  dropdownColor: Color(0xFFFFFFFF),
+                                  dropdownColor: secondaryBackground,
                                   elevation: 2,
                                 ),
                               ),
@@ -337,54 +400,51 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
                                 child: Text(
                                   '학년',
                                   style: TextStyle(
-                                    fontFamily: 'Noto Sans KR',
-                                    fontSize: 15,
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w400,
-                                    color: Color(0xFF7E7E7E),
+                                    color: secondaryText,
                                   ),
                                 ),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                margin:
-                                    EdgeInsetsDirectional.fromSTEB(6, 4, 6, 12),
+                                width: 160,
+                                padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                margin: EdgeInsetsDirectional.fromSTEB(
+                                    6, 4, 6, 12),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Color(0xFFCDCDCD), width: 2.0),
                                   borderRadius: BorderRadius.circular(24.0),
                                 ),
                                 child: DropdownButton<String>(
-                                  value: selectedValue1,
+                                  isExpanded: true,
+                                  value: selectedGrade,
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      selectedValue1 = newValue!;
+                                      selectedGrade = newValue!;
                                     });
                                   },
-                                  items: <String>[
-                                    '1학년',
-                                    '2학년',
-                                    '3학년',
-                                    '4학년',
-                                    '5학년',
-                                    '6학년',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
+                                  items:
+                                  Grades.map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
                                   itemHeight: 50,
                                   style: TextStyle(
-                                    fontFamily: 'Noto Sans KR',
-                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 12,
                                   ),
                                   icon: Icon(
                                     Icons.keyboard_arrow_up,
-                                    color: Color(0xFF7E7E7E),
+                                    color: secondaryText,
                                     size: 24,
                                   ),
-                                  dropdownColor: Color(0xFFFFFFFF),
+                                  dropdownColor: secondaryBackground,
                                   elevation: 2,
                                 ),
                               ),
@@ -630,6 +690,13 @@ class _PWInputFormState extends State<PWInputForm> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void updatePasswordValidation(bool passed, bool same) {
+    setState(() {
+      isPassed = passed;
+      isSame = same;
+    });
   }
 
   @override
