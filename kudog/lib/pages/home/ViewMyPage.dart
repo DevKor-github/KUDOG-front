@@ -21,7 +21,11 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   void initState() {
     super.initState();
     Provider.of<UserInfoService>(context, listen: false).getUserInfo();
-    Provider.of<SignOutService>(context, listen: false).SignOut();
+  }
+
+  @override
+  void didPop() {
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
   }
 
   @override
@@ -34,6 +38,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
     return Consumer2<UserInfoService, SignOutService>(
         builder: (context, userInfoService, signOutService, child) {
       User userInfo = userInfoService.user;
+
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
         body: Column(
@@ -131,10 +136,12 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                 padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ChangemyinfoPageWidget()));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChangemyinfoPageWidget()),
+                                    );
                                   },
                                   child: Text(
                                     "편집",

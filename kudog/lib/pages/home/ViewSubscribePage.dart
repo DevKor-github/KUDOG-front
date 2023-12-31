@@ -1,11 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/FixSubscribePage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/TokenService.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ViewSubscribePageWidget extends StatefulWidget {
   const ViewSubscribePageWidget({Key? key}) : super(key: key);
@@ -26,20 +29,120 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
   //List<int> unsubscribeIds = [];
   late List<Notice> noticeList;
 
+  List<String> lowerCategoryList1 = [];
+  List<int> lowerCategoryIdList1 = [];
+  List<String> lowerCategoryList2 = [];
+  List<int> lowerCategoryIdList2 = [];
+  List<String> lowerCategoryList3 = [];
+  List<int> lowerCategoryIdList3 = [];
+
+  List<String> upperCategoryList = [];
+  List<String> lowerCategoryList = [];
+  List<int> lowerCategoryIdList = [];
+
   void changeIcon(int index) {
     setState(() {
       iconStates[index] = !iconStates[index];
     });
   }
 
+  Future<void> getUpperCategoryList() async {
+    upperCategoryList.clear();
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+      print(token);
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/provider",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        for (Map<String, dynamic> item in response.data) {
+          UpperCategory upperCategory = UpperCategory.fromJson(item);
+          upperCategoryList.add(upperCategory.name!);
+        }
+        print(response.data);
+        return;
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getUpperCategoryList(); //다시 수행
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+  }
+
+  Future<void> getLowerCategoryList(int upperCategoryId) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/category/by-provider/$upperCategoryId",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        for (Map<String, dynamic> item in response.data) {
+          LowerCategory lowerCategory = LowerCategory.fromJson(item);
+          lowerCategoryList.add(lowerCategory.name!);
+          lowerCategoryIdList.add(lowerCategory.id!);
+        }
+        print('카테고리서비스12 : ${lowerCategoryList}');
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getUpperCategoryList();
+      } else if (response.statusCode == 404) {
+        print("해당 PROVIDER가 존재하지 않습니다.");
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    isSelected = List.generate(subscriptionButtonText.length, (index) => false);
     dio = Dio();
     Provider.of<NoticeService>(context, listen: false).getAllNotices();
-    Provider.of<NoticeService>(context, listen: false)
-        .getUpperCategoryNotice(1, 0);
+    Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
+    _initializeLowerCategories();
+    isSelected = List.generate(lowerCategoryList.length, (index) => false);
+  }
+
+  Future<void> _initializeLowerCategories() async {
+    await getLowerCategoryList(1);
+    await getLowerCategoryList(2);
+    await getLowerCategoryList(3);
+
+    print('안녕하세요. ${lowerCategoryList}');
   }
 
   @override
@@ -63,11 +166,11 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
 
     List<String> sortedCategories = [];
     subscribeIds.forEach((id) {
-      sortedCategories.add(subscriptionButtonText[id - 1]);
+      sortedCategories.add(lowerCategoryList[id - 1]);
     });
 
     unsubscribeIds.forEach((id) {
-      sortedCategories.add(subscriptionButtonText[id - 1]);
+      sortedCategories.add(lowerCategoryList[id - 1]);
     });
 
     Map<String, dynamic> requestBody = {
@@ -107,6 +210,10 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
       List<Notice> filteredNoticeList = noticeList
           .where((notice) => subscribeIds.contains(notice.id))
           .toList();
+
+      /*CategoryService A = CategoryService();
+          A.getLowerCategoryList(3);
+          print('lower: ${A.lowerCategoryList}');*/
 
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
@@ -182,8 +289,8 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton(
-                            onPressed: () {
+                          child: InkWell(
+                            onTap: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -254,7 +361,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
           child: Text(
-            subscriptionButtonText[id - 1],
+            lowerCategoryList[id - 1],
             style: TextStyle(
               color:
                   subscribeIds.contains(id) ? Colors.white : Color(0xFF696969),
