@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SignInService extends ChangeNotifier {
   late UserToken userToken;
   bool successLogin = false;
-  void Signin(LoginUser user) async {
+  Future<void> Signin(LoginUser user) async {
     SharedPreferences sharedPreference = await SharedPreferences.getInstance();
     Map<String, dynamic> data = user.toJson();
     try {

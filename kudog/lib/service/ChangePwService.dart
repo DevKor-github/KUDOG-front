@@ -39,12 +39,34 @@ class ChangePwService extends ChangeNotifier {
     }
   }
 
-  void VeriyfyCode(String code) async {
+  void ChangePw(String email, String pw) async {
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data["portalEmail"] = email;
+    data["password"] = pw;
+    try {
+      Response response = await Dio().put(
+          "https://api.kudog.devkor.club/auth/change-password/request",
+          data: data);
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 400) {
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
+      print(e.toString());
+    }
+  }
+
+  void VerifyCode(String code) async {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data["code"] = code;
+    print(data);
     try {
       Response response = await Dio().post(
-          "https://api.kudog.devkor.club/auth/change-password/request",
+          "https://api.kudog.devkor.club/auth/change-password/verify",
           data: data);
       if (response.statusCode == 201) {
         secondId = 1;
@@ -63,27 +85,6 @@ class ChangePwService extends ChangeNotifier {
     } catch (e) {
       secondAnswer = "알 수 없는 이유로 메일 전송에 실패했습니다. 잠시 후에 다시 시도해주세요.";
       print("POST 요청 에러");
-      print(e.toString());
-    }
-  }
-
-  void ChangePw(String email, String pw) async {
-    Map<String, dynamic> data = new Map<String, dynamic>();
-    data["portalEmail"] = email;
-    data["password"] = pw;
-    try {
-      Response response = await Dio().put(
-          "https://api.kudog.devkor.club/auth/change-password/request",
-          data: data);
-      if (response.statusCode == 200) {
-        print("PUT 요청 성공");
-      } else if (response.statusCode == 400) {
-      } else {
-        print("PUT 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("PUT 요청 에러");
       print(e.toString());
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/ChangePwPage.dart';
 import 'package:kudog/service/ChangePwService.dart';
@@ -12,10 +14,35 @@ class FindpwPageWidget extends StatefulWidget {
 
 class _FindpwPageWidgetState extends State<FindpwPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController _codeController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
+  bool _showTimer = false;
+  int _timerCount = 180;
+  String userEmail = "";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_timerCount == 0) {
+          setState(() {
+            _showTimer = false;
+          });
+          timer.cancel();
+        } else {
+          setState(() {
+            _timerCount--;
+          });
+        }
+      },
+    );
   }
 
   @override
@@ -28,79 +55,117 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
     return Consumer<ChangePwService>(
         builder: (context, changePwService, child) {
       return Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              width: 405,
-              height: 720,
-              color: Colors.white,
+        key: scaffoldKey,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          automaticallyImplyLeading: true,
+          title: Text(
+            '비밀번호 찾기',
+            style: TextStyle(
+              fontFamily: "NotoSans-Regular",
+              color: Colors.black,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
             ),
-            Positioned(
-              width: 14,
-              height: 22.38,
-              top: 59.69,
-              left: 32,
-              child: Icon(Icons.keyboard_arrow_right),
-            ),
-            Positioned(
-              width: 184,
-              height: 46,
-              top: 51,
-              left: 77,
-              child: Text(
-                "비밀번호 찾기",
-                style: TextStyle(
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 32,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            Positioned(
-              width: 42,
-              height: 22,
-              top: 123,
-              left: 49,
-              child: Text(
-                "이메일",
-                style: TextStyle(
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                  color: Color(0xFF7E7E7E),
-                  decoration: TextDecoration.underline,
-                  decorationColor: Color(0xFFD9D9D9),
-                  decorationThickness: 0.2,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 150,
-              left: 24,
-              child: SizedBox(
-                width: 238,
-                height: 47,
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.fromLTRB(24, 12, 22, 12), // 질문
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(208),
-                    border: Border.all(color: Color(0xFFCDCDCD), width: 2),
+          ),
+          actions: [],
+          centerTitle: false,
+          elevation: 2,
+        ),
+        body: SafeArea(
+          top: true,
+          child: Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(18, 40, 18, 0),
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 40),
+                  height: 22,
+                  child: Text(
+                    "이메일",
+                    style: TextStyle(
+                      fontFamily: 'Noto Sans KR',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: Color(0xFF7E7E7E),
+                      decorationColor: Color(0xFFD9D9D9),
+                      decorationThickness: 0.2,
+                    ),
                   ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
                   child: Row(
                     children: [
                       Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "ⓘ 학교 이메일로 입력해 주세요",
-                            hintStyle: TextStyle(
-                              fontFamily: 'Noto Sans KR',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
-                              color: Color(0xFFA4A4A4),
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
+                          child: SizedBox(
+                            height: 47,
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(208),
+                                border: Border.all(
+                                    color: Color(0xFFCDCDCD), width: 2),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: emailController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "ⓘ 학교 이메일로 입력해 주세요",
+                                        hintStyle: TextStyle(
+                                          fontFamily: 'Noto Sans KR',
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 13,
+                                          color: Color(0xFFA4A4A4),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 111,
+                        height: 47,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _showTimer = true;
+                              _timerCount = 180;
+                              userEmail = emailController.text;
+                            });
+                            startTimer();
+                            changePwService.RequestCode(emailController.text);
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(58),
+                              border: Border.all(
+                                  color: Color(0xFFCE4040), width: 2),
+                            ),
+                            child: Text(
+                              "인증번호 받기",
+                              style: TextStyle(
+                                fontFamily: 'Noto Sans KR',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: Color(0xFFCE4040),
+                              ),
                             ),
                           ),
                         ),
@@ -108,137 +173,139 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                     ],
                   ),
                 ),
-              ),
-            ),
-            Positioned(
-              top: 150,
-              left: 270,
-              child: SizedBox(
-                  width: 111,
-                  height: 47,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(58),
-                        border: Border.all(color: Color(0xFFCE4040), width: 2),
-                      ),
-                      child: Text(
-                        "인증번호 받기",
-                        style: TextStyle(
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xFFCE4040),
-                        ),
-                      ),
+                if (_showTimer)
+                  Container(
+                    padding: EdgeInsets.only(left: 50),
+                    child: Row(
+                      children: [],
                     ),
-                  )),
-            ),
-            Positioned(
-              top: 202,
-              left: 74,
-              child: Text(
-                'ⓘ 학교 이메일로 입력해 주세요.',
-                style: TextStyle(
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 11,
-                  color: Color(0xFFCE4040),
-                  decoration: TextDecoration.underline, // 텍스트 주위에 선 추가
-                  decorationColor: Color(0xFFD9D9D9), // 선의 색상
-                  decorationThickness: 0.2,
-                ),
-              ),
-            ),
-            Positioned(
-              top: 229,
-              left: 24,
-              child: SizedBox(
-                width: 238,
-                height: 47,
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(12), // 질문
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(208),
-                    border: Border.all(color: Color(0xFFCDCDCD), width: 2),
                   ),
+                Container(
+                  padding: EdgeInsets.only(left: 50),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
                       Text(
-                        "02:47",
+                        'ⓘ 학교 이메일로 입력해주세요.',
                         style: TextStyle(
-                          fontFamily: "Noto Sans KR",
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xFFDB4A4A),
+                          fontFamily: 'Noto Sans KR',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 11,
+                          color: Color(0xFFCE4040),
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFFD9D9D9),
+                          decorationThickness: 0.2,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            Positioned(
-                top: 229,
-                left: 270,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChangepwPageWidget()));
-                  },
-                  child: SizedBox(
-                    width: 111,
-                    height: 47,
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(58),
-                        border: Border.all(color: Color(0xFFCE4040), width: 2),
-                      ),
-                      child: Text(
-                        "확인",
-                        style: TextStyle(
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xFFCE4040),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
+                          child: SizedBox(
+                            height: 47,
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(208),
+                                border: Border.all(
+                                    color: Color(0xFFCDCDCD), width: 2),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _codeController,
+                                      decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: "ⓘ 인증번호를 입력해주세요",
+                                          hintStyle: TextStyle(
+                                            fontFamily: 'Noto Sans KR',
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 13,
+                                            color: Color(0xFFA4A4A4),
+                                          )),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${(_timerCount ~/ 60).toString().padLeft(2, '0')}:${(_timerCount % 60).toString().padLeft(2, '0')}',
+                                    style: TextStyle(
+                                      fontFamily: 'Noto Sans KR',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14,
+                                      color: Color(0xFFCE4040),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(
+                        width: 111,
+                        height: 47,
+                        child: InkWell(
+                          onTap: () {
+                            changePwService.VerifyCode(_codeController.text);
+                            if (changePwService.isVerified) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    ChangepwPageWidget(email: userEmail),
+                              ));
+                            }
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(58),
+                              border: Border.all(
+                                  color: Color(0xFFCE4040), width: 2),
+                            ),
+                            child: Text(
+                              "확인",
+                              style: TextStyle(
+                                fontFamily: 'Noto Sans KR',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: Color(0xFFCE4040),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                )),
-            Positioned(
-              top: 281,
-              left: 74,
-              child: Text(
-                'ⓘ잘못된 인증번호입니다.',
-                style: TextStyle(
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 11,
-                  color: Color(0xFFCE4040),
-                  decoration: TextDecoration.underline, // 텍스트 주위에 선 추가
-                  decorationColor: Color(0xFFD9D9D9), // 선의 색상
-                  decorationThickness: 0.2,
                 ),
-              ),
+                Container(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Row(
+                    children: [
+                      Text(
+                        'ⓘ 잘못된 인증번호입니다.',
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans KR',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 11,
+                          color: Color(0xFFCE4040),
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFFD9D9D9),
+                          decorationThickness: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     });

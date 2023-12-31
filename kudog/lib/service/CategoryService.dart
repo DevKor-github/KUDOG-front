@@ -25,15 +25,14 @@ class CategoryService extends ChangeNotifier {
           },
         ),
       );
-      for (Map<String, dynamic> item in response.data) {
-        UpperCategory upperCategory = UpperCategory.fromJson(item);
-        upperCategoryList.add(upperCategory.name!);
-      }
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
+        for (Map<String, dynamic> item in response.data) {
+          UpperCategory upperCategory = UpperCategory.fromJson(item);
+          upperCategoryList.add(upperCategory.name!);
+        }
         print(response.data);
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -76,7 +75,6 @@ class CategoryService extends ChangeNotifier {
           lowerCategoryList.add(lowerCategory.name!);
           lowerCategoryIdList.add(lowerCategory.id!);
         }
-        return;
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();

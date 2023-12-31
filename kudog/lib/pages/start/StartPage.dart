@@ -45,6 +45,7 @@ class _StartPageWidgetState extends State<StartPageWidget> {
   Future<bool> _validateTokens() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     accessToken = sharedPreferences.getString("access_token");
+    print(accessToken);
     try {
       Response response = await Dio().get(
         "https://api.kudog.devkor.club/users/info",
