@@ -40,7 +40,9 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
   void initState() {
     super.initState();
     User userInfo = Provider.of<UserInfoService>(context, listen: false).user;
-
+    nameController.text = userInfo.name ?? '';
+    emailController.text = userInfo.portalEmail ?? '';
+    subscribeController.text = userInfo.subscriberEmail ?? '';
     Majors.sort((a, b) => a.compareTo(b));
     selectedMajor = userInfo.major ?? '';
     print(selectedMajor);
@@ -134,70 +136,10 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
     }
   }
 
-  /*Future<void> updateUserInfo() async {
-    try {
-      SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-
-      String? token = sharedPreferences.getString("access_token");
-      print(token);
-      print({
-        "name": nameController.text,
-        "studentId": selectedId,
-        "grade": int.parse(selectedGrade.substring(0, 1)),
-        "major": selectedMajor,
-        "subscriberEmail": subscribeController.text,
-        "portalEmail": emailController.text,
-      });
-      final response = await _dio.put(
-        'https://api.kudog.devkor.club/users/info',
-        data: {
-          "name": nameController.text,
-          "studentId": selectedId,
-          "grade": int.parse(selectedGrade.substring(0, 1)),
-          "major": selectedMajor,
-          "subscriberEmail": subscribeController.text,
-          "portalEmail": emailController.text,
-          "password":
-        },
-
-        options: Options(headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        }),
-      );
-      if (response.statusCode == 200) {
-        print("PUT 요청 성공");
-        Navigator.pop(context);
-        Provider.of<UserInfoService>(context, listen: false).getUserInfo();
-      } else {
-        print("PUT 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (error) {
-      print("PUT 요청 에러");
-      print(error.toString());
-    }
-
-    print({
-      "name": nameController.text,
-      "studentId": selectedId,
-      "grade": int.parse(selectedGrade.substring(0, 1)),
-      "major": selectedMajor,
-      "subscriberEmail": subscribeController.text,
-      "portalEmail": emailController.text,
-    });
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return Consumer2<SignUpService, UserInfoService>(
         builder: (context, signupService, userInfoService, child) {
-      User userInfo = userInfoService.user;
-      nameController.text = userInfo.name ?? '';
-      emailController.text = userInfo.portalEmail ?? '';
-      subscribeController.text = userInfo.subscriberEmail ?? '';
-
       return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
