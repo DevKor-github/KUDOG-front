@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/pages/start/StartPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -31,7 +31,6 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
-        // home: StartPageWidget(),
-        home: LoginPageWidget());
+        home: StartPageWidget());
   }
 }
