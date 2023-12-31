@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:html/parser.dart' as htmlParser;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
   const ViewPostDetailPageWidget({super.key, required this.notice});
@@ -15,9 +16,43 @@ class ViewPostDetailPageWidget extends StatefulWidget {
 
 class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  WebViewController? _webViewController;
+
+  final String htmlcode = """
+     <h1>H1 Title</h1>
+     <h2>H2 Title</h2>
+        <p>A paragraph with <strong>bold</strong> and <u>underline</u> text.</p>
+        <ol>
+          <li>List 1</li>
+          <li>List 2<ul>
+              <li>List 2.1 (nested)</li>
+              <li>List 2.2</li>
+             </ul>
+          </li>
+          <li>Three</li>
+        </ol>
+     <a href="https://www.hellohpc.cdom">Link to HelloHPC.com</a>
+     <img src='https://www.hellohpc.com/wp-content/uploads/2020/05/flutter.png'/>
+    """;
 
   bool isClicked = false;
+
+  List<String> extractAttachmentUrls(String htmlContent) {
+    List<String> attachmentUrls = [];
+
+    var document = htmlParser.parse(htmlContent);
+
+    var links = document.querySelectorAll('a');
+
+    for (var link in links) {
+      var href = link.attributes['href'];
+      if (href != null) {
+        attachmentUrls.add(href);
+      }
+    }
+
+    return attachmentUrls;
+  }
+
   void scrapOrNot() {
     setState(() {
       widget.notice.scrapped = !widget.notice.scrapped!;
@@ -28,9 +63,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
 
   @override
   void initState() {
-    _webViewController = WebViewController()
-      ..loadRequest(Uri.parse('https://youtube.com'))
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
     super.initState();
     Provider.of<NoticeService>(context, listen: false)
         .getNotice(widget.notice.id!);
@@ -45,6 +77,10 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
       NoticeDetail _noticeDetail = noticeService.noticeDetail;
+      print(_noticeDetail.content);
+      List<String> attachmentUrls = _noticeDetail.content == null
+          ? []
+          : extractAttachmentUrls(_noticeDetail.content!);
 
       return Scaffold(
         key: scaffoldKey,
@@ -99,15 +135,62 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                    child: ImageIcon(
-                      color: Color(0xffFFFFFF),
-                      AssetImage(
-                        "assets/images/icon_14.png",
+                  GestureDetector(
+                    // onTap: () {
+                    //   showDialog(
+                    //       context: context,
+                    //       barrierDismissible: false,
+                    //       builder: (BuildContext context) {
+                    //         List<String> attachmentUrls =
+                    //             extractAttachmentUrls(_noticeDetail.content!);
+                    //         return AlertDialog(
+                    //           shape: RoundedRectangleBorder(
+                    //               borderRadius: BorderRadius.circular(10.0)),
+                    //           title: Column(
+                    //             children: <Widget>[
+                    //               Text("첨부 파일"),
+                    //             ],
+                    //           ),
+                    //           content: Column(
+                    //             mainAxisSize: MainAxisSize.min,
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: <Widget>[
+                    //               ListView.builder(
+                    //                 itemCount: attachmentUrls.length,
+                    //                 itemBuilder: (context, index) {
+                    //                   return ListTile(
+                    //                     title: Text(attachmentUrls[index]),
+                    //                   );
+                    //                 },
+                    //               ),
+                    //             ],
+                    //           ),
+                    //           actions: <Widget>[
+                    //             TextButton(
+                    //               style: TextButton.styleFrom(
+                    //                 padding: const EdgeInsets.all(20.0),
+                    //                 foregroundColor: primary,
+                    //                 textStyle: const TextStyle(fontSize: 20),
+                    //               ),
+                    //               child: Text("확인"),
+                    //               onPressed: () {
+                    //                 Navigator.pop(context);
+                    //               },
+                    //             ),
+                    //           ],
+                    //         );
+                    //       });
+                    // },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                      child: ImageIcon(
+                        color: Color(0xffFFFFFF),
+                        AssetImage(
+                          "assets/images/icon_14.png",
+                        ),
                       ),
                     ),
-                  ),
+                  )
                 ])),
         body: SingleChildScrollView(
           child: noticeService.noticeDetail!.id == null
@@ -255,16 +338,27 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 ],
                               ),
                             ),
+                            // attachmentUrls == []
+                            //     ? Container()
+                            //     : Container(
+                            //         child: ListView.builder(
+                            //           itemCount: attachmentUrls.length,
+                            //           itemBuilder: (context, index) {
+                            //             return Text(attachmentUrls[index]);
+                            //           },
+                            //         ),
+                            //       ),
                             Container(
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                 child: SingleChildScrollView(
                                     child: Container(
-                                  width: MediaQuery.of(context).size.width * 2,
                                   height:
                                       MediaQuery.of(context).size.height * 10,
-                                  child: WebViewWidget(
-                                      controller: _webViewController!),
+                                  child: HtmlWidget(
+                                      _noticeDetail.content == null
+                                          ? htmlcode
+                                          : _noticeDetail.content!),
                                 )))
                           ],
                         ),

@@ -13,10 +13,11 @@ dependencies:
   dio: ^4.0.6
   http: ^0.13.6
   http_parser: ^4.0.2
-  flutter_html: ^3.0.0-alpha.6
   shared_preferences: any
   flutter_secure_storage: ^5.0.2
-  webview_flutter: ^4.0.2
+  flutter_widget_from_html: ^0.14.10
+  flutter_downloader: ^1.11.6
+  html: ^0.15.4
 
 dev_dependencies:
   flutter_test:
