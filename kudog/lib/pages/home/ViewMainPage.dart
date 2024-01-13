@@ -12,7 +12,7 @@ class ViewMainPageWidget extends StatefulWidget {
 }
 
 class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 1;
   @override
   void initState() {
     super.initState();
@@ -28,7 +28,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
       ViewSubscribePageWidget(),
-      ViewHotPageWidget(),
+      // ViewHotPageWidget(),
       ViewHomePageWidget(),
       ViewScrabPageWidget(),
       ViewMyPageWidget()
@@ -61,18 +61,18 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
                       ),
                       size: 44),
                   label: ""),
-              BottomNavigationBarItem(
-                  icon: ImageIcon(
-                      AssetImage(
-                        "assets/images/icon_2.png",
-                      ),
-                      size: 44),
-                  activeIcon: ImageIcon(
-                      AssetImage(
-                        "assets/images/icon_2_colored.png",
-                      ),
-                      size: 44),
-                  label: ""),
+              // BottomNavigationBarItem(
+              //     icon: ImageIcon(
+              //         AssetImage(
+              //           "assets/images/icon_2.png",
+              //         ),
+              //         size: 44),
+              //     activeIcon: ImageIcon(
+              //         AssetImage(
+              //           "assets/images/icon_2_colored.png",
+              //         ),
+              //         size: 44),
+              //     label: ""),
               BottomNavigationBarItem(
                   icon: ImageIcon(
                       AssetImage(

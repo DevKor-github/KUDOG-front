@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NoticeService extends ChangeNotifier {
   NoticeDetail noticeDetail = NoticeDetail();
   NoticeList noticeList = NoticeList(notices: []); // 현재 화면에 보여지는 notice 전달
-  NoticeList scrappedNoticeList = NoticeList(notices: []);
+  ScrappedNoticeList scrappedNoticeList = ScrappedNoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   NoticeList searchedNoticeList = NoticeList(notices: []);
   SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
@@ -158,7 +158,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getScrappedNotices(int page) async {
+  void getScrappedNotices() async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -177,11 +177,11 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        scrappedNoticeList = NoticeList.fromJson(response.data);
+        scrappedNoticeList = ScrappedNoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
-        getScrappedNotices(page);
+        getScrappedNotices();
       } else {
         print("GET 요청 실패");
         print("Status Code : ${response.statusCode}");
