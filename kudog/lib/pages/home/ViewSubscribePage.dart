@@ -131,7 +131,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
   void initState() {
     super.initState();
     dio = Dio();
-    Provider.of<NoticeService>(context, listen: false).getAllNotices();
+    Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
     Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
     _initializeLowerCategories();
     isSelected = List.generate(lowerCategoryList.length, (index) => false);

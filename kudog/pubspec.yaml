@@ -18,6 +18,7 @@ dependencies:
   flutter_widget_from_html: ^0.14.10
   flutter_downloader: ^1.11.6
   html: ^0.15.4
+  url_launcher: ^6.2.3
 
 dev_dependencies:
   flutter_test:

@@ -27,7 +27,7 @@ class CategoryService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print("GET 요청 성공");
+        ("GET 요청 성공");
         for (Map<String, dynamic> item in response.data) {
           UpperCategory upperCategory = UpperCategory.fromJson(item);
           upperCategoryList.add(upperCategory.name!);
