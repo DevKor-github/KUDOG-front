@@ -29,6 +29,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   NoticeService noticeService = NoticeService();
   int k = 0;
   bool isLowerSelected = false;
+  int currentPage = 1;
   void changeIcon(int index) {
     setState(() {
       iconStates[index] = !iconStates[index];
@@ -47,6 +48,12 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
           }
         }
       }
+    });
+  }
+
+  void pageClick(int page) {
+    setState(() {
+      currentPage = page;
     });
   }
 
@@ -389,16 +396,16 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                           },
                                         )),
                               Container(
-                                  height: 40,
+                                  height: 60,
                                   child: ListView.builder(
                                     padding: EdgeInsets.only(top: 10),
                                     shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
                                     itemCount: numOfPages,
                                     itemBuilder: (context, index) {
-                                      return GestureDetector(
+                                      return InkWell(
                                           onTap: () {
-                                            print("pressed");
+                                            pageClick(index + 1);
                                             pageNum[index] = true;
                                             if (selectedCategory == "전체") {
                                               noticeService
@@ -423,18 +430,25 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                     .notices!;
                                               }
                                             }
-
-                                            print(pageNum);
                                           },
                                           child: Container(
-                                              margin:
-                                                  EdgeInsets.only(right: 40),
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                color: currentPage == index + 1
+                                                    ? Color.fromRGBO(
+                                                        206, 64, 64, 0.65)
+                                                    : Color(0xFFCDCDCD),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              margin: EdgeInsets.all(8),
+                                              padding: EdgeInsets.all(8),
                                               child: Text(
                                                 (index + 1).toString(),
                                                 style: TextStyle(
-                                                    color: !pageNum[index]
-                                                        ? Colors.black
-                                                        : Colors.red),
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               )));
                                     },
                                   ))
