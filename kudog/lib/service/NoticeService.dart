@@ -10,9 +10,8 @@ class NoticeService extends ChangeNotifier {
   NoticeList scrappedNoticeList = NoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   NoticeList searchedNoticeList = NoticeList(notices: []);
-  SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
 
-  void getAllNotices() async {
+  void getAllNotices(int page) async{
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -20,7 +19,7 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/bydate",
+        "https://api.kudog.devkor.club/notice/list/bydate?page=$page",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -35,7 +34,7 @@ class NoticeService extends ChangeNotifier {
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
-        getAllNotices();
+        getAllNotices(1);
       } else {
         print("GET 요청 실패");
         print("Status Code : ${response.statusCode}");

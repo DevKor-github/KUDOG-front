@@ -32,6 +32,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
   void initState() {
     super.initState();
     dio = Dio();
+
     Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
     Provider.of<CategoryService>(context, listen: false).getFullLowerCategoryList();
     Provider.of<CategoryService>(context, listen: false).getSubList();

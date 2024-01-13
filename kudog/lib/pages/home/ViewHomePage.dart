@@ -22,11 +22,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   List<String> upperCategories = ["전체"];
   List<String> lowerCategories = [];
   List<int> lowerCategoryIds = [];
-  List<bool> lowerStates = List.filled(20, false);
+  List<bool> lowerStates = List.filled(20, false); //lowerstates가 20개 이하라고 가정
   String? selectedCategory = "전체";
   TextEditingController _searchController = TextEditingController();
   bool isSearch = false; //임시 : 검색 버전인지 아닌지 구별하는 변수
   NoticeService noticeService = NoticeService();
+  int k = 0;
+  bool isLowerSelected = false;
   void changeIcon(int index) {
     setState(() {
       iconStates[index] = !iconStates[index];
@@ -51,7 +53,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   @override
   void initState() {
     super.initState();
-    Provider.of<NoticeService>(context, listen: false).getAllNotices();
+    Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
     Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
 
     lowerCategories = [];
@@ -101,6 +103,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
       builder: (context, categoryService, noticeService, child) {
+        print(selectedCategory);
         upperCategories = ["전체"] + categoryService.upperCategoryList;
         lowerCategories = categoryService.lowerCategoryList;
         lowerCategoryIds = categoryService.lowerCategoryIdList;
@@ -110,8 +113,15 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                 ? noticeService.noticeList.notices!
                 : noticeService
                     .selectedNoticeList.notices!); //현재 화면에 보여지는 notice들
-
+        print(isLowerSelected);
         int selectedIndex = upperCategories.indexOf(selectedCategory!) + 1;
+        int? numOfPages = isSearch
+            ? noticeService.searchedNoticeList.totalPage
+            : (selectedCategory == "전체"
+                ? noticeService.noticeList.totalPage
+                : noticeService.selectedNoticeList.totalPage);
+        List<bool> pageNum =
+            List.filled(numOfPages == null ? 50 : numOfPages, false);
         return Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Color(0xFFCE4040),
@@ -235,6 +245,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       alignment: AlignmentDirectional.center,
                                       value: selectedCategory,
                                       onChanged: (String? newValue) {
+                                        isLowerSelected = false;
                                         isSearch = false;
                                         _searchController.text = "";
                                         selectedCategory = newValue!;
@@ -272,7 +283,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       thickness: 0.5, color: Color(0xffCDCDCD)),
                                   lowerCategories != []
                                       ? Container(
-                                          height: 44,
+                                          height: selectedCategory != "전체"
+                                              ? 40
+                                              : 10,
                                           child: ListView.builder(
                                             padding: EdgeInsets.fromLTRB(
                                                 24, 0, 0, 0),
@@ -281,16 +294,18 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                             itemBuilder: (context, index) {
                                               return GestureDetector(
                                                   onTap: () {
+                                                    isLowerSelected = true;
                                                     _searchController.text = "";
                                                     isSearch = false;
                                                     if (!lowerStates[index]) {
                                                       selectOrReleaseLower(
                                                           index);
+                                                      k = lowerCategoryIds[
+                                                          index];
                                                       noticeService
                                                           .getLowerCategoryNotice(
                                                               1,
-                                                              lowerCategoryIds[
-                                                                  index]); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
+                                                              k); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
                                                       noticeList = noticeService
                                                           .selectedNoticeList
                                                           .notices!;
@@ -372,7 +387,57 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                             return noticeCard(
                                                 notice: noticeList[index]);
                                           },
-                                        ))
+                                        )),
+                              Container(
+                                  height: 40,
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.only(top: 10),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: numOfPages,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                          onTap: () {
+                                            print("pressed");
+                                            pageNum[index] = true;
+                                            if (selectedCategory == "전체") {
+                                              noticeService
+                                                  .getAllNotices(index + 1);
+                                              noticeList = noticeService
+                                                  .noticeList.notices!;
+                                            } else {
+                                              if (isLowerSelected) {
+                                                noticeService
+                                                    .getLowerCategoryNotice(
+                                                        index + 1, k);
+                                                noticeList = noticeService
+                                                    .selectedNoticeList
+                                                    .notices!;
+                                              } else {
+                                                noticeService
+                                                    .getUpperCategoryNotice(
+                                                        index + 1,
+                                                        selectedIndex - 1);
+                                                noticeList = noticeService
+                                                    .selectedNoticeList
+                                                    .notices!;
+                                              }
+                                            }
+
+                                            print(pageNum);
+                                          },
+                                          child: Container(
+                                              margin:
+                                                  EdgeInsets.only(right: 40),
+                                              child: Text(
+                                                (index + 1).toString(),
+                                                style: TextStyle(
+                                                    color: !pageNum[index]
+                                                        ? Colors.black
+                                                        : Colors.red),
+                                              )));
+                                    },
+                                  ))
                             ],
                           )),
                       Positioned(

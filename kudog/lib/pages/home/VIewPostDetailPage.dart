@@ -5,6 +5,7 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
   const ViewPostDetailPageWidget({super.key, required this.notice});
@@ -18,20 +19,9 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final String htmlcode = """
-     <h1>H1 Title</h1>
-     <h2>H2 Title</h2>
-        <p>A paragraph with <strong>bold</strong> and <u>underline</u> text.</p>
-        <ol>
-          <li>List 1</li>
-          <li>List 2<ul>
-              <li>List 2.1 (nested)</li>
-              <li>List 2.2</li>
-             </ul>
-          </li>
-          <li>Three</li>
-        </ol>
-     <a href="https://www.hellohpc.cdom">Link to HelloHPC.com</a>
-     <img src='https://www.hellohpc.com/wp-content/uploads/2020/05/flutter.png'/>
+     <h1>No Info</h1>
+     <h2>There is no information</h2>
+        
     """;
 
   bool isClicked = false;
@@ -77,11 +67,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
       NoticeDetail _noticeDetail = noticeService.noticeDetail;
-      print(_noticeDetail.content);
-      List<String> attachmentUrls = _noticeDetail.content == null
-          ? []
-          : extractAttachmentUrls(_noticeDetail.content!);
-
       return Scaffold(
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
@@ -125,6 +110,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       noticeService.scrapNotice(widget.notice.id!);
                     },
                     child: Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
                       child: ImageIcon(
                         color: Color(0xffFFFFFF),
                         AssetImage(
@@ -135,62 +121,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    // onTap: () {
-                    //   showDialog(
-                    //       context: context,
-                    //       barrierDismissible: false,
-                    //       builder: (BuildContext context) {
-                    //         List<String> attachmentUrls =
-                    //             extractAttachmentUrls(_noticeDetail.content!);
-                    //         return AlertDialog(
-                    //           shape: RoundedRectangleBorder(
-                    //               borderRadius: BorderRadius.circular(10.0)),
-                    //           title: Column(
-                    //             children: <Widget>[
-                    //               Text("첨부 파일"),
-                    //             ],
-                    //           ),
-                    //           content: Column(
-                    //             mainAxisSize: MainAxisSize.min,
-                    //             crossAxisAlignment: CrossAxisAlignment.start,
-                    //             children: <Widget>[
-                    //               ListView.builder(
-                    //                 itemCount: attachmentUrls.length,
-                    //                 itemBuilder: (context, index) {
-                    //                   return ListTile(
-                    //                     title: Text(attachmentUrls[index]),
-                    //                   );
-                    //                 },
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           actions: <Widget>[
-                    //             TextButton(
-                    //               style: TextButton.styleFrom(
-                    //                 padding: const EdgeInsets.all(20.0),
-                    //                 foregroundColor: primary,
-                    //                 textStyle: const TextStyle(fontSize: 20),
-                    //               ),
-                    //               child: Text("확인"),
-                    //               onPressed: () {
-                    //                 Navigator.pop(context);
-                    //               },
-                    //             ),
-                    //           ],
-                    //         );
-                    //       });
-                    // },
-                    child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                      child: ImageIcon(
-                        color: Color(0xffFFFFFF),
-                        AssetImage(
-                          "assets/images/icon_14.png",
-                        ),
-                      ),
-                    ),
-                  )
                 ])),
         body: SingleChildScrollView(
           child: noticeService.noticeDetail!.id == null
@@ -338,28 +268,28 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 ],
                               ),
                             ),
-                            // attachmentUrls == []
-                            //     ? Container()
-                            //     : Container(
-                            //         child: ListView.builder(
-                            //           itemCount: attachmentUrls.length,
-                            //           itemBuilder: (context, index) {
-                            //             return Text(attachmentUrls[index]);
-                            //           },
-                            //         ),
-                            //       ),
                             Container(
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                 child: SingleChildScrollView(
                                     child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 10,
                                   child: HtmlWidget(
-                                      _noticeDetail.content == null
-                                          ? htmlcode
-                                          : _noticeDetail.content!),
-                                )))
+                                    _noticeDetail.content == null
+                                        ? htmlcode
+                                        : _noticeDetail.content!,
+                                    onTapUrl: (url) async {
+                                      Uri dest = Uri.parse(url);
+                                      if (await canLaunchUrl(dest)) {
+                                        await launchUrl(dest);
+                                      }
+                                      print("링크 클릭 : $url");
+                                      return true;
+                                    },
+                                  ),
+                                ))),
+                            Container(
+                              height: 100,
+                            )
                           ],
                         ),
                       ),

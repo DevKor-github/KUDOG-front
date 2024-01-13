@@ -83,7 +83,7 @@ class NoticeDetail {
 
 class NoticeList {
   List<Notice>? notices;
-  int? page;
+  String? page;
   int? totalNotice;
   int? totalPage;
 
