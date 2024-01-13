@@ -10,7 +10,8 @@ class NoticeService extends ChangeNotifier {
   NoticeList scrappedNoticeList = NoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   NoticeList searchedNoticeList = NoticeList(notices: []);
-  void getAllNotices(int page) async {
+
+  void getAllNotices(int page) async{
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -273,4 +274,42 @@ class NoticeService extends ChangeNotifier {
       print(e.toString());
     }
   }
+
+  void getSubscribedNotices(int page) async {
+    try {
+      SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/notice/list/subscribe-categories?page=$page",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        subscribedNoticeList = SelectedNoticeList.fromJson(response.data);
+        print(subscribedNoticeList);
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getAllNotices();
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
 }
