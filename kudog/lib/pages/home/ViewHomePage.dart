@@ -288,7 +288,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   ),
                                   const Divider(
                                       thickness: 0.5, color: Color(0xffCDCDCD)),
-                                  lowerCategories != []
+                                  selectedCategory != "전체"
                                       ? Container(
                                           height: selectedCategory != "전체"
                                               ? 40

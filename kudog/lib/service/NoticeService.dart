@@ -9,7 +9,7 @@ class NoticeService extends ChangeNotifier {
   NoticeList noticeList = NoticeList(notices: []); // 현재 화면에 보여지는 notice 전달
   ScrappedNoticeList scrappedNoticeList = ScrappedNoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
-  NoticeList searchedNoticeList = NoticeList(notices: []);
+  SearchedNoticeList searchedNoticeList = SearchedNoticeList(notices: []);
   SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
   void getAllNotices(int page) async {
     try {
@@ -260,7 +260,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        searchedNoticeList = NoticeList.fromJson(response.data);
+        searchedNoticeList = SearchedNoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
