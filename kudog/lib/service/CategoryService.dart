@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/model/CategoryModel.dart';
@@ -57,12 +55,13 @@ class CategoryService extends ChangeNotifier {
 
     notifyListeners();
   }
+
   void getLowerCategoryList(int upperCategoryId) async {
     lowerCategoryList.clear();
     lowerCategoryIdList.clear();
     try {
       SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
+          await SharedPreferences.getInstance();
 
       String? token = sharedPreferences.getString("access_token");
 
@@ -100,6 +99,7 @@ class CategoryService extends ChangeNotifier {
 
     notifyListeners();
   }
+
   Future<void> getLowerCategoryList_temp(int upperCategoryId) async {
     lowerCategoryList.clear();
     lowerCategoryIdList.clear();
@@ -144,7 +144,6 @@ class CategoryService extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void getFullLowerCategoryList() async {
     fullLowerCategoryList.clear();
 
@@ -161,26 +160,27 @@ class CategoryService extends ChangeNotifier {
 
   void getSubList() async {
     try {
-      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("access_token");
       print(token);
       Response response = await Dio().get(
         "https://api.kudog.devkor.club/category/subscribe",
         options: Options(
           headers: {
-            'Authorization' : 'Bearer $token',
-            'Content-Type' : 'application/json',
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
           },
         ),
       );
-
 
       if (response.statusCode == 200) {
         print('GET 요청 성공');
         subIdList.clear();
         subNameList.clear();
 
-        List<Map<String, dynamic>> responseData = List<Map<String, dynamic>>.from(response.data);
+        List<Map<String, dynamic>> responseData =
+            List<Map<String, dynamic>>.from(response.data);
         for (Map<String, dynamic> item in responseData) {
           subIdList.add(item['id']);
           subNameList.add(item['name']);
@@ -191,8 +191,7 @@ class CategoryService extends ChangeNotifier {
         print('subNames: $subNameList');
         print('unsubscribeIds: $unsubIdList');
         return;
-      }
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
         getUpperCategoryList(); //다시 수행
@@ -206,5 +205,4 @@ class CategoryService extends ChangeNotifier {
     }
     notifyListeners();
   }
-
 }
