@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/model/UserModel.dart';
 import 'package:kudog/pages/auth/ChangeMyInfoPage.dart';
+import 'package:kudog/pages/auth/DeleteUserPage.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/UserInfoService.dart';
@@ -277,6 +278,27 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                           ],
                         ),
                       ),
+                    ),
+                    SizedBox(height: 200),
+                    Container(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => DeleteUserPageWidget()),
+                          );
+                        },
+                          child: Text(
+                              "회원 탈퇴하기",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                fontFamily: "Noto Sans KR",
+                                color: Color(0xFFCDCDCD),
+                              )
+                          )
+                      )
+
                     ),
                   ],
                 ),
