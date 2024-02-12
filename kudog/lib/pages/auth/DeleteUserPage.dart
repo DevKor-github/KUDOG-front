@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:kudog/service/WithdrawalService.dart';
 
 class DeleteUserPageWidget extends StatefulWidget {
+
   @override
   _DeleteUserPageWidgetState createState() => _DeleteUserPageWidgetState();
 }
