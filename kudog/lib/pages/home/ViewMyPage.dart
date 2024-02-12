@@ -190,7 +190,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 26),
+                    /*SizedBox(height: 26),
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
@@ -250,7 +250,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                           Icon(Icons.keyboard_arrow_right)
                         ],
                       ),
-                    ),
+                    ),*/
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
