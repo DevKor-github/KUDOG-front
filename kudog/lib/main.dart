@@ -7,6 +7,7 @@ import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/SignUpService.dart';
 import 'package:kudog/service/UserInfoService.dart';
+import 'package:kudog/service/WithdrawalService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -20,6 +21,7 @@ void main() {
     ChangeNotifierProvider(create: (context) => UserInfoService()),
     ChangeNotifierProvider(create: (context) => CategoryService()),
     ChangeNotifierProvider(create: (context) => SignOutService()),
+    ChangeNotifierProvider(create: (context) => WithdrawalService()),
   ], child: const MainApp()));
 }
 

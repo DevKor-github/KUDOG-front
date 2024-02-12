@@ -62,12 +62,12 @@ class SignUpService extends ChangeNotifier {
     }
   }
 
-  void VerifyEmail(String address, String code) async {
+  Future<void> VerifyEmail(String address, String code) async {
     try {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/mail/verify/check",
           data: {"email": address, "code": code});
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print("POST 요청 성공");
         secondId = 1;
         secondAnswer = "ⓘ 인증되었습니다.";
