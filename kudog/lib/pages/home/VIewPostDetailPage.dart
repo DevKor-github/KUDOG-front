@@ -107,7 +107,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                   GestureDetector(
                     onTap: () {
                       scrapOrNot();
-                      noticeService.scrapNotice(widget.notice.id!);
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(0, 0, 25, 0),

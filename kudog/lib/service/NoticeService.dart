@@ -11,7 +11,7 @@ class NoticeService extends ChangeNotifier {
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   SearchedNoticeList searchedNoticeList = SearchedNoticeList(notices: []);
   SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
-  void getAllNotices(int page) async {
+  Future<void> getAllNotices(int page) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -83,7 +83,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getUpperCategoryNotice(int page, int upperCategoryId) async {
+  Future<void> getUpperCategoryNotice(int page, int upperCategoryId) async {
     //상위 카테고리에 맞는 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
@@ -241,7 +241,7 @@ class NoticeService extends ChangeNotifier {
     }
   }
 
-  void searchNotices(String keyword) async {
+  Future<void> searchNotices(String keyword) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();

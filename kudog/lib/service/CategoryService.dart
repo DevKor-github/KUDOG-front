@@ -14,7 +14,7 @@ class CategoryService extends ChangeNotifier {
   List<String> subNameList = [];
   List<String> fullLowerCategoryList = [];
   List<int> fullList = List.generate(20, (index) => index + 1);
-  void getUpperCategoryList() async {
+  Future<void> getUpperCategoryList() async {
     upperCategoryList.clear();
     try {
       SharedPreferences sharedPreferences =
