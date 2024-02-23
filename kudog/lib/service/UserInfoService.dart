@@ -8,6 +8,50 @@ class UserInfoService extends ChangeNotifier {
   User user = User(
     name: "",
   );
+  bool usersub = false;
+
+  void getUserSubscribing() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/users/subscribe",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      print("토글 상태는 현재 : ${response.data}");
+      usersub = response.data == 'true';
+      print("usersub는 현재 : ${usersub}");
+
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+  }
+
+  void putUserSubscribing() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/users/subscribe",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+    } catch (e) {
+      print("PUT 요청 에러");
+      print(e.toString());
+    }
+  }
 
   void getUserInfo() async {
     try {

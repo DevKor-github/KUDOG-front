@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/ChangePwPage.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:provider/provider.dart';
+import 'package:kudog/etc/Colors.dart';
+
+import 'package:kudog/pages/auth/SignUpPage.dart';
 
 class FindpwPageWidget extends StatefulWidget {
   const FindpwPageWidget({Key? key}) : super(key: key);
@@ -18,8 +21,13 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
   TextEditingController emailController = TextEditingController();
 
   bool _showTimer = false;
+  bool _showCodeAlert = false;
   int _timerCount = 180;
   String userEmail = "";
+
+  late Timer _timer;
+  bool isSame = false;
+  bool _noticeVisible = false;
 
   @override
   void initState() {
@@ -27,11 +35,12 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
   }
 
   void startTimer() {
+    _noticeVisible = true;
     const oneSec = const Duration(seconds: 1);
-    Timer.periodic(
+    _timer = Timer.periodic(
       oneSec,
-      (Timer timer) {
-        if (_timerCount == 0) {
+          (Timer timer) {
+        if (_timerCount < 1) {
           setState(() {
             _showTimer = false;
           });
@@ -43,11 +52,18 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
         }
       },
     );
+    _showTimer = true;
   }
+
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void stopTimer() {
+    _timer.cancel();
+    _showTimer = false;
   }
 
   @override
@@ -96,6 +112,199 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                     ),
                   ),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    EmailInputForm(
+                        controller: emailController,
+                        type: "이메일",
+                        label: "ⓘ 학교 이메일로 입력해주세요."),
+                    Container(
+                        height: MediaQuery.of(context)
+                            .size
+                            .height *
+                            0.05,
+                        width: MediaQuery.of(context)
+                            .size
+                            .width *
+                            0.35,
+                        padding:
+                        EdgeInsetsDirectional.fromSTEB(
+                            12, 0, 0, 0),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              startTimer();
+                              changePwService.RequestCode(emailController.text);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1.0,
+                                color: primary,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      20.0)),
+                              backgroundColor:
+                              secondaryBackground,
+                            ),
+                            child: Text(
+                              "인증번호 받기",
+                              style: const TextStyle(
+                                  color: primary,
+                                  fontSize: 14,
+                                  fontWeight:
+                                  FontWeight.w500),
+                            ))),
+                  ],
+                ),
+                Message(
+                    text: changePwService.firstAnswer,
+                    color: changePwService.firstId == 1
+                        ? Color(0xFF06C755)
+                        : Color(0xFFCE4040),
+                    visible: _showTimer),
+                Container(
+                    padding: EdgeInsets.only(top: 6),
+                    child: Row(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.center,
+                      children: [
+                        CodeInputForm_find(
+                            value: _timerCount,
+                            controller: _codeController,
+                            label: "ⓘ 인증번호를 입력해 주세요",
+                            ),
+                        Container(
+                            height: MediaQuery.of(context)
+                                .size
+                                .height *
+                                0.05,
+                            width: MediaQuery.of(context)
+                                .size
+                                .width *
+                                0.35,
+                            padding: EdgeInsetsDirectional
+                                .fromSTEB(12, 0, 0, 0),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  _showCodeAlert = true;
+
+                                  if (changePwService.firstId ==
+                                      1) {
+                                    stopTimer();
+
+                                    changePwService.VerifyCode(
+                                        _codeController.text);
+                                    if (changePwService.secondId == 1) {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChangepwPageWidget(email: userEmail),
+                                      ));
+                                    }
+
+                                  } else {
+                                    showDialog(
+                                        context: context,
+                                        barrierDismissible:
+                                        false,
+                                        builder: (BuildContext
+                                        context) {
+                                          return AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius
+                                                    .circular(
+                                                    10.0)),
+                                            title: Column(
+                                              children: <Widget>[
+                                                Text(
+                                                    "인증 번호 전송 필요"),
+                                              ],
+                                            ),
+                                            content: Column(
+                                              mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                              children: <Widget>[
+                                                Text(
+                                                  "인증 번호가 전송되지 않았습니다.",
+                                                ),
+                                              ],
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                style: TextButton
+                                                    .styleFrom(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .all(
+                                                      20.0),
+                                                  foregroundColor:
+                                                  primary,
+                                                  textStyle: const TextStyle(
+                                                      fontSize:
+                                                      20),
+                                                ),
+                                                child: Text(
+                                                    "확인"),
+                                                onPressed:
+                                                    () {
+                                                  Navigator.pop(
+                                                      context);
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
+                                style:
+                                ElevatedButton.styleFrom(
+                                  side: const BorderSide(
+                                    width: 1.0,
+                                    color: primary,
+                                  ),
+                                  shape:
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius
+                                          .circular(
+                                          20.0)),
+                                  backgroundColor:
+                                  secondaryBackground,
+                                ),
+                                child: Text(
+                                  "확인",
+                                  style: const TextStyle(
+                                      color: primary,
+                                      fontSize: 16,
+                                      fontWeight:
+                                      FontWeight.w500),
+                                ))),
+                      ],
+                    )),
+                Message(
+                    text: changePwService.secondAnswer,
+                    color: changePwService.secondId == 1
+                        ? Color(0xFF06C755)
+                        : Color(0xFFCE4040),
+                    visible: _showCodeAlert),
+                /*changePwService.isVerified
+                    ? Message(
+                    text: changePwService.secondAnswer,
+                    color: changePwService.secondId == 1
+                        ? Color(0xFF06C755)
+                        : Color(0xFFCE4040),
+                    visible: _noticeVisible)
+                    : Padding(
+                  padding: EdgeInsets.all(0),
+                ), */
+
+                /*
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: Row(
@@ -302,12 +511,101 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                       ),
                     ],
                   ),
-                ),
+                ), */
               ],
             ),
           ),
         ),
       );
     });
+  }
+}
+
+
+
+
+class CodeInputForm_find extends StatefulWidget {
+  const CodeInputForm_find(
+      {super.key,
+        required this.value,
+        required this.controller,
+        required this.label});
+  final int value;
+  final TextEditingController controller;
+  final String label;
+  @override
+  _CodeInputForm_findState createState() => _CodeInputForm_findState();
+}
+
+class _CodeInputForm_findState extends State<CodeInputForm_find> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+    String secondsStr = remainingSeconds.toString().padLeft(2, '0');
+    return '$minutesStr:$secondsStr';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.only(left: 15),
+        height: MediaQuery.of(context).size.height * 0.06,
+        width: MediaQuery.of(context).size.width * 0.55,
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(width: 2, color: Color(0xFFCDCDCD)),
+            borderRadius: BorderRadius.circular(208),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.38,
+              child: TextFormField(
+                controller: widget.controller,
+                autofocus: true,
+                autofillHints: [AutofillHints.email],
+                obscureText: false,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  labelText: widget.label,
+                  labelStyle: TextStyle(
+                    fontFamily: 'Readex Pro',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: primaryText,
+                  ),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+            Visibility(
+              visible: true,
+              child: Container(
+                child: Text(
+                  formatTime(widget.value),
+                  style: TextStyle(
+                    color: Color(0xFFDA4949),
+                    fontSize: 14,
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ));
   }
 }

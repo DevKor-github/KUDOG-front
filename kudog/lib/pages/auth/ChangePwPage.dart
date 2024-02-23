@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:provider/provider.dart';
+import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart' show Message;
 
 class ChangepwPageWidget extends StatefulWidget {
   final String email;
@@ -77,6 +79,34 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                     ),
                   ),
                 ),
+
+                PWInputForm(
+                  controller: newPasswordController,
+                  type: "비밀번호",
+                  label: "ⓘ 6-16자 / 영문 소문자, 숫자 사용가능",
+                ),
+                PWInputForm(
+                  controller: confirmPasswordController,
+                  type: newPasswordController.text,
+                  label: "ⓘ 한 번 더 입력해주세요.",
+                ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                /*
                 Container(
                   margin: EdgeInsets.fromLTRB(18, 18, 18, 8),
                   child: SizedBox(
@@ -201,6 +231,9 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                     ],
                   ),
                 ),
+                */
+
+
                 Container(
                   margin: EdgeInsets.fromLTRB(18, 28, 18, 18),
                   child: SizedBox(
@@ -209,9 +242,12 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                     child: GestureDetector(
                       onTap: () {
                         if (isValidPassword(newPasswordController.text) &&
-                            newPasswordController.text ==
-                                confirmPasswordController.text) {
-                          savePassword(newPasswordController.text);
+                            newPasswordController.text == confirmPasswordController.text) {
+                          changePwService.ChangePw(
+                              widget.email, newPasswordController.text);
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPageWidget()));
                         }
                       },
                       child: Container(
@@ -220,22 +256,13 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                           color: Color(0xFFCE4040),
                           borderRadius: BorderRadius.circular(58),
                         ),
-                        child: InkWell(
-                          onTap: () {
-                            changePwService.ChangePw(
-                                widget.email, newPasswordController.text);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPageWidget()));
-                          },
-                          child: Text(
-                            "비밀번호 저장",
-                            style: TextStyle(
-                              fontFamily: 'Noto Sans KR',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
+                        child: Text(
+                          "비밀번호 저장",
+                          style: TextStyle(
+                            fontFamily: 'Noto Sans KR',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -257,5 +284,129 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
 
   void savePassword(String password) {
     print("Password saved: $password");
+  }
+}
+
+
+
+
+class PWInputForm extends StatefulWidget {
+  const PWInputForm(
+      {super.key,
+        required this.controller,
+        required this.type,
+        required this.label});
+  final TextEditingController controller;
+  final String type;
+  final String label;
+
+  @override
+  _PWInputFormState createState() => _PWInputFormState();
+}
+
+class _PWInputFormState extends State<PWInputForm> {
+  bool isPassed = false;
+  bool isSame = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    isSame = widget.controller.text == widget.type;
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        widget.type == "비밀번호"
+            ? Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+          child: Text(
+            widget.type,
+            style: TextStyle(
+              fontFamily: 'Readex Pro',
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: secondaryText,
+            ),
+          ),
+        )
+            : Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: TextFormField(
+            onChanged: (value) {
+              if (value == null) {
+                isPassed = false;
+              } else if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(value)) {
+                isPassed = true;
+              }
+            },
+            controller: widget.controller,
+            autofocus: true,
+            autofillHints: [AutofillHints.email],
+            obscureText: true,
+            obscuringCharacter: "●",
+            style: TextStyle(color: Color(0xFFA4A4A4)),
+            decoration: InputDecoration(
+              labelText: widget.label,
+              labelStyle: TextStyle(
+                fontFamily: 'Readex Pro',
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: primaryText,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color(0xFFCDCDCD),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: primary,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: alternate,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: alternate,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              filled: true,
+              fillColor: secondaryBackground,
+              contentPadding: EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ),
+        Message(
+            text: widget.type == "비밀번호"
+                ? '6-16자 영문 소문자, 숫자를 사용하세요.'
+                : '비밀번호가 일치하지 않습니다.',
+            color: Color(0xFFCE4040),
+            visible: widget.type == "비밀번호" ? !isPassed : !isSame)
+      ],
+    );
   }
 }

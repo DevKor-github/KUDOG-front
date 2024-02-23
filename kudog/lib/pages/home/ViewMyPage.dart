@@ -16,12 +16,13 @@ class ViewMyPageWidget extends StatefulWidget {
 
 class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _isSwitched = false; // 스위치 상태를 관리할 변수
+  bool _isSwitched = false;
 
   @override
   void initState() {
     super.initState();
     Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+    Provider.of<UserInfoService>(context, listen: false).getUserSubscribing();
   }
 
   @override
@@ -39,6 +40,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
     return Consumer2<UserInfoService, SignOutService>(
         builder: (context, userInfoService, signOutService, child) {
       User userInfo = userInfoService.user;
+      bool usersubstate = userInfoService.usersub;
 
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
@@ -134,7 +136,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                   border: Border.all(
                                       color: Color(0xFFA4A4A4), width: 1),
                                 ),
-                                padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
+                                padding: EdgeInsets.fromLTRB(13, 6.27, 12, 6.27),
                                 child: InkWell(
                                   onTap: () {
                                     Navigator.push(
@@ -180,11 +182,13 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                             ),
                           ),
                           CustomSwitch(
-                            value: _isSwitched,
+                            value: usersubstate,
                             onChanged: (value) {
                               setState(() {
                                 _isSwitched = value;
                               });
+                              Provider.of<UserInfoService>(context, listen: false).putUserSubscribing();
+                              Provider.of<UserInfoService>(context, listen: false).getUserSubscribing();
                             },
                           ),
                         ],
@@ -329,26 +333,26 @@ class _CustomSwitchState extends State<CustomSwitch> {
         widget.onChanged(!widget.value);
       },
       child: Container(
-        width: 60, // 스위치의 가로 크기 조절
-        height: 30, // 스위치의 세로 크기 조절
+        width: 60,
+        height: 30,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0), // 버튼의 모양을 원하는 대로 조절
+          borderRadius: BorderRadius.circular(15.0),
           color: widget.value
               ? Color(0xFFCE4040)
-              : Color(0xFFA4A4A4), // 활성 및 비활성 상태에 따른 색상 설정
+              : Color(0xFFA4A4A4),
         ),
         child: Stack(
           children: [
             AnimatedPositioned(
               duration: Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              left: widget.value ? 30.0 : 0.0, // 버튼의 위치를 움직이는 애니메이션
+              left: widget.value ? 30.0 : 0.0,
               child: Container(
                 width: 30,
                 height: 30,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle, // 원 모양 버튼
-                  color: Colors.white, // 버튼의 색상
+                  shape: BoxShape.circle,
+                  color: Colors.white,
                 ),
               ),
             ),
