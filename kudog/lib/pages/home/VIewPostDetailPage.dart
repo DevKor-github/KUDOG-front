@@ -3,6 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -92,7 +93,10 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ViewHomePageWidget()));
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
