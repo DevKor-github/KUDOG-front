@@ -60,7 +60,7 @@ class ChangePwService extends ChangeNotifier {
     }
   }
 
-  void VerifyCode(String code) async {
+  Future<void> VerifyCode(String code) async {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data["code"] = code;
     print(data);
@@ -68,6 +68,7 @@ class ChangePwService extends ChangeNotifier {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/auth/change-password/verify",
           data: data);
+      print(response);
       if (response.statusCode == 201) {
         secondId = 1;
         secondAnswer = "인증 성공, 비밀번호를 10분간 변경할 수 있습니다.";

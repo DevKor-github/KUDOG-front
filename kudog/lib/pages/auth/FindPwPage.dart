@@ -187,21 +187,21 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                             padding: EdgeInsetsDirectional
                                 .fromSTEB(12, 0, 0, 0),
                             child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   _showCodeAlert = true;
 
                                   if (changePwService.firstId ==
                                       1) {
                                     stopTimer();
 
-                                    changePwService.VerifyCode(
-                                        _codeController.text);
-                                    if (changePwService.secondId == 1) {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChangepwPageWidget(email: userEmail),
-                                      ));
-                                    }
+                                    changePwService.VerifyCode(_codeController.text).then((_) {
+                                      if (changePwService.secondId == 1) {
+                                        print("secondId == 1로 확인");
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) => ChangepwPageWidget(email: userEmail),
+                                        ));
+                                      }
+                                    });
 
                                   } else {
                                     showDialog(

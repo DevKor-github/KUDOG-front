@@ -280,6 +280,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                                       "확인"),
                                                                   onPressed:
                                                                       () {
+
                                                                     Navigator.pop(
                                                                         context);
                                                                   },
