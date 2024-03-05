@@ -222,11 +222,11 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                         suffixIcon: IconButton(
                                             icon: Icon(Icons.search),
                                             onPressed: () {
-                                              setState(() async {
+                                              setState(() {
                                                 isSearch = true;
                                                 String searchTerm =
                                                     _searchController.text;
-                                                await noticeService
+                                                noticeService
                                                     .searchNotices(searchTerm);
                                                 searchedNoticeList =
                                                     noticeService
@@ -254,7 +254,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       alignment: AlignmentDirectional.center,
                                       value: selectedCategory,
                                       onChanged: (String? newValue) {
-                                        setState(() async {
+                                        setState(() {
                                           isLowerSelected = false;
                                           isSearch = false;
                                           _searchController.text = "";
@@ -262,7 +262,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                           if (selectedCategory != "전체") {
                                             selectedIndex = upperCategories
                                                 .indexOf(selectedCategory!);
-                                            await noticeService
+                                            noticeService
                                                 .getUpperCategoryNotice(
                                                     1, selectedIndex);
                                             categoryService
@@ -281,8 +281,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                               lowerStates[i] = false;
                                             }
                                           } else {
-                                            await noticeService
-                                                .getAllNotices(1);
+                                            noticeService.getAllNotices(1);
                                             noticeList = noticeService
                                                 .noticeList.notices!;
                                           }

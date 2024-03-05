@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ChangePwService extends ChangeNotifier {
   bool isVerified = false;
   int firstId = 0; //정상 작동 ; 1, 그렇지 않으면 : 0
-  int secondId = 1; //정상 작동 ; 1, 그렇지 않으면 : 0
+  int secondId = 0; //정상 작동 ; 1, 그렇지 않으면 : 0
   String firstAnswer = ""; //페이지에서 보여줘야할 에러/성공 메시지
   String secondAnswer = ""; //페이지에서 보여줘야할 에러/성공 메시지
 
@@ -60,7 +60,7 @@ class ChangePwService extends ChangeNotifier {
     }
   }
 
-  void VerifyCode(String code) async {
+  Future<void> VerifyCode(String code) async {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data["code"] = code;
     print(data);
@@ -68,11 +68,13 @@ class ChangePwService extends ChangeNotifier {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/auth/change-password/verify",
           data: data);
+      print(response);
       if (response.statusCode == 201) {
         secondId = 1;
         secondAnswer = "인증 성공, 비밀번호를 10분간 변경할 수 있습니다.";
         isVerified = true;
         print("POST 요청 성공");
+        print(response);
       } else if (response.statusCode == 400) {
         secondAnswer = "인증 코드가 일치하지 않습니다.";
       } else if (response.statusCode == 408) {
@@ -82,6 +84,7 @@ class ChangePwService extends ChangeNotifier {
         print("POST 요청 실패");
         print("Status Code : ${response.statusCode}");
       }
+      print("답은 : ${secondAnswer}");
     } catch (e) {
       secondAnswer = "알 수 없는 이유로 메일 전송에 실패했습니다. 잠시 후에 다시 시도해주세요.";
       print("POST 요청 에러");
