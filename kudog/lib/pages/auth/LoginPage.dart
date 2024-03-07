@@ -42,7 +42,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
               children: [
                 Container(
                     height: 64,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color(0xFFCE4040),
                     ),
                     child: Row(
@@ -50,7 +50,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                       children: [
                         Container(
                           width: 88,
-                          margin: EdgeInsets.all(15),
+                          margin: const EdgeInsets.all(15),
                           child: Row(
                             children: [
                               Image.asset(
@@ -71,34 +71,30 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                       ],
                     )),
                 Container(
-                  padding: EdgeInsets.fromLTRB(60, 80, 30, 30),
-                  child: Row(
+                  padding: const EdgeInsets.fromLTRB(60, 80, 30, 30),
+                  child: const Row(
                     children: [
-                      Container(
-                        child: Text(
-                          "로그인",
-                          style: TextStyle(
-                            fontFamily: 'Noto Sans KR',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 32,
-                            color: Colors.black,
-                          ),
+                      Text(
+                        "로그인",
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans KR',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                          color: Colors.black,
                         ),
                       ),
                       SizedBox(width: 20),
-                      Container(
-                        child: Text(
-                          "공지사항 쿠독 시작하기",
-                          style: TextStyle(
-                            fontFamily: 'Noto Sans KR',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                            color: Color(0xFF7E7E7E),
-                            decoration:
-                                TextDecoration.underline, // 텍스트 주위에 선 추가
-                            decorationColor: Color(0xFFD9D9D9), // 텍스트 테두리 색상
-                            decorationThickness: 0.2, // 텍스트 테두리 두께
-                          ),
+                      Text(
+                        "공지사항 쿠독 시작하기",
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans KR',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: Color(0xFF7E7E7E),
+                          decoration:
+                              TextDecoration.underline, // 텍스트 주위에 선 추가
+                          decorationColor: Color(0xFFD9D9D9), // 텍스트 테두리 색상
+                          decorationThickness: 0.2, // 텍스트 테두리 두께
                         ),
                       ),
                     ],
@@ -112,7 +108,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(208),
-                      border: Border.all(color: Color(0xFFCDCDCD), width: 2),
+                      border: Border.all(color: const Color(0xFFCDCDCD), width: 2),
                     ),
                     child: Row(
                       children: [
@@ -123,7 +119,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                         Expanded(
                           child: TextFormField(
                             controller: emailController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "example@korea.ac.kr",
                               hintStyle: TextStyle(
@@ -139,7 +135,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: 357,
                   height: 47,
@@ -148,7 +144,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(208),
-                      border: Border.all(color: Color(0xFFCDCDCD), width: 2),
+                      border: Border.all(color: const Color(0xFFCDCDCD), width: 2),
                     ),
                     child: Row(
                       children: [
@@ -159,7 +155,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                         Expanded(
                           child: TextFormField(
                             controller: passwordController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "비밀번호",
                               hintStyle: TextStyle(
@@ -171,14 +167,14 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             ),
                             obscureText: true,
                             obscuringCharacter: '●',
-                            style: TextStyle(color: Color(0xFFA4A4A4)),
+                            style: const TextStyle(color: Color(0xFFA4A4A4)),
                           ),
                         ),
                       ], // children
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 InkWell(
                   onTap: () async {
                     LoginUser user = LoginUser(
@@ -190,7 +186,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ViewMainPageWidget()));
+                              builder: (context) => const ViewMainPageWidget()));
                     } else {
                       showDialog(
                           context: context,
@@ -199,12 +195,12 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             return AlertDialog(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
-                              title: Column(
+                              title: const Column(
                                 children: <Widget>[
                                   Text("로그인 실패"),
                                 ],
                               ),
-                              content: Column(
+                              content: const Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
@@ -220,7 +216,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     foregroundColor: primary,
                                     textStyle: const TextStyle(fontSize: 20),
                                   ),
-                                  child: Text("확인"),
+                                  child: const Text("확인"),
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
@@ -235,10 +231,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     height: 47,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: Color(0xFFCE4040),
+                      color: const Color(0xFFCE4040),
                       borderRadius: BorderRadius.circular(58),
                     ),
-                    child: Text(
+                    child: const Text(
                       "로그인",
                       style: TextStyle(
                         fontFamily: 'Noto Sans KR',
@@ -249,25 +245,23 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
-                Container(
-                  child: Text(
-                    "또는",
-                    style: TextStyle(
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 13,
-                      color: Color(0xFFD33434),
-                    ),
+                const SizedBox(height: 10),
+                const Text(
+                  "또는",
+                  style: TextStyle(
+                    fontFamily: 'Noto Sans KR',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
+                    color: Color(0xFFD33434),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => SignUpPageWidget()));
+                            builder: (context) => const SignUpPageWidget()));
                   },
                   child: Container(
                     width: 357,
@@ -276,9 +270,9 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(58),
-                      border: Border.all(color: Color(0xFFCE4040), width: 2),
+                      border: Border.all(color: const Color(0xFFCE4040), width: 2),
                     ),
-                    child: Text(
+                    child: const Text(
                       "회원가입",
                       style: TextStyle(
                         fontFamily: 'Noto Sans KR',
@@ -289,23 +283,21 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 InkWell(
                   onTap: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FindpwPageWidget()));
+                            builder: (context) => const FindpwPageWidget()));
                   },
-                  child: Container(
-                    child: Text(
-                      "비밀번호 찾기",
-                      style: TextStyle(
-                        fontFamily: 'Noto Sans KR',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                        color: Color(0xFFD33434),
-                      ),
+                  child: const Text(
+                    "비밀번호 찾기",
+                    style: TextStyle(
+                      fontFamily: 'Noto Sans KR',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      color: Color(0xFFD33434),
                     ),
                   ),
                 )
