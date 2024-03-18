@@ -257,7 +257,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                       padding: EdgeInsets.only(left: 24, right: 24),
                       child: InkWell(
                         onTap: () {
-                          signOutService.SignOut();
+                          signOutService.signOut();
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (context) => LoginPageWidget()));

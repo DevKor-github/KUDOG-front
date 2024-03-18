@@ -63,7 +63,7 @@ class DioClient {
     ));
   }
 
-  Future<Response> post(
+  Future<Response<T>> post<T>(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
@@ -81,7 +81,7 @@ class DioClient {
         onReceiveProgress: onReceiveProgress);
   }
 
-  Future<Response> get(
+  Future<Response<T>> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -95,7 +95,7 @@ class DioClient {
         onReceiveProgress: onReceiveProgress);
   }
 
-  Future<Response> put(
+  Future<Response<T>> put<T>(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,

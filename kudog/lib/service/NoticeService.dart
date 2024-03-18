@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/model/NoticeModel.dart';
-import 'package:kudog/service/TokenService.dart';
+import 'package:kudog/util/DioClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeService extends ChangeNotifier {
@@ -13,182 +15,67 @@ class NoticeService extends ChangeNotifier {
   SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
   Future<void> getAllNotices(int page) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/bydate?page=$page",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getAllNotices(1);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      Response response = await dioClient.get("/notice/list/bydate?page=$page");
+      noticeList = NoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
 
     notifyListeners();
   }
 
-  void getNotice(int id) async {
-    //단일 notice 가져오기
+  Future<void> getNotice(int id) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/info/${id}",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-
-        noticeDetail = NoticeDetail.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getNotice(id);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      Response response = await dioClient.get("/notice/info/$id");
+      noticeDetail = NoticeDetail.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
     notifyListeners();
   }
 
   Future<void> getUpperCategoryNotice(int page, int upperCategoryId) async {
-    //상위 카테고리에 맞는 notice 가져오기
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/provider/$upperCategoryId/bydate?page=$page",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        selectedNoticeList = SelectedNoticeList.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getUpperCategoryNotice(page, upperCategoryId);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      Response response = await dioClient
+          .get("/notice/list/provider/$upperCategoryId/bydate?page=$page");
+      selectedNoticeList = SelectedNoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
 
     notifyListeners();
   }
 
-  void getLowerCategoryNotice(int page, int lowerCategoryId) async {
-    //하위 카테고리에 맞는 notice 가져오기
+  Future<void> getLowerCategoryNotice(int page, int lowerCategoryId) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
+      Response response = await dioClient
+          .get("/notice/list/$lowerCategoryId/bydate?page=$page");
 
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/$lowerCategoryId/bydate?page=$page",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-
-        selectedNoticeList = SelectedNoticeList.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getLowerCategoryNotice(page, lowerCategoryId);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      selectedNoticeList = SelectedNoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
 
     notifyListeners();
   }
 
-  void getScrappedNotices() async {
+  Future<void> getScrappedNotices() async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
+      Response response = await dioClient.get("/notice/list/scrap");
 
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/scrap",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        scrappedNoticeList = ScrappedNoticeList.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getScrappedNotices();
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      selectedNoticeList = SelectedNoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
 
     notifyListeners();
@@ -196,117 +83,41 @@ class NoticeService extends ChangeNotifier {
 
   Future<String> scrapNotice(int noticeId) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
+      Response<String> response =
+          await dioClient.put("/notice/scrap/$noticeId");
+      String? result = response.data;
+      if (result == null) throw Exception();
 
-      Response response = await Dio().put(
-        "https://api.kudog.devkor.club/notice/scrap/$noticeId",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("PUT 요청 성공");
-        return response.data;
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        String? token = sharedPreferences.getString("access_token");
-
-        Response response = await Dio().put(
-          "https://api.kudog.devkor.club/notice/scrap/$noticeId",
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'application/json',
-            },
-          ),
-        );
-        return response.data;
-      } else {
-        print("PUT 요청 실패");
-        print("Status Code : ${response.statusCode}");
-        throw Exception;
-      }
-    } catch (e) {
-      print("PUT 요청 에러");
-      print(e.toString());
-      throw Exception;
+      return result;
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
+      return 'false';
     }
   }
 
   Future<void> searchNotices(String keyword) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/search?keyword=$keyword",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        searchedNoticeList = SearchedNoticeList.fromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        searchNotices(keyword);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      Response response =
+          await dioClient.get("/notice/list/search?keyword=$keyword");
+      searchedNoticeList = SearchedNoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
   }
 
-  void getSubscribedNotices(int page) async {
+  Future<void> getSubscribedNotices(int page) async {
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      DioClient dioClient = DioClient();
 
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/subscribe-categories?page=$page",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        subscribedNoticeList = SelectedNoticeList.fromJson(response.data);
-        print(subscribedNoticeList);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        getSubscribedNotices(page);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
+      Response response =
+          await dioClient.get("/notice/list/subscribe-categories?page=$page");
+      subscribedNoticeList = SelectedNoticeList.fromJson(response.data);
+    } on DioError catch (e) {
+      // TODO: 에러 피드백
     }
 
     notifyListeners();
