@@ -59,7 +59,7 @@ class _ChangemyinfoPageWidgetState extends State<ChangemyinfoPageWidget> {
       if (pwController.text != '' && pwConfirmController.text != '') {
         if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(pwController.text) &&
             pwController.text == pwConfirmController.text) {
-          final response = await dioClient.put('/users/info', data: {
+          await dioClient.put('/users/info', data: {
             "name": nameController.text,
             "studentId": selectedId,
             "grade": int.parse(selectedGrade.substring(0, 1)),

@@ -66,7 +66,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      NoticeDetail _noticeDetail = noticeService.noticeDetail;
+      NoticeDetail noticeDetail = noticeService.noticeDetail;
       return Scaffold(
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
@@ -139,7 +139,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                               width: 99,
                               height: 19,
                               child: Text(
-                                _noticeDetail.provider!,
+                                noticeDetail.provider!,
                                 style: const TextStyle(
                                   color: Color(0xFFCE4040),
                                   fontSize: 12,
@@ -150,7 +150,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                               ),
                             ),
                             Text(
-                              _noticeDetail.title!,
+                              noticeDetail.title!,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 24,
@@ -174,7 +174,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                             0, 0, 8, 0),
                                         height: 19.08,
                                         child: Text(
-                                          _noticeDetail.writer!,
+                                          noticeDetail.writer!,
                                           textAlign: TextAlign.right,
                                           style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
@@ -190,7 +190,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                         width: 100,
                                         height: 19.08,
                                         child: Text(
-                                          _noticeDetail.date!,
+                                          noticeDetail.date!,
                                           style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
                                             fontSize: 12,
@@ -221,7 +221,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                         padding: const EdgeInsetsDirectional
                                             .fromSTEB(3, 0, 0, 0),
                                         child: Text(
-                                          "${_noticeDetail.view!}",
+                                          "${noticeDetail.view!}",
                                           style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
                                             fontSize: 12,
@@ -248,7 +248,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                           padding: const EdgeInsetsDirectional
                                               .fromSTEB(3, 0, 0, 0),
                                           child: Text(
-                                            "${_noticeDetail.scrapCount!}",
+                                            "${noticeDetail.scrapCount!}",
                                             textAlign: TextAlign.right,
                                             style: const TextStyle(
                                               color: Color(0xFF7E7E7E),
@@ -267,19 +267,17 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     0, 40, 0, 0),
                                 child: SingleChildScrollView(
-                                    child: Container(
-                                  child: HtmlWidget(
-                                    _noticeDetail.content == null
-                                        ? htmlcode
-                                        : _noticeDetail.content!,
-                                    onTapUrl: (url) async {
-                                      Uri dest = Uri.parse(url);
-                                      if (await canLaunchUrl(dest)) {
-                                        await launchUrl(dest);
-                                      }
-                                      return true;
-                                    },
-                                  ),
+                                    child: HtmlWidget(
+                                  noticeDetail.content == null
+                                      ? htmlcode
+                                      : noticeDetail.content!,
+                                  onTapUrl: (url) async {
+                                    Uri dest = Uri.parse(url);
+                                    if (await canLaunchUrl(dest)) {
+                                      await launchUrl(dest);
+                                    }
+                                    return true;
+                                  },
                                 ))),
                             Container(
                               height: 100,

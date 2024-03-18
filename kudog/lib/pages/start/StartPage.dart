@@ -46,7 +46,7 @@ class _StartPageWidgetState extends State<StartPageWidget> {
   Future<bool> _validateTokens() async {
     try {
       DioClient dioClient = DioClient();
-      Response response = await dioClient.get("/users/info");
+      await dioClient.get("/users/info");
 
       return true;
     } catch (e) {

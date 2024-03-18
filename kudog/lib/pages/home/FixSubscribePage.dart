@@ -62,32 +62,29 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
   Widget _buildSubscriptionButton(int index) {
     String buttonText = widget.lowerCategoryNames[index];
 
-    return Container(
-      child: ElevatedButton(
-        onPressed: () => changeSubscription(index),
-        style: ElevatedButton.styleFrom(
-          side: BorderSide(
-            width: 1.0,
-            color: isSelected[index]
-                ? Colors.transparent
-                : const Color(0xFFCDCDCD),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(208),
-          ),
-          backgroundColor: isSelected[index]
-              ? const Color.fromRGBO(206, 64, 64, 0.65)
-              : Colors.white,
+    return ElevatedButton(
+      onPressed: () => changeSubscription(index),
+      style: ElevatedButton.styleFrom(
+        side: BorderSide(
+          width: 1.0,
+          color:
+              isSelected[index] ? Colors.transparent : const Color(0xFFCDCDCD),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              color: isSelected[index] ? Colors.white : const Color(0xFF696969),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(208),
+        ),
+        backgroundColor: isSelected[index]
+            ? const Color.fromRGBO(206, 64, 64, 0.65)
+            : Colors.white,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        child: Text(
+          buttonText,
+          style: TextStyle(
+            color: isSelected[index] ? Colors.white : const Color(0xFF696969),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -118,7 +115,7 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
 
     try {
       DioClient dioClient = DioClient();
-      Response response = await dioClient.put(
+      await dioClient.put(
         "/category/subscribe",
         data: requestBody,
       );
