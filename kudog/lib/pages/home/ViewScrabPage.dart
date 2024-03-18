@@ -38,16 +38,17 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
       List<Notice> scrapNotices = noticeService.scrappedNoticeList.notices!;
-      bool empty = scrapNotices.length == 0; // TODO : empty assign방식 변경 예정
+      bool empty = scrapNotices.isEmpty; // TODO : empty assign방식 변경 예정
       return Scaffold(
-        backgroundColor: Color(0xFFCE4040),
+        backgroundColor: const Color(0xFFCE4040),
         body: Column(
           children: [
             Container(
                 height: 64,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFCE4040),
                 ),
                 child: Row(
@@ -55,7 +56,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
                   children: [
                     Container(
                       width: 88,
-                      margin: EdgeInsets.all(15),
+                      margin: const EdgeInsets.all(15),
                       child: Row(
                         children: [
                           Image.asset(
@@ -73,7 +74,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
                         ],
                       ),
                     ),
-                    Text(
+                    const Text(
                       '스크랩',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -86,8 +87,8 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
                     Container(
                       alignment: Alignment.centerRight,
                       width: 88,
-                      margin: EdgeInsets.all(15),
-                      child: ImageIcon(
+                      margin: const EdgeInsets.all(15),
+                      child: const ImageIcon(
                           AssetImage(
                             "assets/images/icon_8.png",
                           ),
@@ -97,8 +98,8 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
                 )),
             Expanded(
               child: Container(
-                  padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  decoration: ShapeDecoration(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                  decoration: const ShapeDecoration(
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -108,14 +109,14 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
                     ),
                   ),
                   child: empty
-                      ? Container(
+                      ? SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.asset("assets/images/image_empty.png"),
-                              Text(
+                              const Text(
                                 '스크랩 한 공지사항이 없어요',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(

@@ -27,7 +27,7 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
   }
 
   void startTimer() {
-    const oneSec = const Duration(seconds: 1);
+    const oneSec = Duration(seconds: 1);
     Timer.periodic(
       oneSec,
       (Timer timer) {
@@ -59,9 +59,9 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           automaticallyImplyLeading: true,
-          title: Text(
+          title: const Text(
             '비밀번호 찾기',
             style: TextStyle(
               fontFamily: "NotoSans-Regular",
@@ -77,14 +77,14 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
         body: SafeArea(
           top: true,
           child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(18, 40, 18, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 40, 18, 0),
             child: Column(
               children: [
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 40),
+                  padding: const EdgeInsets.only(left: 40),
                   height: 22,
-                  child: Text(
+                  child: const Text(
                     "이메일",
                     style: TextStyle(
                       fontFamily: 'Noto Sans KR',
@@ -102,24 +102,24 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                     children: [
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
+                          margin: const EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
                           child: SizedBox(
                             height: 47,
                             child: Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                              padding: const EdgeInsets.fromLTRB(24, 12, 22, 12),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(208),
                                 border: Border.all(
-                                    color: Color(0xFFCDCDCD), width: 2),
+                                    color: const Color(0xFFCDCDCD), width: 2),
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: TextField(
                                       controller: emailController,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         border: InputBorder.none,
                                         hintText: "ⓘ 학교 이메일로 입력해 주세요",
                                         hintStyle: TextStyle(
@@ -156,9 +156,9 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(58),
                               border: Border.all(
-                                  color: Color(0xFFCE4040), width: 2),
+                                  color: const Color(0xFFCE4040), width: 2),
                             ),
-                            child: Text(
+                            child: const Text(
                               "인증번호 받기",
                               style: TextStyle(
                                 fontFamily: 'Noto Sans KR',
@@ -175,14 +175,14 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                 ),
                 if (_showTimer)
                   Container(
-                    padding: EdgeInsets.only(left: 50),
-                    child: Row(
+                    padding: const EdgeInsets.only(left: 50),
+                    child: const Row(
                       children: [],
                     ),
                   ),
                 Container(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Row(
+                  padding: const EdgeInsets.only(left: 50),
+                  child: const Row(
                     children: [
                       Text(
                         'ⓘ 학교 이메일로 입력해주세요.',
@@ -205,24 +205,24 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                     children: [
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
+                          margin: const EdgeInsets.fromLTRB(18, 18, 8, 8), // 여기에서 수정
                           child: SizedBox(
                             height: 47,
                             child: Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                              padding: const EdgeInsets.fromLTRB(24, 12, 22, 12),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(208),
                                 border: Border.all(
-                                    color: Color(0xFFCDCDCD), width: 2),
+                                    color: const Color(0xFFCDCDCD), width: 2),
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: TextField(
                                       controller: _codeController,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                           border: InputBorder.none,
                                           hintText: "ⓘ 인증번호를 입력해주세요",
                                           hintStyle: TextStyle(
@@ -235,7 +235,7 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                                   ),
                                   Text(
                                     '${(_timerCount ~/ 60).toString().padLeft(2, '0')}:${(_timerCount % 60).toString().padLeft(2, '0')}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontFamily: 'Noto Sans KR',
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
@@ -267,9 +267,9 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(58),
                               border: Border.all(
-                                  color: Color(0xFFCE4040), width: 2),
+                                  color: const Color(0xFFCE4040), width: 2),
                             ),
-                            child: Text(
+                            child: const Text(
                               "확인",
                               style: TextStyle(
                                 fontFamily: 'Noto Sans KR',
@@ -285,8 +285,8 @@ class _FindpwPageWidgetState extends State<FindpwPageWidget> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 50),
-                  child: Row(
+                  padding: const EdgeInsets.only(left: 50),
+                  child: const Row(
                     children: [
                       Text(
                         'ⓘ 잘못된 인증번호입니다.',

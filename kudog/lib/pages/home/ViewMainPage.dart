@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
-import 'package:kudog/pages/home/ViewHotPage.dart';
 import 'package:kudog/pages/home/ViewMyPage.dart';
 import 'package:kudog/pages/home/ViewScrabPage.dart';
 import 'package:kudog/pages/home/ViewSubscribePage.dart';
@@ -27,11 +26,11 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
-      ViewSubscribePageWidget(),
+      const ViewSubscribePageWidget(),
       // ViewHotPageWidget(),
-      ViewHomePageWidget(),
-      ViewScrabPageWidget(),
-      ViewMyPageWidget()
+      const ViewHomePageWidget(),
+      const ViewScrabPageWidget(),
+      const ViewMyPageWidget()
     ];
 
     return Scaffold(
@@ -39,7 +38,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Colors.grey,
@@ -48,7 +47,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
             ],
           ),
           child: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
+            items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                   icon: ImageIcon(
                       AssetImage(

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/UserInfoService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/DioClient.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kudog/model/UserModel.dart';
 
 class FixSubscribePageWidget extends StatefulWidget {
@@ -68,21 +68,23 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
         style: ElevatedButton.styleFrom(
           side: BorderSide(
             width: 1.0,
-            color: isSelected[index] ? Colors.transparent : Color(0xFFCDCDCD),
+            color: isSelected[index]
+                ? Colors.transparent
+                : const Color(0xFFCDCDCD),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(208),
           ),
           backgroundColor: isSelected[index]
-              ? Color.fromRGBO(206, 64, 64, 0.65)
+              ? const Color.fromRGBO(206, 64, 64, 0.65)
               : Colors.white,
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: Text(
             buttonText,
             style: TextStyle(
-              color: isSelected[index] ? Colors.white : Color(0xFF696969),
+              color: isSelected[index] ? Colors.white : const Color(0xFF696969),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -115,32 +117,13 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
     };
 
     try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await dio.put(
-        "https://api.kudog.devkor.club/category/subscribe",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
+      DioClient dioClient = DioClient();
+      Response response = await dioClient.put(
+        "/category/subscribe",
         data: requestBody,
       );
-
-      if (response.statusCode == 200) {
-        print("PUT 요청 성공");
-        print(response.data);
-      } else {
-        print("PUT 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("PUT 요청 에러");
-      print(e.toString());
+    } on DioError catch (e) {
+      //TODO: 에러피드백
     }
   }
 
@@ -160,12 +143,12 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
       User userInfo = userInfoservice.user;
 
       return Scaffold(
-        backgroundColor: Color(0xFFCE4040),
+        backgroundColor: const Color(0xFFCE4040),
         body: Column(
           children: [
             Container(
               height: 64,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFCE4040),
               ),
               child: Row(
@@ -173,7 +156,7 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                 children: [
                   Container(
                     width: 88,
-                    margin: EdgeInsets.all(15),
+                    margin: const EdgeInsets.all(15),
                     child: Row(
                       children: [
                         Image.asset(
@@ -191,7 +174,7 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                       ],
                     ),
                   ),
-                  Text(
+                  const Text(
                     '구독',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -204,8 +187,8 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                   Container(
                     alignment: Alignment.centerRight,
                     width: 88,
-                    margin: EdgeInsets.all(15),
-                    child: ImageIcon(
+                    margin: const EdgeInsets.all(15),
+                    child: const ImageIcon(
                       AssetImage(
                         "assets/images/icon_8.png",
                       ),
@@ -217,8 +200,8 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                decoration: ShapeDecoration(
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -230,7 +213,7 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(55, 12, 0, 0),
                       child: Text(
                         '구독용 이메일',
@@ -244,18 +227,18 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.fromLTRB(30, 10, 30, 20),
-                      padding: EdgeInsets.fromLTRB(25, 10, 0, 10),
+                      margin: const EdgeInsets.fromLTRB(30, 10, 30, 20),
+                      padding: const EdgeInsets.fromLTRB(25, 10, 0, 10),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Color(0xFFCDCDCD),
+                          color: const Color(0xFFCDCDCD),
                           width: 2.0,
                         ),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Text(
                         userInfo.subscriberEmail ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Noto Sans KR',
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -266,9 +249,9 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                     Expanded(
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                        decoration: BoxDecoration(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        decoration: const BoxDecoration(
                           color: Color(0xFFF5F5F5),
                         ),
                         child: Column(
@@ -289,7 +272,7 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                             Container(
                               width: 167,
                               height: 47,
-                              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                              margin: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                               child: ElevatedButton(
                                 onPressed: () {
                                   saveChanges();
@@ -308,16 +291,16 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
                                       .getSubscribedNotices(1);
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  side: BorderSide(
+                                  side: const BorderSide(
                                     width: 2.0,
                                     color: Color(0xFFCE4040),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(58),
                                   ),
-                                  backgroundColor: Color(0xFFF5F5F5),
+                                  backgroundColor: const Color(0xFFF5F5F5),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   "변경사항 저장",
                                   style: TextStyle(
                                     color: Color(0xFFCE4040),

@@ -63,12 +63,11 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
       int totalPage = noticeService.subscribedNoticeList.totalPage ?? 1;
       List<int> subIdList = categoryService.subIdList;
       List<int> unsubIdList = categoryService.unsubIdList;
-      List<String> subNameList = categoryService.subNameList;
       List<String> fullLowerCategoryList =
           categoryService.fullLowerCategoryList;
       isSelected =
           List.generate(fullLowerCategoryList.length, (index) => false);
-      Widget _buildSubscriptionItem(int id) {
+      Widget buildSubscriptionItem(int id) {
         if (id <= fullLowerCategoryList.length) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -77,12 +76,12 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(208),
                 color:
-                    subIdList.contains(id) ? Color(0xFFCE4040) : Colors.white,
+                    subIdList.contains(id) ? const Color(0xFFCE4040) : Colors.white,
                 border: Border.all(
                   width: 1.0,
                   color: subIdList.contains(id)
                       ? Colors.transparent
-                      : Color(0xFFCDCDCD),
+                      : const Color(0xFFCDCDCD),
                 ),
               ),
               child: Padding(
@@ -92,7 +91,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                   style: TextStyle(
                     color: subIdList.contains(id)
                         ? Colors.white
-                        : Color(0xFF696969),
+                        : const Color(0xFF696969),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -101,17 +100,17 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
             ),
           );
         } else {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
       }
 
       return Scaffold(
-        backgroundColor: Color(0xFFCE4040),
+        backgroundColor: const Color(0xFFCE4040),
         body: Column(
           children: [
             Container(
               height: 64,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFCE4040),
               ),
               child: Row(
@@ -119,7 +118,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                 children: [
                   Container(
                     width: 88,
-                    margin: EdgeInsets.all(15),
+                    margin: const EdgeInsets.all(15),
                     child: Row(
                       children: [
                         Image.asset(
@@ -137,7 +136,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                       ],
                     ),
                   ),
-                  Text(
+                  const Text(
                     '구독',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -150,8 +149,8 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                   Container(
                     alignment: Alignment.centerRight,
                     width: 88,
-                    margin: EdgeInsets.all(15),
-                    child: ImageIcon(
+                    margin: const EdgeInsets.all(15),
+                    child: const ImageIcon(
                       AssetImage(
                         "assets/images/icon_8.png",
                       ),
@@ -163,8 +162,8 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                decoration: ShapeDecoration(
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -206,9 +205,9 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                             child: Row(
                               children: [
                                 for (int id in subIdList)
-                                  _buildSubscriptionItem(id),
+                                  buildSubscriptionItem(id),
                                 for (int id in unsubIdList)
-                                  _buildSubscriptionItem(id),
+                                  buildSubscriptionItem(id),
                               ],
                             ),
                           ),
@@ -217,7 +216,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                     ),
                     Expanded(
                       child: noticeList.isEmpty
-                          ? Column()
+                          ? const Column()
                           : Column(
                               children: [
                                 Expanded(
@@ -245,19 +244,19 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                         (index) => InkWell(
                                           onTap: () => onPageClick(index + 1),
                                           child: Container(
-                                            margin: EdgeInsets.all(8),
-                                            padding: EdgeInsets.all(8),
+                                            margin: const EdgeInsets.all(8),
+                                            padding: const EdgeInsets.all(8),
                                             decoration: BoxDecoration(
                                               color: currentPage == index + 1
-                                                  ? Color.fromRGBO(
+                                                  ? const Color.fromRGBO(
                                                       206, 64, 64, 0.65)
-                                                  : Color(0xFFCDCDCD),
+                                                  : const Color(0xFFCDCDCD),
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               (index + 1).toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold,
                                               ),

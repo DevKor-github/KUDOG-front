@@ -115,11 +115,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
       builder: (context, categoryService, noticeService, child) {
@@ -128,17 +123,16 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             : (selectedCategory == "전체"
                 ? noticeService.noticeList.totalPage
                 : noticeService.selectedNoticeList.totalPage);
-        List<bool> pageNum =
-            List.filled(numOfPages == null ? 50 : numOfPages, false);
+        List<bool> pageNum = List.filled(numOfPages ?? 50, false);
         return Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor: Color(0xFFCE4040),
+            backgroundColor: const Color(0xFFCE4040),
             body: Stack(children: [
               Column(
                 children: [
                   Container(
                       height: 64,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFCE4040),
                       ),
                       child: Row(
@@ -146,7 +140,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                         children: [
                           Container(
                             width: 88,
-                            margin: EdgeInsets.all(15),
+                            margin: const EdgeInsets.all(15),
                             child: Row(
                               children: [
                                 Image.asset(
@@ -164,7 +158,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                               ],
                             ),
                           ),
-                          Text(
+                          const Text(
                             '홈',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -177,7 +171,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                           Container(
                             alignment: Alignment.centerRight,
                             width: 88,
-                            margin: EdgeInsets.all(15),
+                            margin: const EdgeInsets.all(15),
                             child: InkWell(
                               onTap: _showWidget,
                               child: Image.asset(
@@ -193,8 +187,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                   Expanded(
                     child: Stack(children: [
                       Container(
-                          padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                          decoration: ShapeDecoration(
+                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          decoration: const ShapeDecoration(
                             color: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
@@ -215,12 +209,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       controller: _searchController,
                                       decoration: InputDecoration(
                                         labelText: '검색어를 입력하세요',
-                                        labelStyle: TextStyle(
+                                        labelStyle: const TextStyle(
                                             fontSize: 14,
                                             color: Color(0xFFD9D9D9)),
-                                        contentPadding: EdgeInsets.all(24.0),
+                                        contentPadding:
+                                            const EdgeInsets.all(24.0),
                                         suffixIcon: IconButton(
-                                            icon: Icon(Icons.search),
+                                            icon: const Icon(Icons.search),
                                             onPressed: () {
                                               setState(() async {
                                                 isSearch = true;
@@ -234,7 +229,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                         .notices!;
                                               });
                                             }),
-                                        border: OutlineInputBorder(
+                                        border: const OutlineInputBorder(
                                           borderSide: BorderSide(
                                               color: Color(0xff999999),
                                               width: 2.0),
@@ -244,11 +239,11 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       ),
                                     ),
                                   ),
-                                  Container(
+                                  SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width * 0.5,
                                     child: DropdownButtonFormField<String>(
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         border: InputBorder.none,
                                       ),
                                       alignment: AlignmentDirectional.center,
@@ -302,12 +297,12 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   const Divider(
                                       thickness: 0.5, color: Color(0xffCDCDCD)),
                                   selectedCategory != "전체"
-                                      ? Container(
+                                      ? SizedBox(
                                           height: selectedCategory != "전체"
                                               ? 40
                                               : 10,
                                           child: ListView.builder(
-                                            padding: EdgeInsets.fromLTRB(
+                                            padding: const EdgeInsets.fromLTRB(
                                                 24, 0, 0, 0),
                                             scrollDirection: Axis.horizontal,
                                             itemCount: lowerCategories.length,
@@ -335,17 +330,14 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                     });
                                                   },
                                                   child: Container(
-                                                      margin:
-                                                          EdgeInsets.fromLTRB(
-                                                              0, 0, 8, 0),
+                                                      margin: const EdgeInsets
+                                                          .fromLTRB(0, 0, 8, 0),
                                                       decoration: BoxDecoration(
                                                         color: lowerStates[
                                                                 index]
-                                                            ? Color.fromARGB(
-                                                                255,
-                                                                213,
-                                                                124,
-                                                                124)
+                                                            ? const Color
+                                                                .fromARGB(255,
+                                                                213, 124, 124)
                                                             : Colors
                                                                 .transparent,
                                                         borderRadius:
@@ -356,19 +348,19 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                                   index]
                                                               ? Colors
                                                                   .transparent
-                                                              : Color(
+                                                              : const Color(
                                                                   0xFFCDCDCD),
                                                         ),
                                                       ),
                                                       child: Align(
                                                         alignment:
-                                                            AlignmentDirectional(
+                                                            const AlignmentDirectional(
                                                                 0, 0),
                                                         child: Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
-                                                                  .fromSTEB(24,
-                                                                      4, 24, 4),
+                                                              const EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                  24, 4, 24, 4),
                                                           child: Text(
                                                             lowerCategories[
                                                                 index],
@@ -377,9 +369,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                                   'Noto Sans KR',
                                                               color: lowerStates[
                                                                       index]
-                                                                  ? Color(
+                                                                  ? const Color(
                                                                       0xFFFFFFFF)
-                                                                  : Color(
+                                                                  : const Color(
                                                                       0xff696969),
                                                               fontSize: 14,
                                                               fontWeight:
@@ -399,9 +391,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                               isSearch
                                   ? Expanded(
                                       child: noticeService.searchedNoticeList
-                                                  .notices!.length ==
-                                              0
-                                          ? Column()
+                                              .notices!.isEmpty
+                                          ? const Column()
                                           : ListView.builder(
                                               padding: EdgeInsets.zero,
                                               shrinkWrap: true,
@@ -416,9 +407,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                             ))
                                   : Expanded(
                                       child: noticeService
-                                                  .noticeList.notices!.length ==
-                                              0
-                                          ? Column()
+                                              .noticeList.notices!.isEmpty
+                                          ? const Column()
                                           : ListView.builder(
                                               padding: EdgeInsets.zero,
                                               shrinkWrap: true,
@@ -429,10 +419,10 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                     notice: noticeList[index]);
                                               },
                                             )),
-                              Container(
+                              SizedBox(
                                   height: 60,
                                   child: ListView.builder(
-                                    padding: EdgeInsets.only(top: 10),
+                                    padding: const EdgeInsets.only(top: 10),
                                     shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
                                     itemCount: numOfPages,
@@ -469,17 +459,17 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                               height: 20,
                                               decoration: BoxDecoration(
                                                 color: currentPage == index + 1
-                                                    ? Color.fromRGBO(
+                                                    ? const Color.fromRGBO(
                                                         206, 64, 64, 0.65)
-                                                    : Color(0xFFCDCDCD),
+                                                    : const Color(0xFFCDCDCD),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
-                                              margin: EdgeInsets.all(8),
-                                              padding: EdgeInsets.all(8),
+                                              margin: const EdgeInsets.all(8),
+                                              padding: const EdgeInsets.all(8),
                                               child: Text(
                                                 (index + 1).toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -497,7 +487,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                 decoration: ShapeDecoration(
                                   color: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                    side: BorderSide(
+                                    side: const BorderSide(
                                         width: 2, color: Color(0xFFCDCDCD)),
                                     borderRadius: BorderRadius.circular(30),
                                   ),
@@ -506,8 +496,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   children: [
                                     Container(
                                         height: 18,
-                                        margin:
-                                            EdgeInsets.fromLTRB(30, 23, 30, 30),
+                                        margin: const EdgeInsets.fromLTRB(
+                                            30, 23, 30, 30),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -516,15 +506,14 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                 onTap: _hideWidget,
                                                 child: Image.asset(
                                                     "assets/images/close.png")),
-                                            Container(
-                                                child: Row(
+                                            Row(
                                               children: [
                                                 Image.asset(
                                                     "assets/images/alarm.png"),
                                                 Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 4),
-                                                  child: Text(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 4),
+                                                  child: const Text(
                                                     '알림',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
@@ -539,42 +528,41 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                   ),
                                                 )
                                               ],
-                                            )),
+                                            ),
                                             Container(width: 20),
                                           ],
                                         )),
-                                    Container(
-                                        child: Column(
+                                    const Column(
                                       children: [
                                         alertCard(),
                                         alertCard(),
                                       ],
-                                    )),
+                                    ),
                                     Expanded(
                                         child: GestureDetector(
                                             onTap: alertRatio == 0.33
                                                 ? _extendWidget
                                                 : _shrinkWidget,
-                                            child: Container(
-                                                child: Row(
+                                            child: Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.end,
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
                                                 alertRatio == 0.33
-                                                    ? Icon(Icons
+                                                    ? const Icon(Icons
                                                         .keyboard_arrow_down)
-                                                    : Icon(Icons
+                                                    : const Icon(Icons
                                                         .keyboard_arrow_up),
                                                 Container(
-                                                    margin: EdgeInsets.only(
-                                                        bottom: 8),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            bottom: 8),
                                                     child: Text(
                                                       alertRatio == 0.33
                                                           ? "더보기"
                                                           : "간략히",
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 12,
                                                         fontFamily:
@@ -585,7 +573,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                       ),
                                                     ))
                                               ],
-                                            ))))
+                                            )))
                                   ],
                                 ))),
                       ),
@@ -608,14 +596,14 @@ class alertCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
           width: MediaQuery.of(context).size.width,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                child: Text(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: const Text(
                   '쿠독 서비스 인스타그램 친구 태그 이벤트 하고있어요!\n@kudog_email',
                   style: TextStyle(
                     color: Colors.black,
@@ -626,16 +614,14 @@ class alertCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                child: Text(
-                  '2022-09-15',
-                  style: TextStyle(
-                    color: Color(0xFF7E7E7E),
-                    fontSize: 10,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w400,
-                    height: 0,
-                  ),
+              const Text(
+                '2022-09-15',
+                style: TextStyle(
+                  color: Color(0xFF7E7E7E),
+                  fontSize: 10,
+                  fontFamily: 'Noto Sans KR',
+                  fontWeight: FontWeight.w400,
+                  height: 0,
                 ),
               ),
             ],
@@ -666,17 +652,13 @@ class _noticeCardState extends State<noticeCard>
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<NoticeService>(
       builder: (context, noticeService, child) {
         return GestureDetector(
@@ -688,53 +670,49 @@ class _noticeCardState extends State<noticeCard>
                         ViewPostDetailPageWidget(notice: widget.notice)));
           },
           child: Container(
-              padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.75,
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Text(
-                            widget.notice.title!,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontFamily: 'Noto Sans KR',
-                              fontWeight: FontWeight.w700,
-                              height: 0,
-                            ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                        child: Text(
+                          widget.notice.title!,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontFamily: 'Noto Sans KR',
+                            fontWeight: FontWeight.w700,
+                            height: 0,
                           ),
                         ),
-                        GestureDetector(
-                            onTap: () {
-                              changeIcon();
-                              noticeService.scrapNotice(widget.notice.id!);
-                            },
-                            child: ImageIcon(
-                              AssetImage(widget.notice.scrapped!
-                                  ? "assets/images/icon_9.png"
-                                  : "assets/images/icon_10.png"),
-                              color: Color(0xFFCE4040),
-                            ))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: Text(
-                      widget.notice.date!,
-                      style: TextStyle(
-                        color: Color(0xFF7E7E7E),
-                        fontSize: 10,
-                        fontFamily: 'Noto Sans KR',
-                        fontWeight: FontWeight.w400,
-                        height: 0,
                       ),
+                      GestureDetector(
+                          onTap: () {
+                            changeIcon();
+                            noticeService.scrapNotice(widget.notice.id!);
+                          },
+                          child: ImageIcon(
+                            AssetImage(widget.notice.scrapped!
+                                ? "assets/images/icon_9.png"
+                                : "assets/images/icon_10.png"),
+                            color: const Color(0xFFCE4040),
+                          ))
+                    ],
+                  ),
+                  Text(
+                    widget.notice.date!,
+                    style: const TextStyle(
+                      color: Color(0xFF7E7E7E),
+                      fontSize: 10,
+                      fontFamily: 'Noto Sans KR',
+                      fontWeight: FontWeight.w400,
+                      height: 0,
                     ),
                   ),
                 ],

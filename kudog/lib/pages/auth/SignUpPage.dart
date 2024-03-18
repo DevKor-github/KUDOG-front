@@ -46,7 +46,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
 
   void startTimer() {
     _noticeVisible = true;
-    const oneSecond = const Duration(seconds: 1);
+    const oneSecond = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSecond,
       (Timer timer) {
@@ -86,9 +86,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
           backgroundColor: secondaryBackground,
           appBar: AppBar(
             backgroundColor: secondaryBackground,
-            iconTheme: IconThemeData(color: primaryText),
+            iconTheme: const IconThemeData(color: primaryText),
             automaticallyImplyLeading: true,
-            title: Text(
+            title: const Text(
               '회원가입',
               style: TextStyle(
                 fontFamily: 'Noto Sans',
@@ -97,7 +97,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            actions: [],
+            actions: const [],
             centerTitle: false,
             elevation: 2,
           ),
@@ -105,7 +105,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
               top: true,
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(18, 0, 18, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -125,7 +125,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 mainAxisSize: MainAxisSize.max,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         18, 12, 0, 6),
                                     child: Text(
@@ -154,9 +154,8 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                   .size
                                                   .width *
                                               0.35,
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  12, 0, 0, 0),
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(12, 0, 0, 0),
                                           child: ElevatedButton(
                                               onPressed: () {
                                                 startTimer();
@@ -178,9 +177,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                 backgroundColor:
                                                     secondaryBackground,
                                               ),
-                                              child: Text(
+                                              child: const Text(
                                                 "인증번호 받기",
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                     color: primary,
                                                     fontSize: 14,
                                                     fontWeight:
@@ -191,11 +190,11 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   Message(
                                       text: signupService.firstAnswer,
                                       color: signupService.firstId == 1
-                                          ? Color(0xFF06C755)
-                                          : Color(0xFFCE4040),
+                                          ? const Color(0xFF06C755)
+                                          : const Color(0xFFCE4040),
                                       visible: _timerVisible),
                                   Container(
-                                      padding: EdgeInsets.only(top: 6),
+                                      padding: const EdgeInsets.only(top: 6),
                                       child: Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -219,8 +218,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                       .size
                                                       .width *
                                                   0.35,
-                                              padding: EdgeInsetsDirectional
-                                                  .fromSTEB(12, 0, 0, 0),
+                                              padding:
+                                                  const EdgeInsetsDirectional
+                                                      .fromSTEB(12, 0, 0, 0),
                                               child: ElevatedButton(
                                                   onPressed: () {
                                                     if (signupService.firstId ==
@@ -243,13 +243,15 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                                       BorderRadius
                                                                           .circular(
                                                                               10.0)),
-                                                              title: Column(
+                                                              title:
+                                                                  const Column(
                                                                 children: <Widget>[
                                                                   Text(
                                                                       "인증 번호 전송 필요"),
                                                                 ],
                                                               ),
-                                                              content: Column(
+                                                              content:
+                                                                  const Column(
                                                                 mainAxisSize:
                                                                     MainAxisSize
                                                                         .min,
@@ -276,8 +278,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                                         fontSize:
                                                                             20),
                                                                   ),
-                                                                  child: Text(
-                                                                      "확인"),
+                                                                  child:
+                                                                      const Text(
+                                                                          "확인"),
                                                                   onPressed:
                                                                       () {
                                                                     Navigator.pop(
@@ -304,9 +307,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                     backgroundColor:
                                                         secondaryBackground,
                                                   ),
-                                                  child: Text(
+                                                  child: const Text(
                                                     "확인",
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                         color: primary,
                                                         fontSize: 16,
                                                         fontWeight:
@@ -318,10 +321,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       ? Message(
                                           text: signupService.secondAnswer,
                                           color: signupService.secondId == 1
-                                              ? Color(0xFF06C755)
-                                              : Color(0xFFCE4040),
+                                              ? const Color(0xFF06C755)
+                                              : const Color(0xFFCE4040),
                                           visible: _noticeVisible)
-                                      : Padding(
+                                      : const Padding(
                                           padding: EdgeInsets.all(0),
                                         )
                                 ],
@@ -348,7 +351,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
+                          const Padding(
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                             child: Text(
@@ -363,18 +366,19 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                            margin: EdgeInsetsDirectional.fromSTEB(6, 4, 6, 4),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                            margin: const EdgeInsetsDirectional.fromSTEB(
+                                6, 4, 6, 4),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                  color: Color(0xFFCDCDCD), width: 2.0),
+                                  color: const Color(0xFFCDCDCD), width: 2.0),
                               borderRadius: BorderRadius.circular(24.0),
                             ),
                             child: DropdownButton<String>(
                               isExpanded: true,
                               value: selectedMajor,
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0, 0, 0, 0),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   selectedMajor = newValue!;
@@ -388,12 +392,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 );
                               }).toList(),
                               itemHeight: 50,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Readex Pro',
                                 fontSize: 12,
                               ),
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.keyboard_arrow_up,
                                 color: secondaryText,
                                 size: 24,
@@ -418,9 +422,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 children: [
                                   Container(
                                     width: 50,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        18, 12, 0, 6),
-                                    child: Text(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            18, 12, 0, 6),
+                                    child: const Text(
                                       '학번',
                                       style: TextStyle(
                                         fontFamily: 'Readex Pro',
@@ -432,12 +437,15 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   ),
                                   Container(
                                     width: 160,
-                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                    margin: EdgeInsetsDirectional.fromSTEB(
-                                        6, 4, 6, 12),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    margin:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            6, 4, 6, 12),
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                          color: Color(0xFFCDCDCD), width: 2.0),
+                                          color: const Color(0xFFCDCDCD),
+                                          width: 2.0),
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
@@ -456,12 +464,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                         );
                                       }).toList(),
                                       itemHeight: 50,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'Readex Pro',
                                         fontSize: 12,
                                       ),
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.keyboard_arrow_up,
                                         color: secondaryText,
                                         size: 24,
@@ -478,9 +486,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 children: [
                                   Container(
                                     width: 50,
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        18, 12, 0, 6),
-                                    child: Text(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            18, 12, 0, 6),
+                                    child: const Text(
                                       '학년',
                                       style: TextStyle(
                                         fontFamily: 'Readex Pro',
@@ -492,12 +501,15 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   ),
                                   Container(
                                     width: 160,
-                                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                    margin: EdgeInsetsDirectional.fromSTEB(
-                                        6, 4, 6, 12),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    margin:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            6, 4, 6, 12),
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                          color: Color(0xFFCDCDCD), width: 2.0),
+                                          color: const Color(0xFFCDCDCD),
+                                          width: 2.0),
                                       borderRadius: BorderRadius.circular(24.0),
                                     ),
                                     child: DropdownButton<String>(
@@ -517,12 +529,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                         );
                                       }).toList(),
                                       itemHeight: 50,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'Readex Pro',
                                         fontSize: 12,
                                       ),
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.keyboard_arrow_up,
                                         color: secondaryText,
                                         size: 24,
@@ -550,136 +562,110 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(10.0)),
-                                      title: Column(
+                                      title: const Column(
                                         children: <Widget>[
                                           Text("KUDOG 개인정보 처리방침"),
                                         ],
                                       ),
-                                      content: SingleChildScrollView(
+                                      content: const SingleChildScrollView(
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
-                                            Container(
-                                                child: Text(
-                                                    "KUDOG은 정보주체의 자유와 권리 보호를 위해 개인정보 보호법 및 관계 법령이 정한 바를 준수하여, 적법하게 개인정보를 처리하고 안전하게 관리하고 있습니다. 이에 개인정보 보호법 제30조에 따라 정보주체에게 개인정보 처리에 관한 절차 및 기준을 안내하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립 및 공개합니다.")),
+                                            Text(
+                                                "KUDOG은 정보주체의 자유와 권리 보호를 위해 개인정보 보호법 및 관계 법령이 정한 바를 준수하여, 적법하게 개인정보를 처리하고 안전하게 관리하고 있습니다. 이에 개인정보 보호법 제30조에 따라 정보주체에게 개인정보 처리에 관한 절차 및 기준을 안내하고, 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립 및 공개합니다."),
                                             Divider(
                                               color: Colors.black, // 구분선 색상 설정
                                               thickness: 1.0, // 구분선 두께 설정
                                             ),
-                                            Container(
-                                                child: Text(
+                                            Text(
                                               "개인정보의 처리 목적",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "KUDOG은 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 이용 목적이 변경되는 경우에는 개인정보 보호법 제 18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "1. 회원 가입 및 관리\n회원제 서비스 제공에 따른 유저 식별 및 인증 목적으로 개인정보를 처리합니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "2. 서비스 제공\n이메일 전송 서비스 제공을 위한 목적으로 이메일 주소를 수집하여 사용합니다.")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "KUDOG은 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 이용 목적이 변경되는 경우에는 개인정보 보호법 제 18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다."),
+                                            Text(
+                                                "1. 회원 가입 및 관리\n회원제 서비스 제공에 따른 유저 식별 및 인증 목적으로 개인정보를 처리합니다."),
+                                            Text(
+                                                "2. 서비스 제공\n이메일 전송 서비스 제공을 위한 목적으로 이메일 주소를 수집하여 사용합니다."),
+                                            Text(
                                               "\n처리하는 개인정보 항목",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "KUDOG은 다음의 개인정보 항목을 처리하고 있습니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "1. 회원 가입 및 관리 \n - 필수 항목 : 이메일 주소, 닉네임, 대학 전공, 학년, 입학년도")),
-                                            Container(
-                                                child: Text(
-                                                    "2. 서비스 제공\n- 필수 항목 : 이메일 주소")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "KUDOG은 다음의 개인정보 항목을 처리하고 있습니다."),
+                                            Text(
+                                                "1. 회원 가입 및 관리 \n - 필수 항목 : 이메일 주소, 닉네임, 대학 전공, 학년, 입학년도"),
+                                            Text("2. 서비스 제공\n- 필수 항목 : 이메일 주소"),
+                                            Text(
                                               "\n개인정보의 처리 및 보유 기간",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "1. KUDOG은 법령에 따른 개인정보 보유, 이용 기간 또는 정보주체로부터 개인정보를 수집 시에 동의 받은 개인정보 보유, 이용기간 내에서 개인정보를 처리, 보유합니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "2. 각각의 개인정보 처리 및 보유 기간은 다음과 같습니다\n- 회원 가입 및 관리 : 앱 탈퇴 / 서비스 종료 시까지\n- 서비스 제공 : 앱 탈퇴 / 서비스 종료 시까지")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "1. KUDOG은 법령에 따른 개인정보 보유, 이용 기간 또는 정보주체로부터 개인정보를 수집 시에 동의 받은 개인정보 보유, 이용기간 내에서 개인정보를 처리, 보유합니다."),
+                                            Text(
+                                                "2. 각각의 개인정보 처리 및 보유 기간은 다음과 같습니다\n- 회원 가입 및 관리 : 앱 탈퇴 / 서비스 종료 시까지\n- 서비스 제공 : 앱 탈퇴 / 서비스 종료 시까지"),
+                                            Text(
                                               "\n개인정보의 파기 절차 및 방법",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "1. KUDOG은 개인정보 보유기간의 경과, 처리 목적 달성 등 개인정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "2. 개인 정보 파기의 절차 및 방법은 다음과 같습니다.\n- 파기 절차\nKUDOG은 파기 사유가 발생 시 해당 유저의 모든 개인정보를 즉각 데이터베이스에서 삭제합니다.\n - 파기 방법\nKUDOG은 개인정보를 암호화하여 본 서비스 소유의 데이터베이스에 저장하고 있습니다. 해당 데이터는 파일 형태로 기록되지 않도록 로그와 함께 즉각 삭제합니다.")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "1. KUDOG은 개인정보 보유기간의 경과, 처리 목적 달성 등 개인정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다."),
+                                            Text(
+                                                "2. 개인 정보 파기의 절차 및 방법은 다음과 같습니다.\n- 파기 절차\nKUDOG은 파기 사유가 발생 시 해당 유저의 모든 개인정보를 즉각 데이터베이스에서 삭제합니다.\n - 파기 방법\nKUDOG은 개인정보를 암호화하여 본 서비스 소유의 데이터베이스에 저장하고 있습니다. 해당 데이터는 파일 형태로 기록되지 않도록 로그와 함께 즉각 삭제합니다."),
+                                            Text(
                                               "\n정보 주체와 법정 대리인의 권리, 의무 및 행사 방법",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "1. 정보 주체는 KUDOG에 대해 언제든지 개인정보 열람, 정정, 삭제, 처리정지 요구 등의 권리를 행사할 수 있습니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "2. 권리 행사는 KUDOG에 대해 이메일, 개인정보 보호 책임자 등의 연락 방법을 통하여 하실 수 있으며, KUDOG은 이에 대해 즉각 조치합니다.")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "1. 정보 주체는 KUDOG에 대해 언제든지 개인정보 열람, 정정, 삭제, 처리정지 요구 등의 권리를 행사할 수 있습니다."),
+                                            Text(
+                                                "2. 권리 행사는 KUDOG에 대해 이메일, 개인정보 보호 책임자 등의 연락 방법을 통하여 하실 수 있으며, KUDOG은 이에 대해 즉각 조치합니다."),
+                                            Text(
                                               "\n개인정보의 안전성 확보 조치",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "KUDOG은 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다.\n- 기술적 조치 : 서버, 데이터베이스 접근 권한 관리, JWT 인증 시스템, 개인정보의 암호화")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "KUDOG은 개인정보의 안전성 확보를 위해 다음과 같은 조치를 취하고 있습니다.\n- 기술적 조치 : 서버, 데이터베이스 접근 권한 관리, JWT 인증 시스템, 개인정보의 암호화"),
+                                            Text(
                                               "\n개인정보 보호 책임자",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "1. KUDOG은 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 정보 주체의 불만 처리 및 피해 구제 등을 위하여 아래와 같이 개인정보 보호 책임자를 지정하고 있습니다. 해당 연락처를 통해 개인정보 열람 청구 업무도 신청할 수 있습니다.")),
-                                            Container(
-                                                child: Text(
-                                                    "- 개인정보 보호 책임자\n- 연락처 : devkor.apply@gmail.com")),
-                                            Container(
-                                                child: Text(
+                                            ),
+                                            Text(
+                                                "1. KUDOG은 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 정보 주체의 불만 처리 및 피해 구제 등을 위하여 아래와 같이 개인정보 보호 책임자를 지정하고 있습니다. 해당 연락처를 통해 개인정보 열람 청구 업무도 신청할 수 있습니다."),
+                                            Text(
+                                                "- 개인정보 보호 책임자\n- 연락처 : devkor.apply@gmail.com"),
+                                            Text(
                                               "\n동의 거부 관리",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18.0,
                                               ),
-                                            )),
-                                            Container(
-                                                child: Text(
-                                                    "사용자는 본 안내에 따른 개인정보 수집 및 이용에 대하여 동의를 거부할 권리가 있습니다. 다만, 개인 정보 수집 동의 거부 시 서비스 사용이 불가능할 수 있습니다.\n이 개인정보 처리 방침은 2024년 1월 16일부터 적용됩니다.")),
+                                            ),
+                                            Text(
+                                                "사용자는 본 안내에 따른 개인정보 수집 및 이용에 대하여 동의를 거부할 권리가 있습니다. 다만, 개인 정보 수집 동의 거부 시 서비스 사용이 불가능할 수 있습니다.\n이 개인정보 처리 방침은 2024년 1월 16일부터 적용됩니다."),
                                           ],
                                         ),
                                       ),
@@ -691,7 +677,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             textStyle:
                                                 const TextStyle(fontSize: 20),
                                           ),
-                                          child: Text("확인"),
+                                          child: const Text("확인"),
                                           onPressed: () {
                                             Navigator.pop(context);
                                           },
@@ -700,8 +686,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                     );
                                   });
                             },
-                            child: Container(
-                                child: Row(
+                            child: const Row(
                               children: [
                                 Text(
                                   "개인정보 처리 방침    ",
@@ -717,7 +702,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                   ),
                                 )
                               ],
-                            )),
+                            ),
                           ),
                           GestureDetector(
                               onTap: () {
@@ -726,12 +711,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 });
                               },
                               child: isChecked
-                                  ? Icon(Icons.check_box_outlined)
-                                  : Icon(Icons.check_box_outline_blank))
+                                  ? const Icon(Icons.check_box_outlined)
+                                  : const Icon(Icons.check_box_outline_blank))
                         ],
                       ),
                       Container(
-                          margin: EdgeInsets.only(top: 12),
+                          margin: const EdgeInsets.only(top: 12),
                           height: MediaQuery.of(context).size.height * 0.05,
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: ElevatedButton(
@@ -754,12 +739,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10.0)),
-                                                title: Column(
+                                                title: const Column(
                                                   children: <Widget>[
                                                     Text("개인정보 처리방침 동의"),
                                                   ],
                                                 ),
-                                                content: Column(
+                                                content: const Column(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
                                                   crossAxisAlignment:
@@ -781,7 +766,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                           const TextStyle(
                                                               fontSize: 20),
                                                     ),
-                                                    child: Text("확인"),
+                                                    child: const Text("확인"),
                                                     onPressed: () {
                                                       Navigator.pop(context);
                                                     },
@@ -804,7 +789,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    LoginPageWidget()));
+                                                    const LoginPageWidget()));
                                       }
                                     }
                                   : () {
@@ -817,12 +802,12 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           10.0)),
-                                              title: Column(
+                                              title: const Column(
                                                 children: <Widget>[
                                                   Text("정보 미기입"),
                                                 ],
                                               ),
-                                              content: Column(
+                                              content: const Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -842,7 +827,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                                     textStyle: const TextStyle(
                                                         fontSize: 20),
                                                   ),
-                                                  child: Text("확인"),
+                                                  child: const Text("확인"),
                                                   onPressed: () {
                                                     Navigator.pop(context);
                                                   },
@@ -860,9 +845,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                     borderRadius: BorderRadius.circular(20.0)),
                                 backgroundColor: primary,
                               ),
-                              child: Text(
+                              child: const Text(
                                 "회원가입",
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500),
@@ -916,29 +901,29 @@ class _CodeInputFormState extends State<CodeInputForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 15),
         height: MediaQuery.of(context).size.height * 0.06,
         width: MediaQuery.of(context).size.width * 0.55,
         decoration: ShapeDecoration(
           color: Colors.white,
           shape: RoundedRectangleBorder(
-            side: BorderSide(width: 2, color: Color(0xFFCDCDCD)),
+            side: const BorderSide(width: 2, color: Color(0xFFCDCDCD)),
             borderRadius: BorderRadius.circular(208),
           ),
         ),
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: MediaQuery.of(context).size.width * 0.38,
               child: TextFormField(
                 controller: widget.controller,
                 autofocus: true,
-                autofillHints: [AutofillHints.email],
+                autofillHints: const [AutofillHints.email],
                 obscureText: false,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   labelText: widget.label,
-                  labelStyle: TextStyle(
+                  labelStyle: const TextStyle(
                     fontFamily: 'Readex Pro',
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -951,23 +936,20 @@ class _CodeInputFormState extends State<CodeInputForm> {
             widget.isVerified
                 ? Visibility(
                     visible: widget.visible,
-                    child: Container(
-                      child: Text(
-                        formatTime(widget.value),
-                        style: TextStyle(
-                          color: Color(0xFFDA4949),
-                          fontSize: 14,
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w700,
-                        ),
+                    child: Text(
+                      formatTime(widget.value),
+                      style: const TextStyle(
+                        color: Color(0xFFDA4949),
+                        fontSize: 14,
+                        fontFamily: 'Noto Sans KR',
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   )
                 : Visibility(
                     visible: widget.visible,
-                    child: Container(
-                        child: Image.asset("assets/images/verified.png",
-                            width: 14, height: 14, color: Color(0xff06C755))),
+                    child: Image.asset("assets/images/verified.png",
+                        width: 14, height: 14, color: const Color(0xff06C755)),
                   ),
           ],
         ));
@@ -986,44 +968,44 @@ class EmailInputForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width * 0.55,
       child: TextFormField(
         controller: controller,
         autofocus: true,
-        autofillHints: [AutofillHints.email],
+        autofillHints: const [AutofillHints.email],
         obscureText: false,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(
+          labelStyle: const TextStyle(
             fontFamily: 'Readex Pro',
             fontSize: 12,
             fontWeight: FontWeight.w400,
             color: primaryText,
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Color(0xFFCDCDCD),
               width: 2,
             ),
             borderRadius: BorderRadius.circular(24),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: primary,
               width: 2,
             ),
             borderRadius: BorderRadius.circular(24),
           ),
           errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: alternate,
               width: 2,
             ),
             borderRadius: BorderRadius.circular(24),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: alternate,
               width: 2,
             ),
@@ -1031,7 +1013,7 @@ class EmailInputForm extends StatelessWidget {
           ),
           filled: true,
           fillColor: secondaryBackground,
-          contentPadding: EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
+          contentPadding: const EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
         ),
         keyboardType: TextInputType.emailAddress,
       ),
@@ -1054,7 +1036,7 @@ class Message extends StatelessWidget {
     return Visibility(
       visible: visible,
       child: Container(
-          padding: EdgeInsets.fromLTRB(20, 4, 0, 2),
+          padding: const EdgeInsets.fromLTRB(20, 4, 0, 2),
           child: Text(
             text,
             style: TextStyle(
@@ -1086,10 +1068,10 @@ class InputForm extends StatelessWidget {
       children: [
         type != ""
             ? Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+                padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                 child: Text(
                   type,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Readex Pro',
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -1097,47 +1079,47 @@ class InputForm extends StatelessWidget {
                   ),
                 ),
               )
-            : Padding(
+            : const Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
               ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: TextFormField(
             controller: controller,
             autofocus: true,
-            autofillHints: [AutofillHints.email],
+            autofillHints: const [AutofillHints.email],
             obscureText: false,
             decoration: InputDecoration(
               labelText: label,
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 fontFamily: 'Readex Pro',
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: primaryText,
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Color(0xFFCDCDCD),
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: primary,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: alternate,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: alternate,
                   width: 2,
                 ),
@@ -1145,7 +1127,7 @@ class InputForm extends StatelessWidget {
               ),
               filled: true,
               fillColor: secondaryBackground,
-              contentPadding: EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
+              contentPadding: const EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
             ),
             keyboardType: TextInputType.emailAddress,
           ),
@@ -1192,10 +1174,10 @@ class _PWInputFormState extends State<PWInputForm> {
       children: [
         widget.type == "비밀번호"
             ? Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
+                padding: const EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
                 child: Text(
                   widget.type,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Readex Pro',
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -1203,55 +1185,53 @@ class _PWInputFormState extends State<PWInputForm> {
                   ),
                 ),
               )
-            : Padding(
+            : const Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
               ),
-        Container(
+        SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: TextFormField(
             onChanged: (value) {
-              if (value == null) {
-                isPassed = false;
-              } else if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(value)) {
+              if (RegExp(r'^[a-z0-9]{6,16}$').hasMatch(value)) {
                 isPassed = true;
               }
             },
             controller: widget.controller,
             autofocus: true,
-            autofillHints: [AutofillHints.email],
+            autofillHints: const [AutofillHints.email],
             obscureText: true,
             obscuringCharacter: "*",
             decoration: InputDecoration(
               labelText: widget.label,
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 fontFamily: 'Readex Pro',
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
                 color: primaryText,
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Color(0xFFCDCDCD),
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: primary,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               errorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: alternate,
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: alternate,
                   width: 2,
                 ),
@@ -1259,7 +1239,7 @@ class _PWInputFormState extends State<PWInputForm> {
               ),
               filled: true,
               fillColor: secondaryBackground,
-              contentPadding: EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
+              contentPadding: const EdgeInsetsDirectional.fromSTEB(18, 0, 0, 0),
             ),
             keyboardType: TextInputType.emailAddress,
           ),
@@ -1268,7 +1248,7 @@ class _PWInputFormState extends State<PWInputForm> {
             text: widget.type == "비밀번호"
                 ? '6-16자 영문 소문자, 숫자를 사용하세요.'
                 : '비밀번호가 일치하지 않습니다.',
-            color: Color(0xFFCE4040),
+            color: const Color(0xFFCE4040),
             visible: widget.type == "비밀번호" ? !isPassed : !isSame)
       ],
     );

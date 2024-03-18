@@ -73,7 +73,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
         bottomSheet: Container(
             height: 66,
             width: MediaQuery.sizeOf(context).width,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Color(0xFFCE4040),
               boxShadow: [
                 BoxShadow(
@@ -95,8 +95,8 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       Navigator.pop(context);
                     },
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
-                      child: ImageIcon(
+                      padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                      child: const ImageIcon(
                         color: Color(0xffFFFFFF),
                         AssetImage(
                           "assets/images/icon_13.png",
@@ -109,9 +109,9 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                       scrapOrNot();
                     },
                     child: Container(
-                      padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 25, 0),
                       child: ImageIcon(
-                        color: Color(0xffFFFFFF),
+                        color: const Color(0xffFFFFFF),
                         AssetImage(
                           widget.notice.scrapped!
                               ? "assets/images/icon_15.png"
@@ -129,18 +129,18 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Container(
-                      padding: EdgeInsets.fromLTRB(25, 52, 25, 0),
+                      padding: const EdgeInsets.fromLTRB(25, 52, 25, 0),
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
+                            SizedBox(
                               width: 99,
                               height: 19,
                               child: Text(
                                 _noticeDetail.provider!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Color(0xFFCE4040),
                                   fontSize: 12,
                                   fontFamily: 'Noto Sans KR',
@@ -149,19 +149,18 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 ),
                               ),
                             ),
-                            Container(
-                                child: Text(
+                            Text(
                               _noticeDetail.title!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 24,
                                 fontFamily: 'Noto Sans KR',
                                 fontWeight: FontWeight.w700,
                                 height: 0,
                               ),
-                            )),
+                            ),
                             Container(
-                              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment:
@@ -171,13 +170,13 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                     children: [
                                       Container(
                                         alignment: Alignment.topLeft,
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 0, 8, 0),
                                         height: 19.08,
                                         child: Text(
                                           _noticeDetail.writer!,
                                           textAlign: TextAlign.right,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
                                             fontSize: 12,
                                             fontFamily: 'Noto Sans KR',
@@ -192,7 +191,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                         height: 19.08,
                                         child: Text(
                                           _noticeDetail.date!,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
                                             fontSize: 12,
                                             fontFamily: 'Noto Sans KR',
@@ -208,10 +207,9 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                       Container(
                                           height: 19.08,
                                           alignment: Alignment.topLeft,
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  24, 0, 0, 0),
-                                          child: ImageIcon(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(24, 0, 0, 0),
+                                          child: const ImageIcon(
                                             size: 14,
                                             AssetImage(
                                                 "assets/images/icon_11.png"),
@@ -220,11 +218,11 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                       Container(
                                         height: 19.08,
                                         alignment: Alignment.topLeft,
-                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                            3, 0, 0, 0),
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(3, 0, 0, 0),
                                         child: Text(
                                           "${_noticeDetail.view!}",
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Color(0xFF7E7E7E),
                                             fontSize: 12,
                                             fontFamily: 'Noto Sans KR',
@@ -236,10 +234,9 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                       Container(
                                           height: 19.08,
                                           alignment: Alignment.topLeft,
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  20, 0, 0, 0),
-                                          child: ImageIcon(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(20, 0, 0, 0),
+                                          child: const ImageIcon(
                                             size: 14,
                                             AssetImage(
                                                 "assets/images/icon_12.png"),
@@ -248,13 +245,12 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                       Container(
                                           height: 19.08,
                                           alignment: Alignment.topLeft,
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  3, 0, 0, 0),
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(3, 0, 0, 0),
                                           child: Text(
                                             "${_noticeDetail.scrapCount!}",
                                             textAlign: TextAlign.right,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Color(0xFF7E7E7E),
                                               fontSize: 12,
                                               fontFamily: 'Noto Sans KR',
@@ -268,8 +264,8 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                               ),
                             ),
                             Container(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 40, 0, 0),
                                 child: SingleChildScrollView(
                                     child: Container(
                                   child: HtmlWidget(
@@ -281,7 +277,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                       if (await canLaunchUrl(dest)) {
                                         await launchUrl(dest);
                                       }
-                                      print("링크 클릭 : $url");
                                       return true;
                                     },
                                   ),

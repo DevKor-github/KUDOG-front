@@ -39,9 +39,9 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.black),
           automaticallyImplyLeading: true,
-          title: Text(
+          title: const Text(
             '비밀번호 변경',
             style: TextStyle(
               fontFamily: "NotoSans-Regular",
@@ -57,14 +57,14 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
         body: SafeArea(
           top: true,
           child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(18, 40, 18, 0),
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 40, 18, 0),
             child: Column(
               children: [
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 40),
+                  padding: const EdgeInsets.only(left: 40),
                   height: 22,
-                  child: Text(
+                  child: const Text(
                     "새 비밀번호",
                     style: TextStyle(
                       fontFamily: 'Noto Sans KR',
@@ -78,28 +78,29 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(18, 18, 18, 8),
+                  margin: const EdgeInsets.fromLTRB(18, 18, 18, 8),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 47,
                     child: Container(
                       alignment: Alignment.center,
-                      padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                      padding: const EdgeInsets.fromLTRB(24, 12, 22, 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(208),
-                        border: Border.all(color: Color(0xFFCDCDCD), width: 2),
+                        border: Border.all(
+                            color: const Color(0xFFCDCDCD), width: 2),
                       ),
                       child: Row(
                         children: [
                           Expanded(
                             child: TextField(
                               controller: newPasswordController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                               ),
                               obscureText: true,
-                              style: TextStyle(color: Color(0xFFA4A4A4)),
+                              style: const TextStyle(color: Color(0xFFA4A4A4)),
                               obscuringCharacter: '●',
                             ),
                           ),
@@ -121,8 +122,8 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 40),
-                  child: Row(
+                  padding: const EdgeInsets.only(left: 40),
+                  child: const Row(
                     children: [
                       Text(
                         'ⓘ 6-16자 영문 소문자, 숫자를 사용하세요.',
@@ -140,28 +141,29 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(18, 18, 18, 8),
+                  margin: const EdgeInsets.fromLTRB(18, 18, 18, 8),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 47,
                     child: Container(
                       alignment: Alignment.center,
-                      padding: EdgeInsets.fromLTRB(24, 12, 22, 12),
+                      padding: const EdgeInsets.fromLTRB(24, 12, 22, 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(208),
-                        border: Border.all(color: Color(0xFFCDCDCD), width: 2),
+                        border: Border.all(
+                            color: const Color(0xFFCDCDCD), width: 2),
                       ),
                       child: Row(
                         children: [
                           Expanded(
                             child: TextField(
                               controller: confirmPasswordController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                               ),
                               obscureText: true,
-                              style: TextStyle(color: Color(0xFFA4A4A4)),
+                              style: const TextStyle(color: Color(0xFFA4A4A4)),
                               obscuringCharacter: '●',
                             ),
                           ),
@@ -183,8 +185,8 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 40),
-                  child: Row(
+                  padding: const EdgeInsets.only(left: 40),
+                  child: const Row(
                     children: [
                       Text(
                         'ⓘ 비밀번호가 일치하지 않습니다.',
@@ -202,7 +204,7 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(18, 28, 18, 18),
+                  margin: const EdgeInsets.fromLTRB(18, 28, 18, 18),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 47,
@@ -217,7 +219,7 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                       child: Container(
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Color(0xFFCE4040),
+                          color: const Color(0xFFCE4040),
                           borderRadius: BorderRadius.circular(58),
                         ),
                         child: InkWell(
@@ -226,9 +228,10 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
                                 widget.email, newPasswordController.text);
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => LoginPageWidget()));
+                                    builder: (context) =>
+                                        const LoginPageWidget()));
                           },
-                          child: Text(
+                          child: const Text(
                             "비밀번호 저장",
                             style: TextStyle(
                               fontFamily: 'Noto Sans KR',
@@ -255,7 +258,5 @@ class _ChangepwPageWidgetState extends State<ChangepwPageWidget> {
     return regex.hasMatch(password);
   }
 
-  void savePassword(String password) {
-    print("Password saved: $password");
-  }
+  void savePassword(String password) {}
 }

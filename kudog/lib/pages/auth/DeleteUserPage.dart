@@ -29,9 +29,9 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
       return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
-            iconTheme: IconThemeData(color: Colors.black),
+            iconTheme: const IconThemeData(color: Colors.black),
             automaticallyImplyLeading: true,
-            title: Text(
+            title: const Text(
               '회원 탈퇴하기',
               style: TextStyle(
                 fontFamily: "NotoSans-Regular",
@@ -48,8 +48,8 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                child: const Text(
                   "회원탈퇴 시 유의사항",
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
@@ -59,8 +59,8 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: const Text(
                   "탈퇴 시 모든 정보가 삭제되므로, 반드시 아래 내용을 확인하세요",
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
@@ -70,8 +70,8 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(4, 20, 4, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(4, 20, 4, 0),
+                child: const Text(
                   "●   회원탈퇴 시 가입시 인증하였던 메일 정보, 기타 인적사항이 모두 삭제되며, 재가입시 다시 인증 절차가 필요합니다.",
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -81,8 +81,8 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(4, 8, 4, 0),
-                child: Text(
+                margin: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                child: const Text(
                   "●   생성하셨던 구독 카테고리 목록, 스크랩 목록은 모두 삭제되며, 복구할 수 없습니다.",
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -92,7 +92,7 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(10, 100, 0, 0),
+                margin: const EdgeInsets.fromLTRB(10, 100, 0, 0),
                 child: Row(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -107,19 +107,19 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                         height: 24,
                         decoration: BoxDecoration(
                           color: isChecked
-                              ? Color(0xFFDF8383)
+                              ? const Color(0xFFDF8383)
                               : Colors.transparent,
                           border: Border.all(
                             color: isChecked
-                                ? Color(0xFFDF8383)
-                                : Color(0xFFCDCDCD),
+                                ? const Color(0xFFDF8383)
+                                : const Color(0xFFCDCDCD),
                             width: 2,
                           ),
                         ),
                         //child: isChecked ? Icon( Icons.check, color: Colors.red) : null,
                       ),
                     ),
-                    SizedBox(width: 30),
+                    const SizedBox(width: 30),
                     InkWell(
                       onTap: () {
                         setState(() {
@@ -134,7 +134,7 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                           fontSize: 13,
                           fontFamily: "Noto Sans KR",
                           color:
-                              isChecked ? Color(0xFFDF8383) : Color(0xFFCDCDCD),
+                              isChecked ? const Color(0xFFDF8383) : const Color(0xFFCDCDCD),
                         ),
                       ),
                     ),
@@ -143,7 +143,7 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
               ),
               Center(
                 child: Container(
-                  margin: EdgeInsets.only(top: 40),
+                  margin: const EdgeInsets.only(top: 40),
                   child: ElevatedButton(
                     onPressed: isChecked
                         ? () {
@@ -152,18 +152,18 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
                               context,
                               MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    LoginPageWidget(),
+                                    const LoginPageWidget(),
                               ),
                               (route) => false,
                             );
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
-                        primary: Color(0xFFCE4040),
+                        backgroundColor: const Color(0xFFCE4040),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         )),
-                    child: Text('회원 탈퇴'),
+                    child: const Text('회원 탈퇴'),
                   ),
                 ),
               ),
@@ -172,7 +172,4 @@ class _DeleteUserPageWidgetState extends State<DeleteUserPageWidget> {
     });
   }
 
-  void _deleteUser() {
-    print('회원 탈퇴 버튼이 눌렸습니다.');
-  }
 }

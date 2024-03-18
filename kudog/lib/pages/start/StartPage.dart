@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
+import 'package:kudog/util/DioClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StartPageWidget extends StatefulWidget {
@@ -29,42 +30,25 @@ class _StartPageWidgetState extends State<StartPageWidget> {
     if (accessToken != "" && refreshToken != "") {
       Future<bool> isLoggedIn = _validateTokens();
       if (await isLoggedIn) {
-        Future.delayed(Duration(seconds: 2), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => ViewMainPageWidget()));
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => const ViewMainPageWidget()));
         });
       } else {
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => LoginPageWidget()));
+              MaterialPageRoute(builder: (context) => const LoginPageWidget()));
         });
       }
     }
   }
 
   Future<bool> _validateTokens() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    accessToken = sharedPreferences.getString("access_token");
-    print(accessToken);
     try {
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/users/info",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-      if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        return false;
-      } else if (response.statusCode == 200) {
-        print("자동 로그인 성공");
-        return true;
-      } else {
-        return false;
-      }
+      DioClient dioClient = DioClient();
+      Response response = await dioClient.get("/users/info");
+
+      return true;
     } catch (e) {
       return false;
     }
@@ -80,16 +64,17 @@ class _StartPageWidgetState extends State<StartPageWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-                margin: EdgeInsets.only(top: 80),
+                margin: const EdgeInsets.only(top: 80),
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: MediaQuery.of(context).size.height * 0.1,
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(width: 1.09, color: Color(0xFFCD4040)),
+                    side:
+                        const BorderSide(width: 1.09, color: Color(0xFFCD4040)),
                     borderRadius: BorderRadius.circular(16.34),
                   ),
                 ),
-                child: Center(
+                child: const Center(
                     child: Text(
                   '교내 공지사항을 카테고리별로 구독하여\n메일로 받아 보세요!',
                   textAlign: TextAlign.center,
@@ -101,12 +86,12 @@ class _StartPageWidgetState extends State<StartPageWidget> {
                   ),
                 ))),
             Container(
-              margin: EdgeInsets.only(top: 30),
+              margin: const EdgeInsets.only(top: 30),
               width: MediaQuery.of(context).size.width * 0.5,
               height: MediaQuery.of(context).size.height * 0.4,
               child: Image.asset("assets/images/main.png"),
             ),
-            Text.rich(
+            const Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
@@ -143,7 +128,7 @@ class _StartPageWidgetState extends State<StartPageWidget> {
               ),
               textAlign: TextAlign.center,
             ),
-            Container(
+            SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: Image.asset("assets/images/main2.png"))

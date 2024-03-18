@@ -27,11 +27,11 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
-      ViewSubscribePageWidget(),
-      ViewHotPageWidget(),
-      ViewHomePageWidget(),
-      ViewScrabPageWidget(),
-      ViewMyPageWidget()
+      const ViewSubscribePageWidget(),
+      const ViewHotPageWidget(),
+      const ViewHomePageWidget(),
+      const ViewScrabPageWidget(),
+      const ViewMyPageWidget()
     ];
 
     return Scaffold(
@@ -39,7 +39,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: Colors.grey,
@@ -48,7 +48,7 @@ class _ViewMainPageWidgetState extends State<ViewMainPageWidget> {
             ],
           ),
           child: BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
+            items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                   icon: ImageIcon(
                       AssetImage(

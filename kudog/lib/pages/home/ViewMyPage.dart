@@ -41,12 +41,12 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
       User userInfo = userInfoService.user;
 
       return Scaffold(
-        backgroundColor: Color(0xFFCE4040),
+        backgroundColor: const Color(0xFFCE4040),
         body: Column(
           children: [
             Container(
                 height: 64,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFCE4040),
                 ),
                 child: Row(
@@ -54,7 +54,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                   children: [
                     Container(
                       width: 88,
-                      margin: EdgeInsets.all(15),
+                      margin: const EdgeInsets.all(15),
                       child: Row(
                         children: [
                           Image.asset(
@@ -72,7 +72,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         ],
                       ),
                     ),
-                    Text(
+                    const Text(
                       '마이페이지',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -85,7 +85,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                     Container(
                       alignment: Alignment.centerRight,
                       width: 88,
-                      margin: EdgeInsets.all(15),
+                      margin: const EdgeInsets.all(15),
                       child: Image.asset(
                         "assets/images/icon_8.png",
                         width: 36.79,
@@ -97,8 +97,8 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                 )),
             Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                decoration: ShapeDecoration(
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                decoration: const ShapeDecoration(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
@@ -110,7 +110,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                 child: Column(
                   children: [
                     Container(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         left: 24,
                         right: 24,
                       ),
@@ -119,38 +119,37 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         children: [
                           Text(
                             userInfo.name!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: "Noto Sans KR",
                               fontSize: 25,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF444444),
                             ),
                           ),
-                          Container(
-                            child: IntrinsicWidth(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(39),
-                                  border: Border.all(
-                                      color: Color(0xFFA4A4A4), width: 1),
-                                ),
-                                padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ChangemyinfoPageWidget()),
-                                    );
-                                  },
-                                  child: Text(
-                                    "편집",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      fontFamily: "Noto Sans KR",
-                                    ),
+                          IntrinsicWidth(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(39),
+                                border: Border.all(
+                                    color: const Color(0xFFA4A4A4), width: 1),
+                              ),
+                              padding:
+                                  const EdgeInsets.fromLTRB(13, 4, 12, 6.27),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChangemyinfoPageWidget()),
+                                  );
+                                },
+                                child: const Text(
+                                  "편집",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                    fontFamily: "Noto Sans KR",
                                   ),
                                 ),
                               ),
@@ -159,18 +158,18 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
-                      decoration: BoxDecoration(color: Color(0xFFF6F6F6)),
-                      padding: EdgeInsets.fromLTRB(24, 19, 24, 19),
+                      decoration: const BoxDecoration(color: Color(0xFFF6F6F6)),
+                      padding: const EdgeInsets.fromLTRB(24, 19, 24, 19),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             "공지사항 메일 수신",
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
@@ -254,15 +253,16 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
-                      padding: EdgeInsets.only(left: 24, right: 24),
+                      padding: const EdgeInsets.only(left: 24, right: 24),
                       child: InkWell(
                         onTap: () {
                           signOutService.signOut();
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (context) => LoginPageWidget()));
+                                  builder: (context) =>
+                                      const LoginPageWidget()));
                         }, //Pop 반복
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
@@ -279,24 +279,22 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 200),
-                    Container(
-                        child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        DeleteUserPageWidget()),
-                              );
-                            },
-                            child: Text("회원 탈퇴하기",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  fontFamily: "Noto Sans KR",
-                                  color: Color(0xFFCDCDCD),
-                                )))),
+                    const SizedBox(height: 200),
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DeleteUserPageWidget()),
+                          );
+                        },
+                        child: const Text("회원 탈퇴하기",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              fontFamily: "Noto Sans KR",
+                              color: Color(0xFFCDCDCD),
+                            ))),
                   ],
                 ),
               ),
@@ -331,19 +329,19 @@ class _CustomSwitchState extends State<CustomSwitch> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0), // 버튼의 모양을 원하는 대로 조절
           color: widget.value
-              ? Color(0xFFCE4040)
-              : Color(0xFFA4A4A4), // 활성 및 비활성 상태에 따른 색상 설정
+              ? const Color(0xFFCE4040)
+              : const Color(0xFFA4A4A4), // 활성 및 비활성 상태에 따른 색상 설정
         ),
         child: Stack(
           children: [
             AnimatedPositioned(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
               left: widget.value ? 30.0 : 0.0, // 버튼의 위치를 움직이는 애니메이션
               child: Container(
                 width: 30,
                 height: 30,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle, // 원 모양 버튼
                   color: Colors.white, // 버튼의 색상
                 ),
