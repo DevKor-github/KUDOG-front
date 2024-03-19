@@ -929,6 +929,8 @@ class _CodeInputFormState extends State<CodeInputForm> {
                     fontWeight: FontWeight.w400,
                     color: primaryText,
                   ),
+                  contentPadding:
+                      const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                 ),
                 keyboardType: TextInputType.emailAddress,
               ),
