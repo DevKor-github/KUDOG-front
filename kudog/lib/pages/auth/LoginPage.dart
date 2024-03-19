@@ -6,7 +6,6 @@ import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/home/ViewMainPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key? key}) : super(key: key);
@@ -186,10 +185,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                         email: emailController.text,
                         password: passwordController.text);
 
-                    signInService.Signin(user);
+                    await signInService.Signin(user);
                     if (signInService.successLogin) {
-                      SharedPreferences sharedPreferences =
-                          await SharedPreferences.getInstance();
                       Navigator.push(
                           context,
                           MaterialPageRoute(

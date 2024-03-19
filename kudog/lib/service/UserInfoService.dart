@@ -15,6 +15,7 @@ class UserInfoService extends ChangeNotifier {
           await SharedPreferences.getInstance();
 
       String? token = sharedPreferences.getString("access_token");
+      print(token);
 
       Response response = await Dio().get(
         "https://api.kudog.devkor.club/users/info",

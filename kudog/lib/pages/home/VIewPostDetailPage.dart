@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' show parse;
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:html/parser.dart' as htmlParser;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
-  const ViewPostDetailPageWidget({super.key, required this.id});
-  final int id;
+  const ViewPostDetailPageWidget({super.key, required this.notice});
+  final Notice notice;
   @override
   _ViewPostDetailPageWidgetState createState() =>
       _ViewPostDetailPageWidgetState();
@@ -15,17 +18,45 @@ class ViewPostDetailPageWidget extends StatefulWidget {
 
 class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final String htmlcode = """
+     <h1>No Info</h1>
+     <h2>There is no information</h2>
+        
+    """;
+
   bool isClicked = false;
-  void changeIcon() {
+
+  List<String> extractAttachmentUrls(String htmlContent) {
+    List<String> attachmentUrls = [];
+
+    var document = htmlParser.parse(htmlContent);
+
+    var links = document.querySelectorAll('a');
+
+    for (var link in links) {
+      var href = link.attributes['href'];
+      if (href != null) {
+        attachmentUrls.add(href);
+      }
+    }
+
+    return attachmentUrls;
+  }
+
+  void scrapOrNot() {
     setState(() {
+      widget.notice.scrapped = !widget.notice.scrapped!;
       isClicked = !isClicked;
+      NoticeService().scrapNotice(widget.notice.id!);
     });
   }
 
   @override
   void initState() {
     super.initState();
-    Provider.of<NoticeService>(context, listen: false).getNotice(widget.id);
+    Provider.of<NoticeService>(context, listen: false)
+        .getNotice(widget.notice.id!);
   }
 
   @override
@@ -37,13 +68,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
       NoticeDetail _noticeDetail = noticeService.noticeDetail;
-      var document;
-      String? extractedText;
-      if (_noticeDetail.id != null) {
-        document = parse(_noticeDetail.content);
-        extractedText = parse(document.body!.text).documentElement!.text;
-      }
-
       return Scaffold(
         key: scaffoldKey,
         backgroundColor: secondaryBackground,
@@ -69,7 +93,10 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ViewHomePageWidget()));
                     },
                     child: Container(
                       padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
@@ -83,25 +110,17 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      changeIcon();
+                      scrapOrNot();
                     },
                     child: Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
                       child: ImageIcon(
                         color: Color(0xffFFFFFF),
                         AssetImage(
-                          isClicked
+                          widget.notice.scrapped!
                               ? "assets/images/icon_15.png"
                               : "assets/images/icon_16.png",
                         ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                    child: ImageIcon(
-                      color: Color(0xffFFFFFF),
-                      AssetImage(
-                        "assets/images/icon_14.png",
                       ),
                     ),
                   ),
@@ -256,8 +275,24 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
                                 child: SingleChildScrollView(
-                                  child: Text(extractedText!),
-                                ))
+                                    child: Container(
+                                  child: HtmlWidget(
+                                    _noticeDetail.content == null
+                                        ? htmlcode
+                                        : _noticeDetail.content!,
+                                    onTapUrl: (url) async {
+                                      Uri dest = Uri.parse(url);
+                                      if (await canLaunchUrl(dest)) {
+                                        await launchUrl(dest);
+                                      }
+                                      print("링크 클릭 : $url");
+                                      return true;
+                                    },
+                                  ),
+                                ))),
+                            Container(
+                              height: 100,
+                            )
                           ],
                         ),
                       ),

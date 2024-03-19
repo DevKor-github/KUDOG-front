@@ -28,6 +28,7 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
   @override
   void initState() {
     super.initState();
+    Provider.of<NoticeService>(context, listen: false).getScrappedNotices();
   }
 
   @override
@@ -38,7 +39,6 @@ class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget>
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      noticeService.getScrappedNotices(1);
       List<Notice> scrapNotices = noticeService.scrappedNoticeList.notices!;
       bool empty = scrapNotices.length == 0; // TODO : empty assign방식 변경 예정
       return Scaffold(

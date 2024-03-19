@@ -62,12 +62,12 @@ class SignUpService extends ChangeNotifier {
     }
   }
 
-  void VerifyEmail(String address, String code) async {
+  Future<void> VerifyEmail(String address, String code) async {
     try {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/mail/verify/check",
           data: {"email": address, "code": code});
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print("POST 요청 성공");
         secondId = 1;
         secondAnswer = "ⓘ 인증되었습니다.";
@@ -76,19 +76,19 @@ class SignUpService extends ChangeNotifier {
       if (e is DioError) {
         if (e.response!.statusCode == 400) {
           secondAnswer = "ⓘ 인증 번호가 틀립니다.";
-          print("POST 요청 실패");
+          print("POST 요청 실패0");
         } else if (e.response!.statusCode == 404) {
           secondAnswer = "ⓘ 해당 메일이 존재하지 않습니다.";
-          print("POST 요청 실패");
+          print("POST 요청 실패4");
         } else if (e.response!.statusCode == 408) {
           secondAnswer = "ⓘ 다시 번호를 요청하세요.";
-          print("POST 요청 실패");
+          print("POST 요청 실패8");
         } else if (e.response!.statusCode == 409) {
           secondAnswer = "ⓘ 이미 인증된 이메일입니다.";
-          print("POST 요청 실패");
+          print("POST 요청 실패9");
         } else {
           secondAnswer = "ⓘ 잠시 후 시도해주세요.";
-          print("POST 요청 실패");
+          print("POST 요청 실패10");
           print("Status Code : ${e.response!.statusCode}");
         }
       }

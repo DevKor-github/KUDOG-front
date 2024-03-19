@@ -15,18 +15,22 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Notice> noticeList = [];
-
+  List<Notice> searchedNoticeList = [];
   bool _isWidgetVisible = false;
   double alertRatio = 0.33;
   List<bool> iconStates = [false, false, false];
+  int selectedIndex = 0;
   List<String> upperCategories = ["전체"];
   List<String> lowerCategories = [];
   List<int> lowerCategoryIds = [];
-  List<bool> lowerStates = List.filled(20, false);
+  List<bool> lowerStates = List.filled(20, false); //lowerstates가 20개 이하라고 가정
   String? selectedCategory = "전체";
   TextEditingController _searchController = TextEditingController();
   bool isSearch = false; //임시 : 검색 버전인지 아닌지 구별하는 변수
-
+  NoticeService noticeService = NoticeService();
+  int k = 0;
+  bool isLowerSelected = false;
+  int currentPage = 1;
   void changeIcon(int index) {
     setState(() {
       iconStates[index] = !iconStates[index];
@@ -48,13 +52,31 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
+  void pageClick(int page) {
+    setState(() {
+      currentPage = page;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    Provider.of<NoticeService>(context, listen: false).getAllNotices();
-    Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
+    _loadNotices();
+  }
 
-    lowerCategories = [];
+  Future<void> _loadNotices() async {
+    await Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
+    await Provider.of<CategoryService>(context, listen: false)
+        .getUpperCategoryList();
+    upperCategories = ["전체"] +
+        Provider.of<CategoryService>(context, listen: false).upperCategoryList;
+    noticeList =
+        Provider.of<NoticeService>(context, listen: false).noticeList.notices!;
+    selectedIndex = 0;
+    lowerCategories =
+        Provider.of<CategoryService>(context, listen: false).lowerCategoryList;
+    lowerCategoryIds = Provider.of<CategoryService>(context, listen: false)
+        .lowerCategoryIdList;
     lowerStates = [
       false,
       false,
@@ -101,17 +123,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
       builder: (context, categoryService, noticeService, child) {
-        upperCategories = ["전체"] + categoryService.upperCategoryList;
-        lowerCategories = categoryService.lowerCategoryList;
-        lowerCategoryIds = categoryService.lowerCategoryIdList;
-        noticeList = isSearch
-            ? noticeService.searchedNoticeList.notices!
+        int? numOfPages = isSearch
+            ? noticeService.searchedNoticeList.totalPage
             : (selectedCategory == "전체"
-                ? noticeService.noticeList.notices!
-                : noticeService
-                    .selectedNoticeList.notices!); //현재 화면에 보여지는 notice들
-
-        int selectedIndex = upperCategories.indexOf(selectedCategory!) + 1;
+                ? noticeService.noticeList.totalPage
+                : noticeService.selectedNoticeList.totalPage);
+        List<bool> pageNum =
+            List.filled(numOfPages == null ? 50 : numOfPages, false);
         return Scaffold(
             resizeToAvoidBottomInset: false,
             backgroundColor: Color(0xFFCE4040),
@@ -193,7 +211,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                     height: 70,
                                     padding: const EdgeInsets.fromLTRB(
                                         20, 10, 20, 10),
-                                    child: TextField(
+                                    child: TextFormField(
                                       controller: _searchController,
                                       decoration: InputDecoration(
                                         labelText: '검색어를 입력하세요',
@@ -210,9 +228,10 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                                     _searchController.text;
                                                 noticeService
                                                     .searchNotices(searchTerm);
-                                                noticeList = noticeService
-                                                    .searchedNoticeList
-                                                    .notices!;
+                                                searchedNoticeList =
+                                                    noticeService
+                                                        .searchedNoticeList
+                                                        .notices!;
                                               });
                                             }),
                                         border: OutlineInputBorder(
@@ -235,27 +254,38 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       alignment: AlignmentDirectional.center,
                                       value: selectedCategory,
                                       onChanged: (String? newValue) {
-                                        isSearch = false;
-                                        _searchController.text = "";
-                                        selectedCategory = newValue!;
-                                        selectedIndex = upperCategories
-                                            .indexOf(selectedCategory!);
-                                        noticeService.getUpperCategoryNotice(
-                                            1, selectedIndex);
-                                        categoryService.getLowerCategoryList(
-                                            selectedIndex);
-                                        lowerCategories =
-                                            categoryService.lowerCategoryList;
-                                        lowerCategoryIds =
-                                            categoryService.lowerCategoryIdList;
+                                        setState(() {
+                                          isLowerSelected = false;
+                                          isSearch = false;
+                                          _searchController.text = "";
+                                          selectedCategory = newValue!;
+                                          if (selectedCategory != "전체") {
+                                            selectedIndex = upperCategories
+                                                .indexOf(selectedCategory!);
+                                            noticeService
+                                                .getUpperCategoryNotice(
+                                                    1, selectedIndex);
+                                            categoryService
+                                                .getLowerCategoryList(
+                                                    selectedIndex);
+                                            lowerCategories = categoryService
+                                                .lowerCategoryList;
+                                            lowerCategoryIds = categoryService
+                                                .lowerCategoryIdList;
 
-                                        noticeList = noticeService
-                                            .selectedNoticeList.notices!;
-                                        for (int i = 0;
-                                            i < lowerStates.length;
-                                            i++) {
-                                          lowerStates[i] = false;
-                                        }
+                                            noticeList = noticeService
+                                                .selectedNoticeList.notices!;
+                                            for (int i = 0;
+                                                i < lowerStates.length;
+                                                i++) {
+                                              lowerStates[i] = false;
+                                            }
+                                          } else {
+                                            noticeService.getAllNotices(1);
+                                            noticeList = noticeService
+                                                .noticeList.notices!;
+                                          }
+                                        });
                                       },
                                       items: upperCategories
                                           .map<DropdownMenuItem<String>>(
@@ -270,9 +300,11 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   ),
                                   const Divider(
                                       thickness: 0.5, color: Color(0xffCDCDCD)),
-                                  lowerCategories != []
+                                  selectedCategory != "전체"
                                       ? Container(
-                                          height: 44,
+                                          height: selectedCategory != "전체"
+                                              ? 40
+                                              : 10,
                                           child: ListView.builder(
                                             padding: EdgeInsets.fromLTRB(
                                                 24, 0, 0, 0),
@@ -281,20 +313,25 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                             itemBuilder: (context, index) {
                                               return GestureDetector(
                                                   onTap: () {
-                                                    _searchController.text = "";
-                                                    isSearch = false;
-                                                    if (!lowerStates[index]) {
-                                                      selectOrReleaseLower(
-                                                          index);
-                                                      noticeService
-                                                          .getLowerCategoryNotice(
-                                                              1,
-                                                              lowerCategoryIds[
-                                                                  index]); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
-                                                      noticeList = noticeService
-                                                          .selectedNoticeList
-                                                          .notices!;
-                                                    }
+                                                    setState(() {
+                                                      isLowerSelected = true;
+                                                      _searchController.text =
+                                                          "";
+                                                      isSearch = false;
+                                                      if (!lowerStates[index]) {
+                                                        selectOrReleaseLower(
+                                                            index);
+                                                        k = lowerCategoryIds[
+                                                            index];
+                                                        noticeService
+                                                            .getLowerCategoryNotice(
+                                                                1,
+                                                                k); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
+                                                        noticeList = noticeService
+                                                            .selectedNoticeList
+                                                            .notices!;
+                                                      }
+                                                    });
                                                   },
                                                   child: Container(
                                                       margin:
@@ -354,25 +391,100 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                             },
                                           ))
                                       : Container(
-                                          height: 44,
+                                          height: 10,
                                         )
                                 ],
                               ),
-                              Expanded(
-                                  child: noticeService
-                                              .noticeList.notices!.length ==
-                                          0
-                                      ? Column()
-                                      : ListView.builder(
-                                          padding: EdgeInsets.zero,
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.vertical,
-                                          itemCount: noticeList.length,
-                                          itemBuilder: (context, index) {
-                                            return noticeCard(
-                                                notice: noticeList[index]);
+                              isSearch
+                                  ? Expanded(
+                                      child: noticeService.searchedNoticeList
+                                                  .notices!.length ==
+                                              0
+                                          ? Column()
+                                          : ListView.builder(
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.vertical,
+                                              itemCount:
+                                                  searchedNoticeList.length,
+                                              itemBuilder: (context, index) {
+                                                return noticeCard(
+                                                    notice: searchedNoticeList[
+                                                        index]);
+                                              },
+                                            ))
+                                  : Expanded(
+                                      child: noticeService
+                                                  .noticeList.notices!.length ==
+                                              0
+                                          ? Column()
+                                          : ListView.builder(
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.vertical,
+                                              itemCount: noticeList.length,
+                                              itemBuilder: (context, index) {
+                                                return noticeCard(
+                                                    notice: noticeList[index]);
+                                              },
+                                            )),
+                              Container(
+                                  height: 60,
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.only(top: 10),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: numOfPages,
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                          onTap: () {
+                                            pageClick(index + 1);
+                                            pageNum[index] = true;
+                                            if (selectedCategory == "전체") {
+                                              noticeService
+                                                  .getAllNotices(index + 1);
+                                              noticeList = noticeService
+                                                  .noticeList.notices!;
+                                            } else {
+                                              if (isLowerSelected) {
+                                                noticeService
+                                                    .getLowerCategoryNotice(
+                                                        index + 1, k);
+                                                noticeList = noticeService
+                                                    .selectedNoticeList
+                                                    .notices!;
+                                              } else {
+                                                noticeService
+                                                    .getUpperCategoryNotice(
+                                                        index + 1,
+                                                        selectedIndex - 1);
+                                                noticeList = noticeService
+                                                    .selectedNoticeList
+                                                    .notices!;
+                                              }
+                                            }
                                           },
-                                        ))
+                                          child: Container(
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                color: currentPage == index + 1
+                                                    ? Color.fromRGBO(
+                                                        206, 64, 64, 0.65)
+                                                    : Color(0xFFCDCDCD),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              margin: EdgeInsets.all(8),
+                                              padding: EdgeInsets.all(8),
+                                              child: Text(
+                                                (index + 1).toString(),
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )));
+                                    },
+                                  ))
                             ],
                           )),
                       Positioned(
@@ -572,7 +684,7 @@ class _noticeCardState extends State<noticeCard>
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ViewPostDetailPageWidget(id: widget.notice.id!)));
+                        ViewPostDetailPageWidget(notice: widget.notice)));
           },
           child: Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 15),

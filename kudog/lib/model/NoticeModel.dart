@@ -83,7 +83,7 @@ class NoticeDetail {
 
 class NoticeList {
   List<Notice>? notices;
-  int? page;
+  String? page;
   int? totalNotice;
   int? totalPage;
 
@@ -124,6 +124,72 @@ class SelectedNoticeList {
       {this.notices, this.page, this.totalNotice, this.totalPage});
 
   SelectedNoticeList.fromJson(Map<String, dynamic> json) {
+    if (json['notices'] != null) {
+      notices = <Notice>[];
+      json['notices'].forEach((v) {
+        notices!.add(new Notice.fromJson(v));
+      });
+    }
+    page = json['page'];
+    totalNotice = json['totalNotice'];
+    totalPage = json['totalPage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.notices != null) {
+      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
+    }
+    data['page'] = this.page;
+    data['totalNotice'] = this.totalNotice;
+    data['totalPage'] = this.totalPage;
+    return data;
+  }
+}
+
+class ScrappedNoticeList {
+  List<Notice>? notices;
+  int? page;
+  int? totalNotice;
+  int? totalPage;
+
+  ScrappedNoticeList(
+      {this.notices, this.page, this.totalNotice, this.totalPage});
+
+  ScrappedNoticeList.fromJson(Map<String, dynamic> json) {
+    if (json['notices'] != null) {
+      notices = <Notice>[];
+      json['notices'].forEach((v) {
+        notices!.add(new Notice.fromJson(v));
+      });
+    }
+    page = json['page'];
+    totalNotice = json['totalNotice'];
+    totalPage = json['totalPage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.notices != null) {
+      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
+    }
+    data['page'] = this.page;
+    data['totalNotice'] = this.totalNotice;
+    data['totalPage'] = this.totalPage;
+    return data;
+  }
+}
+
+class SearchedNoticeList {
+  List<Notice>? notices;
+  int? page;
+  int? totalNotice;
+  int? totalPage;
+
+  SearchedNoticeList(
+      {this.notices, this.page, this.totalNotice, this.totalPage});
+
+  SearchedNoticeList.fromJson(Map<String, dynamic> json) {
     if (json['notices'] != null) {
       notices = <Notice>[];
       json['notices'].forEach((v) {

@@ -1,9 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:kudog/service/CategoryService.dart';
+import 'package:kudog/service/UserInfoService.dart';
+import 'package:kudog/service/NoticeService.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kudog/model/UserModel.dart';
 
 class FixSubscribePageWidget extends StatefulWidget {
-  const FixSubscribePageWidget({Key? key}) : super(key: key);
+  final List<String> lowerCategoryNames;
+  final List<int> subIdList;
+  final List<int> unsubIdList;
+
+  const FixSubscribePageWidget({
+    Key? key,
+    required this.lowerCategoryNames,
+    required this.subIdList,
+    required this.unsubIdList,
+  }) : super(key: key);
 
   @override
   _FixSubscribePageWidgetState createState() => _FixSubscribePageWidgetState();
@@ -14,18 +28,23 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> iconStates = [false, false, false];
   late Dio dio;
+  List<String> upperCategories = ["전체"];
+  List<String> lowerCategories = [];
+  List<int> lowerCategoryIds = [];
 
-  void changeIcon(int index) {
-    setState(() {
-      iconStates[index] = !iconStates[index];
-    });
-  }
+  late String subscribeEmail;
+  TextEditingController subscribeEmailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    isSelected = List.generate(subscriptionButtonText.length, (index) => false);
+    isSelected = List.generate(widget.lowerCategoryNames.length, (index) {
+      int categoryId = index + 1;
+      return widget.subIdList.contains(categoryId);
+    });
     dio = Dio();
+    Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
   }
 
   @override
@@ -40,25 +59,34 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
     });
   }
 
-  ElevatedButton _buildSubscriptionButton(int index) {
-    return ElevatedButton(
-      onPressed: () => changeSubscription(index),
-      style: ElevatedButton.styleFrom(
-        side: BorderSide(
-          width: 1.0,
-          color: isSelected[index] ? Colors.transparent : Color(0xFFCDCDCD),
+  Widget _buildSubscriptionButton(int index) {
+    String buttonText = widget.lowerCategoryNames[index];
+
+    return Container(
+      child: ElevatedButton(
+        onPressed: () => changeSubscription(index),
+        style: ElevatedButton.styleFrom(
+          side: BorderSide(
+            width: 1.0,
+            color: isSelected[index] ? Colors.transparent : Color(0xFFCDCDCD),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(208),
+          ),
+          backgroundColor: isSelected[index]
+              ? Color.fromRGBO(206, 64, 64, 0.65)
+              : Colors.white,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(208),
-        ),
-        backgroundColor: isSelected[index] ? Color(0xFFCE4040) : Colors.white,
-      ),
-      child: Text(
-        subscriptionButtonText[index],
-        style: TextStyle(
-          color: isSelected[index] ? Colors.white : Color(0xFF696969),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              color: isSelected[index] ? Colors.white : Color(0xFF696969),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );
@@ -70,12 +98,17 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
 
     for (int i = 0; i < isSelected.length; i++) {
       if (isSelected[i]) {
-        subscribeIds.add(i + 1);
+        int categoryId = i + 1;
+        if (!widget.subIdList.contains(categoryId)) {
+          subscribeIds.add(categoryId);
+        }
       } else {
-        unsubscribeIds.add(i + 1);
+        int categoryId2 = i + 1;
+        if (!widget.unsubIdList.contains(categoryId2)) {
+          unsubscribeIds.add(categoryId2);
+        }
       }
     }
-
     Map<String, dynamic> requestBody = {
       "subscribeIds": subscribeIds,
       "unsubscribeIds": unsubscribeIds,
@@ -122,196 +155,189 @@ class _FixSubscribePageWidgetState extends State<FixSubscribePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFCE4040),
-      body: Column(
-        children: [
-          Container(
-            height: 64,
-            decoration: BoxDecoration(
-              color: Color(0xFFCE4040),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 88,
-                  margin: EdgeInsets.all(15),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "assets/images/icon_6.png",
-                        width: 21.21,
-                        height: 21.34,
-                        color: Colors.white,
-                      ),
-                      Image.asset(
-                        "assets/images/icon_7.png",
-                        width: 36.79,
-                        height: 21.34,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '구독',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  width: 88,
-                  margin: EdgeInsets.all(15),
-                  child: ImageIcon(
-                    AssetImage(
-                      "assets/images/icon_8.png",
-                    ),
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-              decoration: ShapeDecoration(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
+    return Consumer<UserInfoService>(
+        builder: (context, userInfoservice, child) {
+      User userInfo = userInfoservice.user;
+
+      return Scaffold(
+        backgroundColor: Color(0xFFCE4040),
+        body: Column(
+          children: [
+            Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: Color(0xFFCE4040),
               ),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(18, 12, 0, 6),
-                    child: Text(
-                      '구독용 이메일',
-                      style: TextStyle(
-                        fontFamily: 'Noto Sans KR',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF7E7E7E),
-                      ),
+                  Container(
+                    width: 88,
+                    margin: EdgeInsets.all(15),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "assets/images/icon_6.png",
+                          width: 21.21,
+                          height: 21.34,
+                          color: Colors.white,
+                        ),
+                        Image.asset(
+                          "assets/images/icon_7.png",
+                          width: 36.79,
+                          height: 21.34,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '구독',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                      fontFamily: 'Noto Sans KR',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.fromLTRB(30, 20, 30, 20),
-                    child: TextFormField(
-                      // controller: subscribeController,
-                      autofocus: true,
-                      autofillHints: [AutofillHints.email],
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        labelText: 'ⓘ 수신 받을 이메일을 입력해주세요.',
-                        labelStyle: TextStyle(
-                          fontFamily: 'Noto Sans KR',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF000000),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCDCDCD),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCDCDCD),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCDCDCD),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFCDCDCD),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFFFFFFF),
+                    alignment: Alignment.centerRight,
+                    width: 88,
+                    margin: EdgeInsets.all(15),
+                    child: ImageIcon(
+                      AssetImage(
+                        "assets/images/icon_8.png",
                       ),
-                      keyboardType: TextInputType.emailAddress,
+                      color: Colors.white,
                     ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                      padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFD9D9D9),
-                      ),
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Wrap(
-                              spacing: 8.0,
-                              runSpacing: 8.0,
-                              children: [
-                                for (int i = 0;
-                                    i < subscriptionButtonText.length;
-                                    i++)
-                                  _buildSubscriptionButton(i),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            width: 167,
-                            height: 47,
-                            margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                            child: ElevatedButton(
-                              onPressed: saveChanges,
-                              style: ElevatedButton.styleFrom(
-                                side: BorderSide(
-                                  width: 1.0,
-                                  color: Color(0xFFCE4040),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(58),
-                                ),
-                                backgroundColor: Color(0xFFCDCDCD),
-                              ),
-                              child: Text(
-                                "변경사항 저장",
-                                style: TextStyle(
-                                  color: Color(0xFFCE4040),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  )
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(55, 12, 0, 0),
+                      child: Text(
+                        '구독용 이메일',
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans KR',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF7E7E7E),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: EdgeInsets.fromLTRB(30, 10, 30, 20),
+                      padding: EdgeInsets.fromLTRB(25, 10, 0, 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color(0xFFCDCDCD),
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Text(
+                        userInfo.subscriberEmail ?? '',
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans KR',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF000000),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFF5F5F5),
+                        ),
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Wrap(
+                                spacing: 8.0,
+                                runSpacing: 8.0,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  for (int i = 0;
+                                      i < widget.lowerCategoryNames.length;
+                                      i++)
+                                    _buildSubscriptionButton(i),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 167,
+                              height: 47,
+                              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  saveChanges();
+                                  Navigator.pop(context);
+                                  Provider.of<CategoryService>(context,
+                                          listen: false)
+                                      .getUpperCategoryList();
+                                  Provider.of<CategoryService>(context,
+                                          listen: false)
+                                      .getFullLowerCategoryList();
+                                  Provider.of<CategoryService>(context,
+                                          listen: false)
+                                      .getSubList();
+                                  Provider.of<NoticeService>(context,
+                                          listen: false)
+                                      .getSubscribedNotices(1);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  side: BorderSide(
+                                    width: 2.0,
+                                    color: Color(0xFFCE4040),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(58),
+                                  ),
+                                  backgroundColor: Color(0xFFF5F5F5),
+                                ),
+                                child: Text(
+                                  "변경사항 저장",
+                                  style: TextStyle(
+                                    color: Color(0xFFCE4040),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/model/UserModel.dart';
+import 'package:kudog/pages/auth/ChangeMyInfoPage.dart';
+import 'package:kudog/pages/auth/DeleteUserPage.dart';
+import 'package:kudog/pages/auth/LoginPage.dart';
+import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/UserInfoService.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +21,12 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   @override
   void initState() {
     super.initState();
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
+  }
+
+  @override
+  void didPop() {
+    Provider.of<UserInfoService>(context, listen: false).getUserInfo();
   }
 
   @override
@@ -26,85 +36,79 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserInfoService>(
-        builder: (context, userInfoService, child) {
-      userInfoService.getUserInfo();
+    return Consumer2<UserInfoService, SignOutService>(
+        builder: (context, userInfoService, signOutService, child) {
       User userInfo = userInfoService.user;
+
       return Scaffold(
         backgroundColor: Color(0xFFCE4040),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFCE4040),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 88,
-                        margin: EdgeInsets.all(15),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/images/icon_6.png",
-                              width: 21.21,
-                              height: 21.34,
-                              color: Colors.white,
-                            ),
-                            Image.asset(
-                              "assets/images/icon_7.png",
-                              width: 36.79,
-                              height: 21.34,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '마이페이지',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 19,
-                          fontFamily: 'Noto Sans KR',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        width: 88,
-                        margin: EdgeInsets.all(15),
-                        child: Image.asset(
-                          "assets/images/icon_8.png",
-                          width: 36.79,
-                          height: 21.34,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  )),
-              Container(
-                height: MediaQuery.of(context).size.height * 729 / 788,
+        body: Column(
+          children: [
+            Container(
+                height: 64,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0, -4),
-                      blurRadius: 8,
-                      color: Color.fromRGBO(105, 56, 56, 0.15),
+                  color: Color(0xFFCE4040),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 88,
+                      margin: EdgeInsets.all(15),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/images/icon_6.png",
+                            width: 21.21,
+                            height: 21.34,
+                            color: Colors.white,
+                          ),
+                          Image.asset(
+                            "assets/images/icon_7.png",
+                            width: 36.79,
+                            height: 21.34,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      '마이페이지',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 19,
+                        fontFamily: 'Noto Sans KR',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      width: 88,
+                      margin: EdgeInsets.all(15),
+                      child: Image.asset(
+                        "assets/images/icon_8.png",
+                        width: 36.79,
+                        height: 21.34,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+                )),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                decoration: ShapeDecoration(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
                   ),
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 38),
                     Container(
                       padding: EdgeInsets.only(
                         left: 24,
@@ -123,27 +127,41 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                             ),
                           ),
                           Container(
-                            width: 48,
-                            height: 27.27,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(39),
-                              border: Border.all(
-                                  color: Color(0xFFA4A4A4), width: 1),
-                            ),
-                            padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
-                            child: Text(
-                              "편집",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                fontFamily: "Noto Sans KR",
+                            child: IntrinsicWidth(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(39),
+                                  border: Border.all(
+                                      color: Color(0xFFA4A4A4), width: 1),
+                                ),
+                                padding: EdgeInsets.fromLTRB(13, 4, 12, 6.27),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChangemyinfoPageWidget()),
+                                    );
+                                  },
+                                  child: Text(
+                                    "편집",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      fontFamily: "Noto Sans KR",
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 36),
+                    SizedBox(
+                      height: 30,
+                    ),
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
@@ -172,7 +190,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 26),
+                    /*SizedBox(height: 26),
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
@@ -232,32 +250,58 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                           Icon(Icons.keyboard_arrow_right)
                         ],
                       ),
-                    ),
+                    ),*/
                     Container(
                       width: double.infinity,
                       height: MediaQuery.of(context).size.height * 67 / 788,
                       padding: EdgeInsets.only(left: 24, right: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "로그아웃",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 20,
-                              fontFamily: "Noto Sans KR",
-                              color: Color(0xFF444444),
+                      child: InkWell(
+                        onTap: () {
+                          signOutService.SignOut();
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPageWidget()));
+                        }, //Pop 반복
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "로그아웃",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 20,
+                                fontFamily: "Noto Sans KR",
+                                color: Color(0xFF444444),
+                              ),
                             ),
-                          ),
-                          Icon(Icons.keyboard_arrow_right)
-                        ],
+                            Icon(Icons.keyboard_arrow_right),
+                          ],
+                        ),
                       ),
                     ),
+                    SizedBox(height: 200),
+                    Container(
+                        child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DeleteUserPageWidget()),
+                              );
+                            },
+                            child: Text("회원 탈퇴하기",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  fontFamily: "Noto Sans KR",
+                                  color: Color(0xFFCDCDCD),
+                                )))),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     });
