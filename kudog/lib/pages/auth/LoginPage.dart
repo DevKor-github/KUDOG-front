@@ -91,8 +91,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           fontWeight: FontWeight.w500,
                           fontSize: 12,
                           color: Color(0xFF7E7E7E),
-                          decoration:
-                              TextDecoration.underline, // 텍스트 주위에 선 추가
+                          decoration: TextDecoration.underline, // 텍스트 주위에 선 추가
                           decorationColor: Color(0xFFD9D9D9), // 텍스트 테두리 색상
                           decorationThickness: 0.2, // 텍스트 테두리 두께
                         ),
@@ -108,7 +107,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(208),
-                      border: Border.all(color: const Color(0xFFCDCDCD), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFFCDCDCD), width: 2),
                     ),
                     child: Row(
                       children: [
@@ -117,20 +117,23 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           child: Image.asset('assets/images/icon_17.png'),
                         ),
                         Expanded(
-                          child: TextFormField(
-                            controller: emailController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "example@korea.ac.kr",
-                              hintStyle: TextStyle(
-                                fontFamily: 'Noto Sans KR',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                color: Color(0xFFA4A4A4),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: TextFormField(
+                              controller: emailController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "example@korea.ac.kr",
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Noto Sans KR',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  color: Color(0xFFA4A4A4),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        )
                       ], // children
                     ),
                   ),
@@ -144,7 +147,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(208),
-                      border: Border.all(color: const Color(0xFFCDCDCD), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFFCDCDCD), width: 2),
                     ),
                     child: Row(
                       children: [
@@ -153,24 +157,25 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           child: Image.asset('assets/images/icon_18.png'),
                         ),
                         Expanded(
-                          child: TextFormField(
-                            controller: passwordController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "비밀번호",
-                              hintStyle: TextStyle(
-                                fontFamily: 'Noto Sans KR',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                color: Color(0xFFA4A4A4),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4), // Adjust this value as needed
+                            child: TextFormField(
+                              controller: emailController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "example@korea.ac.kr",
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Noto Sans KR',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  color: Color(0xFFA4A4A4),
+                                ),
                               ),
                             ),
-                            obscureText: true,
-                            obscuringCharacter: '●',
-                            style: const TextStyle(color: Color(0xFFA4A4A4)),
                           ),
                         ),
-                      ], // children
+                      ],
                     ),
                   ),
                 ),
@@ -186,7 +191,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ViewMainPageWidget()));
+                              builder: (context) =>
+                                  const ViewMainPageWidget()));
                     } else {
                       showDialog(
                           context: context,
@@ -270,7 +276,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(58),
-                      border: Border.all(color: const Color(0xFFCE4040), width: 2),
+                      border:
+                          Border.all(color: const Color(0xFFCE4040), width: 2),
                     ),
                     child: const Text(
                       "회원가입",
