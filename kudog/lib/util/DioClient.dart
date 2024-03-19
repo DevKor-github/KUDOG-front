@@ -35,6 +35,7 @@ class DioClient {
                 },
               ),
             );
+
             if (response.statusCode == 201) {
               String? newAccessToken = response.data["accessToken"];
               String? newRefreshToken = response.data["refreshToken"];
@@ -53,10 +54,11 @@ class DioClient {
 
               return handler.resolve(responseWithNewToken);
             }
-          } catch (e) {
+          } on DioError catch (e) {
             sharedPreferences.remove("access_token");
             sharedPreferences.remove("refresh_token");
             // TODO: 로그인 만료 피드백 및 로그인 화면으로
+            return handler.reject(e);
           }
         }
       },

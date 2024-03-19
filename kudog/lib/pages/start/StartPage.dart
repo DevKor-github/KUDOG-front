@@ -28,8 +28,8 @@ class _StartPageWidgetState extends State<StartPageWidget> {
     accessToken = sharedPreferences.getString("access_token");
     refreshToken = sharedPreferences.getString("refresh_token");
     if (accessToken != "" && refreshToken != "") {
-      Future<bool> isLoggedIn = _validateTokens();
-      if (await isLoggedIn) {
+      bool isLoggedIn = await _validateTokens();
+      if (isLoggedIn) {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => const ViewMainPageWidget()));
@@ -47,7 +47,6 @@ class _StartPageWidgetState extends State<StartPageWidget> {
     try {
       DioClient dioClient = DioClient();
       await dioClient.get("/users/info");
-
       return true;
     } catch (e) {
       return false;
@@ -63,71 +62,6 @@ class _StartPageWidgetState extends State<StartPageWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-                margin: const EdgeInsets.only(top: 80),
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: MediaQuery.of(context).size.height * 0.1,
-                decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    side:
-                        const BorderSide(width: 1.09, color: Color(0xFFCD4040)),
-                    borderRadius: BorderRadius.circular(16.34),
-                  ),
-                ),
-                child: const Center(
-                    child: Text(
-                  '교내 공지사항을 카테고리별로 구독하여\n메일로 받아 보세요!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ))),
-            Container(
-              margin: const EdgeInsets.only(top: 30),
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: Image.asset("assets/images/main.png"),
-            ),
-            const Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: '고려대학교 ',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w400,
-                      height: 0.06,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '공지사항 메일 구독',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w700,
-                      height: 0.06,
-                    ),
-                  ),
-                  TextSpan(
-                    text: ' 서비스',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w400,
-                      height: 0.06,
-                    ),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-            ),
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 height: MediaQuery.of(context).size.height * 0.2,
