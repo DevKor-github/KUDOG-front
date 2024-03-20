@@ -161,10 +161,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 4), // Adjust this value as needed
                             child: TextFormField(
-                              controller: emailController,
+                              controller: passwordController,
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "example@korea.ac.kr",
+                                hintText: "비밀번호",
                                 hintStyle: TextStyle(
                                   fontFamily: 'Noto Sans KR',
                                   fontWeight: FontWeight.w500,
