@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kudog/pages/start/StartPage.dart';
+import 'package:kudog/pages/NavigationPage.dart';
+import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -33,6 +35,6 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
-        home: StartPageWidget());
+        home: NavigationPageWidget());
   }
 }
