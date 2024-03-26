@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/pages/home/ViewSubscribePage.dart';
 import 'package:kudog/pages/start/StartPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
@@ -31,6 +32,6 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
-        home: StartPageWidget());
+        home: ViewSubscribePageWidget());
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/VIewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
@@ -654,18 +655,35 @@ class _noticeCardState extends State<noticeCard>
                         ViewPostDetailPageWidget(notice: widget.notice)));
           },
           child: Container(
-              padding: EdgeInsets.fromLTRB(20, 10, 20, 15),
+              margin: EdgeInsets.only(bottom: 6),
+              decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Color(0xFFF4F2F2)),
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+              padding: EdgeInsets.all(16),
               width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  DecoratedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Text(
+                        '공지사항',
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      color: Color(0xFFF4F2F2),
+                    ),
+                  ),
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width * 0.75,
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          padding: EdgeInsets.fromLTRB(0, 6, 0, 6),
                           child: Text(
                             widget.notice.title!,
                             style: TextStyle(

@@ -1,8 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/FixSubscribePage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
+import 'package:kudog/pages/home/ViewSubscribeListPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
@@ -106,176 +110,122 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
       }
 
       return Scaffold(
-        backgroundColor: Color(0xFFCE4040),
-        body: Column(
-          children: [
-            Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: Color(0xFFCE4040),
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 28,
               ),
-              child: Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 88,
-                    margin: EdgeInsets.all(15),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          "assets/images/icon_6.png",
-                          width: 21.21,
-                          height: 21.34,
-                          color: Colors.white,
-                        ),
-                        Image.asset(
-                          "assets/images/icon_7.png",
-                          width: 36.79,
-                          height: 21.34,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
                   Text(
-                    '구독',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w500,
-                    ),
+                    '관심있는 소식만 빠르게 모아보세요',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    width: 88,
-                    margin: EdgeInsets.all(15),
-                    child: ImageIcon(
-                      AssetImage(
-                        "assets/images/icon_8.png",
-                      ),
-                      color: Colors.white,
-                    ),
-                  )
+                  TextButton(
+                      onPressed: () => {},
+                      child: Text(
+                        '편집',
+                        style: TextStyle(color: Color(0xFFFF4F59)),
+                      ))
                 ],
               ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                decoration: ShapeDecoration(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
+              const SizedBox(
+                height: 22,
+              ),
+              Expanded(
+                  child: Column(children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ViewSubscribeListPageWidget()));
+                  },
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FixSubscribePageWidget(
-                                      lowerCategoryNames: fullLowerCategoryList,
-                                      subIdList: subIdList,
-                                      unsubIdList: unsubIdList,
-                                    ),
-                                  ));
-                              currentPage = 1;
-                            },
-                            child: Image.asset(
-                              "assets/images/Categoryadd.png",
-                              width: 36.79,
-                              height: 40,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image(
+                              image: AssetImage("assets/images/artboard.png"),
                             ),
-                          ),
+                            Icon(Icons.settings_rounded)
+                          ],
                         ),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                for (int id in subIdList)
-                                  _buildSubscriptionItem(id),
-                                for (int id in unsubIdList)
-                                  _buildSubscriptionItem(id),
-                              ],
+                        SizedBox(height: 10),
+                        Text(
+                          "디조짱",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Container(
+                                  margin: EdgeInsets.only(right: 4),
+                                  padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                  height: 26,
+                                  child: Text('컴퓨터학부',
+                                      style: TextStyle(
+                                          color: Color(0xFFFF3B47),
+                                          fontWeight: FontWeight.w500)),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Color(0xFFFFD8DA)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(6)),
+                                      color: Color(0xFFFFFFFF))),
                             ),
-                          ),
-                        ),
+                            Flexible(
+                              child: Container(
+                                  margin: EdgeInsets.only(right: 4),
+                                  padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                  height: 26,
+                                  child: Text('디자인조형학부',
+                                      style: TextStyle(
+                                          color: Color(0xFFFF3B47),
+                                          fontWeight: FontWeight.w500)),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(6)),
+                                      color: Color(0x80FF3B47))),
+                            ),
+                          ],
+                        )
                       ],
                     ),
-                    Expanded(
-                      child: noticeList.isEmpty
-                          ? Column()
-                          : Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                    padding: EdgeInsets.zero,
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    itemCount: noticeList.length,
-                                    itemBuilder: (context, index) {
-                                      return noticeCard(
-                                          notice: noticeList[index]);
-                                    },
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0),
-                                  child: SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: List.generate(
-                                        totalPage,
-                                        (index) => InkWell(
-                                          onTap: () => onPageClick(index + 1),
-                                          child: Container(
-                                            margin: EdgeInsets.all(8),
-                                            padding: EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              color: currentPage == index + 1
-                                                  ? Color.fromRGBO(
-                                                      206, 64, 64, 0.65)
-                                                  : Color(0xFFCDCDCD),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              (index + 1).toString(),
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ],
+                    padding: EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                        color: Color(0xffF4F2F2),
+                        borderRadius: BorderRadius.all(Radius.circular(9))),
+                  ),
                 ),
-              ),
-            ),
-          ],
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  width: double.infinity,
+                  height: 40,
+                  child: OutlinedButton.icon(
+                      icon: Icon(Icons.create_new_folder_outlined),
+                      label: Text('구독함 추가'),
+                      onPressed: () => {},
+                      style: ButtonStyle(
+                          side: MaterialStateProperty.all(BorderSide(
+                              color: Color(0xFF787474),
+                              width: 1.0,
+                              style: BorderStyle.solid)))),
+                )
+              ])),
+            ],
+          ),
         ),
       );
     });
