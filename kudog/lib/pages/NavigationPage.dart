@@ -27,8 +27,8 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
-      ViewSubscribePageWidget(),
       ViewScrabPageWidget(),
+      ViewSubscribePageWidget(),
       ViewHomePageWidget(),
       ViewAlarmPageWidget(),
       ViewMyPageWidget()
