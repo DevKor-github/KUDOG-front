@@ -16,19 +16,38 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     with TickerProviderStateMixin {
   TextEditingController _searchController = TextEditingController();
   @override
-  List<String> majorList = ["전체", "디자인조형학부", "컴퓨터학과", "미디어학부", "경영대학"];
-  List<Notice> noticeList = [];
+  List<Notice> noticeList = []; //보여지는 공지사항들
+  UpperCategory selectedUpperCategory = UpperCategory(name: "전체");
+  int selectedIndex = 0;
   List<UpperCategory> upperCategoryList = [];
   void initState() {
     super.initState();
+    _loadAllNotices();
   }
 
-  Future<List<Notice>> _loadNotices() async {
+  void _loadAllNotices() async {
     //전체 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
-    noticeList =
-        Provider.of<NoticeService>(context, listen: false).noticeList.notices!;
-    return noticeList;
+    setState(() {
+      selectedUpperCategory = upperCategoryList[0];
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .noticeList
+          .notices!;
+    });
+  }
+
+  void selectUpperCategory(int index) async {
+    //선택한 카테고리의 공지사항을 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false)
+        .getUpperCategoryNotice(1, index);
+    setState(() {
+      selectedUpperCategory = upperCategoryList[index];
+      selectedIndex = index;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .selectedNoticeList
+          .notices!;
+    });
   }
 
   Future<List<UpperCategory>> _loadUpperCategories() async {
@@ -36,7 +55,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     await Provider.of<NoticeService>(context, listen: false)
         .getUpperCategories();
     upperCategoryList =
-        Provider.of<NoticeService>(context, listen: false).upperCategoreList;
+        Provider.of<NoticeService>(context, listen: false).upperCategoryList;
+    upperCategoryList.insert(0, UpperCategory(name: "전체"));
     return upperCategoryList;
   }
 
@@ -155,16 +175,36 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                 scrollDirection: Axis.horizontal,
                                 itemCount: upperCategoryList.length,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                      margin: EdgeInsets.only(right: 40),
-                                      child:
-                                          Text(upperCategoryList[index].name!,
+                                  return GestureDetector(
+                                      onTap: () {
+                                        if (index != 0) {
+                                          selectUpperCategory(index);
+                                        } else {
+                                          _loadAllNotices();
+                                        }
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            border: selectedIndex != index
+                                                ? Border()
+                                                : Border(
+                                                    bottom: BorderSide(
+                                                      color: Color(0xffFF3B47),
+                                                      width: 2.0,
+                                                    ),
+                                                  ),
+                                          ),
+                                          margin: EdgeInsets.only(right: 40),
+                                          child: Text(
+                                              upperCategoryList[index].name!,
                                               style: TextStyle(
-                                                color: Color(0xFF787474),
+                                                color: selectedIndex != index
+                                                    ? Color(0xFF787474)
+                                                    : Color(0xffFF3B47),
                                                 fontSize: 18,
                                                 fontFamily: 'Pretendard',
                                                 fontWeight: FontWeight.w500,
-                                              )));
+                                              ))));
                                 }));
                       }
                     })
@@ -272,28 +312,34 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                     ))
               ],
             )),
-        FutureBuilder(
-            future: _loadNotices(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData == false) {
-                return CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Error: ${snapshot.error}',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                );
-              } else {
-                return Expanded(
-                    child: ListView.builder(
-                        itemCount: noticeList.length,
-                        itemBuilder: (context, index) {
-                          return noticeCard(notice: noticeList[index]);
-                        }));
-              }
-            })
+        // FutureBuilder(
+        //     future: _loadAllNotices(),
+        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //       if (snapshot.hasData == false) {
+        //         return CircularProgressIndicator();
+        //       } else if (snapshot.hasError) {
+        //         return Padding(
+        //           padding: const EdgeInsets.all(8.0),
+        //           child: Text(
+        //             'Error: ${snapshot.error}',
+        //             style: TextStyle(fontSize: 15),
+        //           ),
+        //         );
+        //       } else {
+        //         return Expanded(
+        //             child: ListView.builder(
+        //                 itemCount: noticeList.length,
+        //                 itemBuilder: (context, index) {
+        //                   return noticeCard(notice: noticeList[index]);
+        //                 }));
+        //       }
+        //     })
+        Expanded(
+            child: ListView.builder(
+                itemCount: noticeList.length,
+                itemBuilder: (context, index) {
+                  return noticeCard(notice: noticeList[index]);
+                }))
       ],
     )));
   }
@@ -340,8 +386,7 @@ class _noticeCardState extends State<noticeCard> {
                           borderRadius: BorderRadius.circular(4)),
                     ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(

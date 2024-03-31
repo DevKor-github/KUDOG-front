@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NoticeService extends ChangeNotifier {
   NoticeDetail noticeDetail = NoticeDetail();
   NoticeList noticeList = NoticeList(notices: []); // 현재 화면에 보여지는 notice 전달
-  List<UpperCategory> upperCategoreList = [];
+  List<UpperCategory> upperCategoryList = [];
   ScrappedNoticeList scrappedNoticeList = ScrappedNoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   SearchedNoticeList searchedNoticeList = SearchedNoticeList(notices: []);
@@ -52,6 +52,7 @@ class NoticeService extends ChangeNotifier {
 
   Future<void> getUpperCategories() async {
     try {
+      upperCategoryList.clear();
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
 
@@ -71,7 +72,7 @@ class NoticeService extends ChangeNotifier {
         print("GET 요청 성공");
         for (Map<String, dynamic> item in response.data) {
           UpperCategory category = UpperCategory.fromJson(item);
-          upperCategoreList.add(category);
+          upperCategoryList.add(category);
         }
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
@@ -125,7 +126,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getUpperCategoryNotice(int page, int upperCategoryId) async {
+  Future<void> getUpperCategoryNotice(int page, int upperCategoryId) async {
     //상위 카테고리에 맞는 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
@@ -137,7 +138,7 @@ class NoticeService extends ChangeNotifier {
         "https://api.kudog.devkor.club/notice/list/provider/$upperCategoryId/bydate?page=$page",
         options: Options(
           headers: {
-            'Authorization': 'Bearer $token',
+            'Authorization': 'Bearer $tempToken',
             'Content-Type': 'application/json',
           },
         ),
