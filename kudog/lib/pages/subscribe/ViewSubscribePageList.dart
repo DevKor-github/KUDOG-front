@@ -177,7 +177,7 @@ class _ViewSubscribePageListWidgetState
                       scrollDirection: Axis.vertical,
                       itemCount: noticeList.length,
                       itemBuilder: (context, index) {
-                        return NoticeCard();
+                        // return noticeCard();
                       },
                     ),
                   ),
