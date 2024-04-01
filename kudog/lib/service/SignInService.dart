@@ -20,7 +20,6 @@ class SignInService extends ChangeNotifier {
         userToken = UserToken.fromJson(response.data);
         sharedPreference.setString("access_token", userToken.accessToken!);
         sharedPreference.setString("refresh_token", userToken.refreshToken!);
-        print("로그인 함수: " + sharedPreference.getString("access_token")!);
       } else {
         print("POST 요청 실패");
         print("Status Code : ${response.statusCode}");

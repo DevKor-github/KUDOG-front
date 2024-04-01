@@ -212,3 +212,62 @@ class _ViewSubscribeFilterPageWidgetState
         ));
   }
 }
+
+class MajorCard extends StatefulWidget {
+  const MajorCard({super.key, required this.major});
+  final String major;
+  @override
+  _MajorCardState createState() => _MajorCardState();
+}
+
+class _MajorCardState extends State<MajorCard> {
+  @override
+  bool isClicked = false;
+  void initState() {
+    super.initState();
+  }
+
+  void changeColor() {
+    setState(() {
+      isClicked = !isClicked;
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: changeColor,
+        child: Container(
+          margin: EdgeInsets.all(3),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: ShapeDecoration(
+            color: isClicked ? Color(0xFFFFD8DA) : Colors.white,
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                  width: 1,
+                  color: isClicked ? Color(0xFFFF3A46) : Color(0xFF423C3C)),
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              isClicked
+                  ? Icon(Icons.check, color: Color(0xFFFF3A46))
+                  : Container(),
+              Text(
+                widget.major,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF423C3C),
+                  fontSize: 16,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
+}

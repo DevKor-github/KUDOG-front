@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/TempToken.dart';
+import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/TokenService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,11 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NoticeService extends ChangeNotifier {
   NoticeDetail noticeDetail = NoticeDetail();
   NoticeList noticeList = NoticeList(notices: []); // 현재 화면에 보여지는 notice 전달
+  List<UpperCategory> upperCategoryList = [];
   ScrappedNoticeList scrappedNoticeList = ScrappedNoticeList(notices: []);
   SelectedNoticeList selectedNoticeList = SelectedNoticeList(notices: []);
   SearchedNoticeList searchedNoticeList = SearchedNoticeList(notices: []);
   SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
-  void getAllNotices(int page) async {
+  Future<void> getAllNotices(int page) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -31,6 +34,46 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         noticeList = NoticeList.fromJson(response.data);
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getAllNotices(1);
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getUpperCategories() async {
+    try {
+      upperCategoryList.clear();
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/provider",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        for (Map<String, dynamic> item in response.data) {
+          UpperCategory category = UpperCategory.fromJson(item);
+          upperCategoryList.add(category);
+        }
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -83,7 +126,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getUpperCategoryNotice(int page, int upperCategoryId) async {
+  Future<void> getUpperCategoryNotice(int page, int upperCategoryId) async {
     //상위 카테고리에 맞는 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
