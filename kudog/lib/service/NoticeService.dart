@@ -25,7 +25,7 @@ class NoticeService extends ChangeNotifier {
         "https://api.kudog.devkor.club/notice/list/bydate?page=$page",
         options: Options(
           headers: {
-            'Authorization': 'Bearer $tempToken',
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         ),
@@ -62,7 +62,7 @@ class NoticeService extends ChangeNotifier {
         "https://api.kudog.devkor.club/provider",
         options: Options(
           headers: {
-            'Authorization': 'Bearer $tempToken',
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         ),
@@ -138,7 +138,7 @@ class NoticeService extends ChangeNotifier {
         "https://api.kudog.devkor.club/notice/list/provider/$upperCategoryId/bydate?page=$page",
         options: Options(
           headers: {
-            'Authorization': 'Bearer $tempToken',
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         ),
@@ -248,7 +248,7 @@ class NoticeService extends ChangeNotifier {
         "https://api.kudog.devkor.club/notice/scrap/$noticeId",
         options: Options(
           headers: {
-            'Authorization': 'Bearer $tempToken',
+            'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
         ),

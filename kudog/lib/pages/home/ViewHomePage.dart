@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
@@ -312,28 +313,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                     ))
               ],
             )),
-        // FutureBuilder(
-        //     future: _loadAllNotices(),
-        //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //       if (snapshot.hasData == false) {
-        //         return CircularProgressIndicator();
-        //       } else if (snapshot.hasError) {
-        //         return Padding(
-        //           padding: const EdgeInsets.all(8.0),
-        //           child: Text(
-        //             'Error: ${snapshot.error}',
-        //             style: TextStyle(fontSize: 15),
-        //           ),
-        //         );
-        //       } else {
-        //         return Expanded(
-        //             child: ListView.builder(
-        //                 itemCount: noticeList.length,
-        //                 itemBuilder: (context, index) {
-        //                   return noticeCard(notice: noticeList[index]);
-        //                 }));
-        //       }
-        //     })
         Expanded(
             child: ListView.builder(
                 itemCount: noticeList.length,
@@ -365,95 +344,104 @@ class _noticeCardState extends State<noticeCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      return Container(
-          color: Colors.white,
-          margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-          padding: EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+      return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ViewPostDetailPageWidget(
+                          notice: widget.notice,
+                        )));
+          },
+          child: Container(
+              color: Colors.white,
+              margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+              padding: EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 43,
-                    height: 18,
-                    decoration: ShapeDecoration(
-                      color: Color(0xFFF4F1F1),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '공지사항',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF787474),
-                            fontSize: 10,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.notice.title!.length > 30
-                            ? widget.notice.title!.substring(0, 30) + "..."
-                            : widget.notice.title!,
-                        style: TextStyle(
-                          color: Color(0xFF3D3D3D),
-                          fontSize: 16,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w500,
+                      Container(
+                        width: 43,
+                        height: 18,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFFF4F1F1),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '공지사항',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color(0xFF787474),
+                                fontSize: 10,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Container(
-                          margin: EdgeInsets.only(left: 10),
-                          width: 12,
-                          height: 12,
-                          child: Image.asset("assets/images/new.png"))
+                      Row(
+                        children: [
+                          Text(
+                            widget.notice.title!.length > 30
+                                ? widget.notice.title!.substring(0, 30) + "..."
+                                : widget.notice.title!,
+                            style: TextStyle(
+                              color: Color(0xFF3D3D3D),
+                              fontSize: 16,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Container(
+                              margin: EdgeInsets.only(left: 10),
+                              width: 12,
+                              height: 12,
+                              child: Image.asset("assets/images/new.png"))
+                        ],
+                      ),
+                      Text(
+                        widget.notice.date!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF787474),
+                          fontSize: 10,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w300,
+                        ),
+                      )
                     ],
                   ),
-                  Text(
-                    widget.notice.date!,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF787474),
-                      fontSize: 10,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w300,
+                  GestureDetector(
+                    onTap: () {
+                      changeIcon();
+                      noticeService.scrapNotice(widget.notice.id!);
+                    },
+                    child: Container(
+                      width: 22,
+                      height: 22,
+                      child: Icon(
+                        widget.notice.scrapped!
+                            ? Icons.bookmark
+                            : Icons.bookmark_outline,
+                        color: widget.notice.scrapped!
+                            ? Color(0xffFF3B47)
+                            : Color(0xffCCC9C9),
+                      ),
                     ),
                   )
                 ],
-              ),
-              GestureDetector(
-                onTap: () {
-                  changeIcon();
-                  noticeService.scrapNotice(widget.notice.id!);
-                },
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  child: Icon(
-                    widget.notice.scrapped!
-                        ? Icons.bookmark
-                        : Icons.bookmark_outline,
-                    color: widget.notice.scrapped!
-                        ? Color(0xffFF3B47)
-                        : Color(0xffCCC9C9),
-                  ),
-                ),
-              )
-            ],
-          ));
+              )));
     });
   }
 }
