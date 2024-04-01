@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
@@ -44,9 +45,9 @@ class _ViewSubscribeFilterPageWidgetState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: white,
         appBar: AppBar(
-          backgroundColor: Color(0x00ffffff),
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             icon: Icon(Icons.arrow_left),
             onPressed: () {
@@ -77,7 +78,7 @@ class _ViewSubscribeFilterPageWidgetState
                   TextField(
                     decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFFF4F2F2),
+                        fillColor: gray4,
                         enabledBorder:
                             OutlineInputBorder(borderSide: BorderSide.none)),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
@@ -103,7 +104,7 @@ class _ViewSubscribeFilterPageWidgetState
                   TextField(
                     decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFFF4F2F2),
+                        fillColor: gray4,
                         enabledBorder:
                             OutlineInputBorder(borderSide: BorderSide.none)),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
@@ -123,7 +124,7 @@ class _ViewSubscribeFilterPageWidgetState
                             '학과',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Color(0xFF1B1616),
+                              color: black,
                               fontSize: 16,
                               fontFamily: 'Pretendard',
                               fontWeight: FontWeight.w600,
@@ -164,7 +165,7 @@ class _ViewSubscribeFilterPageWidgetState
                               '카테고리',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Color(0xFF1B1616),
+                                color: black,
                                 fontSize: 16,
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w600,
@@ -202,10 +203,10 @@ class _ViewSubscribeFilterPageWidgetState
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8))),
                   minimumSize: Size.fromHeight(40),
-                  backgroundColor: Color(0xffff0000)),
+                  backgroundColor: red1),
               child: const Text(
                 '저장',
-                style: TextStyle(color: Color(0xffffffff)),
+                style: TextStyle(color: white),
               ),
             )
           ]),

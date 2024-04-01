@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribePageList.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
 
@@ -52,7 +53,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                     },
                     child: Text(
                       '편집',
-                      style: TextStyle(color: Color(0xFFFF4F59)),
+                      style: TextStyle(color: red1_5),
                     ))
               ],
             ),
@@ -71,7 +72,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                 child: Container(
                   padding: EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                      color: Color(0xffF4F2F2),
+                      color: gray4,
                       borderRadius: BorderRadius.all(Radius.circular(9))),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +84,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                           Image.asset("assets/images/artboard.png"),
                           Icon(
                             Icons.settings_rounded,
-                            color: Color(0xFFCCC9C9),
+                            color: gray3,
                           )
                         ],
                       ),
@@ -103,14 +104,13 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                 height: 26,
                                 child: Text('컴퓨터학부',
                                     style: TextStyle(
-                                        color: Color(0xFFFF3B47),
+                                        color: red1,
                                         fontWeight: FontWeight.w500)),
                                 decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1, color: Color(0xFFFFD8DA)),
+                                    border: Border.all(width: 1, color: red2),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(6)),
-                                    color: Color(0xFFFFFFFF))),
+                                    color: white)),
                           ),
                           Flexible(
                             child: Container(
@@ -119,12 +119,12 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                 height: 26,
                                 child: Text('디자인조형학부',
                                     style: TextStyle(
-                                        color: Color(0xFFFF3B47),
+                                        color: red1,
                                         fontWeight: FontWeight.w500)),
                                 decoration: BoxDecoration(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(6)),
-                                    color: Color(0x80FF3B47))),
+                                    color: red2)),
                           ),
                         ],
                       )
@@ -154,7 +154,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                         ViewSubscribeFilterPageWidget()))
                           },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFF000000),
+                        foregroundColor: gray1,
                         shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(8))),
                         minimumSize: Size.fromHeight(40),

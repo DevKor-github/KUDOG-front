@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -109,7 +110,7 @@ class _ViewSubscribePageListWidgetState
 
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0x00ffffff),
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             icon: Icon(Icons.chevron_left_rounded),
             onPressed: () {
@@ -117,7 +118,7 @@ class _ViewSubscribePageListWidgetState
             },
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: white,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
@@ -130,10 +131,10 @@ class _ViewSubscribePageListWidgetState
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF3B47))),
+                            color: red1)),
                     Icon(
                       Icons.arrow_drop_down_rounded,
-                      color: Color(0xFF000000),
+                      color: Colors.transparent,
                     )
                   ])),
               SizedBox(
@@ -144,7 +145,7 @@ class _ViewSubscribePageListWidgetState
                 height: 52,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: Color(0xFFF4F2F2))),
+                    border: Border.all(color: gray4)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
