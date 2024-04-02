@@ -162,31 +162,15 @@ class _ViewSubscribePageListWidgetState
                   ),
                   IconButton(
                       padding: EdgeInsets.zero,
-                      iconSize: 24,
-                      onPressed: () => {},
-                      icon: Icon(Icons.chevron_right_rounded))
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 22,
-            ),
-            Expanded(
-              child: Column(children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: noticeList.length,
-                    itemBuilder: (context, index) {
-                      return NoticeCard(
-                        title: noticeList[index].title,
-                        date: noticeList[index].date,
-                        isScrapped: noticeList[index].scrapped,
-                        isBorder: true,
-                      );
-                    },
+
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: noticeList.length,
+                      itemBuilder: (context, index) {
+                        // return noticeCard();
+                      },
+                    ),
+
                   ),
                 ),
                 Padding(

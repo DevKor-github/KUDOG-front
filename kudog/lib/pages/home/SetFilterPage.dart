@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/model/CategoryModel.dart';
+import 'package:kudog/service/NoticeService.dart';
+import 'package:provider/provider.dart';
 
 class SetFilterPageWidget extends StatefulWidget {
   const SetFilterPageWidget({Key? key}) : super(key: key);
@@ -24,6 +27,18 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
     "채용정보",
     "행사"
   ];
+  List<UpperCategory> upperCategoryList = [];
+
+  Future<List<UpperCategory>> _loadUpperCategories() async {
+    //학과 리스트를 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false)
+        .getUpperCategories();
+    upperCategoryList =
+        Provider.of<NoticeService>(context, listen: false).upperCategoryList;
+    upperCategoryList.insert(0, UpperCategory(name: "전체"));
+    return upperCategoryList;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -37,312 +52,344 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                    child: Icon(Icons.arrow_back_ios),
-                    onTap: () {
-                      Navigator.pop(context);
-                    }),
-                Text("필터",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    )),
-                Container(width: 20)
-              ],
-            )),
-        Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text("적용된 필터",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        )),
-                    Container(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Image.asset("assets/images/trash.png",
-                            color: Color(0xff787474)))
-                  ],
-                ),
-                Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: ShapeDecoration(
-                                color: Color(0xFFF4F1F1),
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      width: 1, color: Color(0xFFFFD8DA)),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+        body: SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                      child: Icon(Icons.arrow_back_ios),
+                      onTap: () {
+                        Navigator.pop(context);
+                      }),
+                  Text("필터",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  Container(width: 20)
+                ],
+              )),
+          Column(
+            children: [
+              Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text("적용된 필터",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              )),
+                          Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Image.asset("assets/images/trash.png",
+                                  color: Color(0xff787474)))
+                        ],
+                      ),
+                      Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
                                 children: [
-                                  Text(
-                                    '오늘',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Color(0xFFFF3A46),
-                                      fontSize: 14,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w500,
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    decoration: ShapeDecoration(
+                                      color: Color(0xFFF4F1F1),
+                                      shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            width: 1, color: Color(0xFFFFD8DA)),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '오늘',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Color(0xFFFF3A46),
+                                            fontSize: 14,
+                                            fontFamily: 'Pretendard',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(left: 5),
-                              padding: EdgeInsets.all(5),
-                              decoration: ShapeDecoration(
-                                color: Color(0x7FFFD8DA),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '공지사항, 학사일정',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Color(0xFFFF3A46),
-                                      fontSize: 14,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w500,
+                                  Container(
+                                    margin: EdgeInsets.only(left: 5),
+                                    padding: EdgeInsets.all(5),
+                                    decoration: ShapeDecoration(
+                                      color: Color(0x7FFFD8DA),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(6)),
                                     ),
-                                  ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '공지사항, 학사일정',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Color(0xFFFF3A46),
+                                            fontSize: 14,
+                                            fontFamily: 'Pretendard',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
-                            )
-                          ],
-                        ),
-                      ],
-                    )),
-              ],
-            )),
-        Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Container(
-                    child: Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(bottom: 20),
-                      child: Row(
+                            ],
+                          )),
+                    ],
+                  )),
+              Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Container(
+                          child: Column(
                         children: [
                           Container(
-                              child: Text(
-                                '학과',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF1B1616),
-                                  fontSize: 16,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w600,
-                                ),
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: Row(
+                              children: [
+                                Container(
+                                    child: Text(
+                                      '학과',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFF1B1616),
+                                        fontSize: 16,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    margin: EdgeInsets.only(
+                                      right: 20,
+                                    )),
+                                Icon(Icons.edit_outlined,
+                                    color: Color(0xff787474))
+                              ],
+                            ),
+                          ),
+                          FutureBuilder(
+                              future: _loadUpperCategories(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot snapshot) {
+                                if (snapshot.hasData == false) {
+                                  return CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Error: ${snapshot.error}',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  );
+                                } else {
+                                  return GridView.builder(
+                                      shrinkWrap: true,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              mainAxisSpacing: 10,
+                                              crossAxisSpacing: 10),
+                                      itemCount: upperCategoryList.length,
+                                      itemBuilder: (context, index) =>
+                                          MajorCard(
+                                              major: upperCategoryList[index]));
+                                }
+                              }),
+                        ],
+                      )),
+                      Container(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    margin:
+                                        EdgeInsets.only(top: 30, bottom: 10),
+                                    child: Text(
+                                      '조회기간',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFF1B1616),
+                                        fontSize: 16,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                               margin: EdgeInsets.only(
                                 right: 20,
                               )),
-                          Image.asset("assets/images/edit.png")
+                          Container(
+                              child: Row(
+                            children: [
+                              DateCard(date: dates[0]),
+                              DateCard(date: dates[1]),
+                              DateCard(date: dates[2]),
+                              DateCard(date: dates[3])
+                            ],
+                          )),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.only(
+                                    top: 9, left: 14, right: 8, bottom: 9),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFF4F1F1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '2023. 10. 01',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFF423C3C),
+                                        fontSize: 16,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(left: 30),
+                                        child:
+                                            Icon(Icons.calendar_month_outlined))
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 8, right: 8),
+                                child:
+                                    Text("-", style: TextStyle(fontSize: 30)),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.only(
+                                    top: 9, left: 14, right: 8, bottom: 9),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFF4F1F1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '2023. 10. 05',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFF423C3C),
+                                        fontSize: 16,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(left: 30),
+                                        child:
+                                            Icon(Icons.calendar_month_outlined))
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        MajorCard(major: majors[0]),
-                        MajorCard(major: majors[1]),
-                        MajorCard(major: majors[2])
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        MajorCard(major: majors[3]),
-                        MajorCard(major: majors[4]),
-                        MajorCard(major: majors[5])
-                      ],
-                    )
-                  ],
-                )),
-                Container(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(top: 30, bottom: 10),
-                              child: Text(
-                                '조회기간',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF1B1616),
-                                  fontSize: 16,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.only(
-                          right: 20,
-                        )),
-                    Container(
-                        child: Row(
-                      children: [
-                        DateCard(date: dates[0]),
-                        DateCard(date: dates[1]),
-                        DateCard(date: dates[2]),
-                        DateCard(date: dates[3])
-                      ],
-                    )),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.only(
-                              top: 9, left: 14, right: 8, bottom: 9),
-                          clipBehavior: Clip.antiAlias,
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFF4F1F1),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      )),
+                      Container(
+                          child: Column(
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                '2023. 10. 01',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF423C3C),
-                                  fontSize: 16,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
                               Container(
-                                  margin: EdgeInsets.only(left: 30),
-                                  child: Icon(Icons.calendar_month_outlined))
+                                  margin: EdgeInsets.only(top: 30, bottom: 10),
+                                  child: Text(
+                                    '카테고리',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFF1B1616),
+                                      fontSize: 16,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ))
                             ],
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(left: 8, right: 8),
-                          child: Text("-", style: TextStyle(fontSize: 30)),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(
-                              top: 9, left: 14, right: 8, bottom: 9),
-                          clipBehavior: Clip.antiAlias,
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFF4F1F1),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Row(
                             children: [
-                              Text(
-                                '2023. 10. 05',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF423C3C),
-                                  fontSize: 16,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w400,
-                                ),
+                              Column(
+                                children: [
+                                  CategoryCard(category: categories[0]),
+                                  CategoryCard(category: categories[1]),
+                                  CategoryCard(category: categories[2]),
+                                  CategoryCard(category: categories[3]),
+                                  CategoryCard(category: categories[4])
+                                ],
                               ),
-                              Container(
-                                  margin: EdgeInsets.only(left: 30),
-                                  child: Icon(Icons.calendar_month_outlined))
+                              Column(
+                                children: [
+                                  CategoryCard(category: categories[5]),
+                                  CategoryCard(category: categories[6]),
+                                  CategoryCard(category: categories[7]),
+                                  CategoryCard(category: categories[8]),
+                                  CategoryCard(category: categories[9])
+                                ],
+                              )
                             ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
-                Container(
-                    child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 30, bottom: 10),
-                            child: Text(
-                              '카테고리',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF1B1616),
-                                fontSize: 16,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Column(
-                          children: [
-                            CategoryCard(category: categories[0]),
-                            CategoryCard(category: categories[1]),
-                            CategoryCard(category: categories[2]),
-                            CategoryCard(category: categories[3]),
-                            CategoryCard(category: categories[4])
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            CategoryCard(category: categories[5]),
-                            CategoryCard(category: categories[6]),
-                            CategoryCard(category: categories[7]),
-                            CategoryCard(category: categories[8]),
-                            CategoryCard(category: categories[9])
-                          ],
-                        )
-                      ],
-                    )
-                  ],
-                ))
-              ],
-            ))
-      ],
+                          )
+                        ],
+                      ))
+                    ],
+                  ))
+            ],
+          ),
+        ],
+      ),
     ));
   }
 }
 
 class MajorCard extends StatefulWidget {
   const MajorCard({super.key, required this.major});
-  final String major;
+  final UpperCategory major;
   @override
   _MajorCardState createState() => _MajorCardState();
 }
@@ -364,6 +411,8 @@ class _MajorCardState extends State<MajorCard> {
     return GestureDetector(
         onTap: changeColor,
         child: Container(
+          width: 100.0, // 너비
+          height: 100.0,
           margin: EdgeInsets.all(3),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: ShapeDecoration(
@@ -384,7 +433,7 @@ class _MajorCardState extends State<MajorCard> {
                   ? Icon(Icons.check, color: Color(0xFFFF3A46))
                   : Container(),
               Text(
-                widget.major,
+                widget.major.name!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF423C3C),
