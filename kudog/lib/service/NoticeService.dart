@@ -326,7 +326,7 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list/subscribe-categories?page=$page",
+        "https://api.kudog.devkor.club/notice/list/1/bydate?page=$page",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
@@ -324,6 +325,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   }
 }
 
+
 class noticeCard extends StatefulWidget {
   const noticeCard({super.key, required this.notice});
   final Notice notice;
@@ -363,6 +365,7 @@ class _noticeCardState extends State<noticeCard> {
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -422,6 +425,7 @@ class _noticeCardState extends State<noticeCard> {
                       )
                     ],
                   ),
+
                   GestureDetector(
                     onTap: () {
                       changeIcon();
@@ -437,6 +441,7 @@ class _noticeCardState extends State<noticeCard> {
                         color: widget.notice.scrapped!
                             ? Color(0xffFF3B47)
                             : Color(0xffCCC9C9),
+
                       ),
                     ),
                   )

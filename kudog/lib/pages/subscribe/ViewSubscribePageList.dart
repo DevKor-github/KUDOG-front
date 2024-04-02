@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -35,12 +36,13 @@ class _ViewSubscribePageListWidgetState
   void initState() {
     super.initState();
     dio = Dio();
-    Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
-    Provider.of<CategoryService>(context, listen: false)
-        .getFullLowerCategoryList();
-    Provider.of<CategoryService>(context, listen: false).getSubList();
-    Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(currentPage);
+    // Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
+    // Provider.of<CategoryService>(context, listen: false)
+    //     .getFullLowerCategoryList();
+    // Provider.of<CategoryService>(context, listen: false).getSubList();
+    // Provider.of<NoticeService>(context, listen: false)
+    //     .getSubscribedNotices(currentPage);
+    Provider.of<NoticeService>(context, listen: false).getSubscribedNotices(1);
   }
 
   @override
@@ -109,7 +111,7 @@ class _ViewSubscribePageListWidgetState
 
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0x00ffffff),
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             icon: Icon(Icons.chevron_left_rounded),
             onPressed: () {
@@ -117,62 +119,50 @@ class _ViewSubscribePageListWidgetState
             },
           ),
         ),
-        backgroundColor: Colors.white,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextButton(
+        backgroundColor: white,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 25),
+              child: TextButton(
                   onPressed: () => {},
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Text('디조짱',
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF3B47))),
+                            color: red1)),
                     Icon(
                       Icons.arrow_drop_down_rounded,
-                      color: Color(0xFF000000),
+                      color: gray2,
                     )
                   ])),
-              SizedBox(
-                height: 27,
-              ),
-              Container(
-                width: double.infinity,
-                height: 52,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: Color(0xFFF4F2F2))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        iconSize: 24,
-                        onPressed: () => {},
-                        icon: Icon(Icons.chevron_left_rounded)),
-                    Text(
-                      "2021.10.11",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                    ),
-                    IconButton(
-                        padding: EdgeInsets.zero,
-                        iconSize: 24,
-                        onPressed: () => {},
-                        icon: Icon(Icons.chevron_right_rounded))
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 22,
-              ),
-              Expanded(
-                child: Column(children: [
-                  Expanded(
-                    child: ListView.builder(
+            ),
+            SizedBox(
+              height: 27,
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              width: double.infinity,
+              height: 52,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: gray4)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      iconSize: 24,
+                      onPressed: () => {},
+                      icon: Icon(Icons.chevron_left_rounded)),
+                  Text(
+                    "2021.10.11",
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                  ),
+                  IconButton(
                       padding: EdgeInsets.zero,
+
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       itemCount: noticeList.length,
@@ -180,41 +170,42 @@ class _ViewSubscribePageListWidgetState
                         // return noticeCard();
                       },
                     ),
+
                   ),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              totalPage,
-                              (index) => InkWell(
-                                onTap: () => onPageClick(index + 1),
-                                child: Container(
-                                  margin: EdgeInsets.all(8),
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: currentPage == index + 1
-                                        ? Color.fromRGBO(206, 64, 64, 0.65)
-                                        : Color(0xFFCDCDCD),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    (index + 1).toString(),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            totalPage,
+                            (index) => InkWell(
+                              onTap: () => onPageClick(index + 1),
+                              child: Container(
+                                margin: EdgeInsets.all(8),
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: currentPage == index + 1
+                                      ? Color.fromRGBO(206, 64, 64, 0.65)
+                                      : Color(0xFFCDCDCD),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  (index + 1).toString(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
                             ),
-                          )))
-                ]),
-              ),
-            ],
-          ),
+                          ),
+                        )))
+              ]),
+            ),
+          ],
         ),
       );
     });
