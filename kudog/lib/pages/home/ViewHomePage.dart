@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/service/CategoryService.dart';
@@ -252,12 +253,30 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 }
 
 class NoticeCard extends StatelessWidget {
+  final bool isBorder;
+
+  final String? category;
+  final String? title;
+  final bool? isScrapped;
+  final String? date;
+
+  const NoticeCard(
+      {this.category = '미분류',
+      this.title = '디자인조형학부짱',
+      this.isScrapped = false,
+      this.date = '2024.01.02',
+      this.isBorder = false});
+
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white,
-        margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
-        padding: EdgeInsets.all(20),
-        width: MediaQuery.of(context).size.width * 0.8,
+        margin: EdgeInsets.only(bottom: 20, left: 16, right: 16),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            border: isBorder
+                ? Border.all(color: gray4)
+                : Border.all(style: BorderStyle.none),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: white),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -294,7 +313,7 @@ class NoticeCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '디자인조형학부 짱',
+                      title.toString(),
                       style: TextStyle(
                         color: Color(0xFF3D3D3D),
                         fontSize: 16,
