@@ -19,8 +19,8 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController codeController = TextEditingController();
-  TextEditingController pwController = TextEditingController();
-  TextEditingController pwConfirmController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordConfirmController = TextEditingController();
 
   @override
   void initState() {
@@ -108,12 +108,17 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                     signUpForm(
                         headText: "비밀번호",
                         hintText: "비밀번호",
-                        controller: pwController),
+                        controller: passwordController),
                     signUpForm(
                         headText: "비밀번호 확인",
                         hintText: "비밀번호 확인",
-                        controller: pwConfirmController),
-                    clickButton(text: "회원가입")
+                        controller: passwordConfirmController),
+                    clickButton(
+                      text: "회원가입",
+                      email: emailController.text,
+                      password: passwordController.text,
+                      destination: Container(),
+                    )
                   ],
                 ))
           ],

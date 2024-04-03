@@ -50,48 +50,30 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
       ViewMyPageWidget()
     ];
 
-    return FutureBuilder(
-        future: tempLogin(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData == false) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: TextStyle(fontSize: 15),
-              ),
-            );
-          } else {
-            return Scaffold(
-              body: SafeArea(
-                child: _widgetOptions.elementAt(_selectedIndex),
-              ),
-              bottomNavigationBar: BottomNavigationBar(
-                items: const <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.bookmark_outline, size: 30),
-                      label: "스크랩"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.mail_outline, size: 30), label: "구독함"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.home_outlined, size: 30), label: "홈"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.notifications_none_outlined, size: 30),
-                      label: "알림"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.person_outline_outlined, size: 30),
-                      label: "마이"),
-                ],
-                currentIndex: _selectedIndex,
-                onTap: _onItemTapped,
-                unselectedItemColor: const Color(0xffC6C6C6),
-                selectedItemColor: const Color(0xffFF3B47),
-                showUnselectedLabels: true,
-              ),
-            );
-          }
-        });
+    return Scaffold(
+      body: SafeArea(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark_outline, size: 30), label: "스크랩"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.mail_outline, size: 30), label: "구독함"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined, size: 30), label: "홈"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications_none_outlined, size: 30),
+              label: "알림"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline_outlined, size: 30), label: "마이"),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        unselectedItemColor: const Color(0xffC6C6C6),
+        selectedItemColor: const Color(0xffFF3B47),
+        showUnselectedLabels: true,
+      ),
+    );
   }
 }
