@@ -28,11 +28,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family: NotoSans-Regular
+    - family: Pretendard
       fonts:
-        - asset: assets/fonts/NotoSans-Regular.ttf
-    - family: ReadexPro-Regular
-      fonts:
-        - asset: assets/fonts/ReadexPro-Regular.ttf
+        - asset: assets/fonts/Pretendard-Regular.otf
   assets:
     - assets/images/
