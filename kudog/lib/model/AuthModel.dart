@@ -38,41 +38,26 @@ class UserToken {
 
 class SignUpUser {
   String? name;
-  String? subscriberEmail;
-  String? portalEmail;
+  String? email;
   String? password;
-  String? major;
-  String? studentId;
-  int? grade;
 
-  SignUpUser(
-      {this.name,
-      this.subscriberEmail,
-      this.portalEmail,
-      this.password,
-      this.major,
-      this.studentId,
-      this.grade});
+  SignUpUser({
+    this.name,
+    this.email,
+    this.password,
+  });
 
   SignUpUser.fromJson(Map<String, dynamic> json) {
     name = json['name'];
-    subscriberEmail = json['subscriberEmail'];
-    portalEmail = json['portalEmail'];
+    email = json['email'];
     password = json['password'];
-    major = json['major'];
-    studentId = json['studentId'];
-    grade = json['grade'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
-    data['subscriberEmail'] = this.subscriberEmail;
-    data['portalEmail'] = this.portalEmail;
+    data['email'] = this.email;
     data['password'] = this.password;
-    data['major'] = this.major;
-    data['studentId'] = this.studentId;
-    data['grade'] = this.grade;
     return data;
   }
 }
