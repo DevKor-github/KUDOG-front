@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
+import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:provider/provider.dart';
 
@@ -69,35 +70,14 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   )),
               Container(
                 child: Column(children: [
-                  LoginForm(controller: emailController, hint: "이메일"),
-                  LoginForm(controller: passwordController, hint: "비밀번호"),
-                  GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        margin: EdgeInsets.only(top: 4),
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFFF3A46),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              '로그인',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                  InputForm(
+                    controller: emailController,
+                    hint: "이메일",
+                    ratio: 1,
+                  ),
+                  InputForm(
+                      controller: passwordController, hint: "비밀번호", ratio: 1),
+                  clickButton(text: "로그인"),
                   Container(
                       margin: EdgeInsets.only(top: 10),
                       width: 120,
@@ -124,19 +104,27 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          Text(
-                            '회원가입',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF787474),
-                              fontSize: 12,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w400,
-                              height: 0.15,
-                            ),
-                          )
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SignUpPageWidget()));
+                              },
+                              child: Text(
+                                '회원가입',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xFF787474),
+                                  fontSize: 12,
+                                  fontFamily: 'Pretendard',
+                                  fontWeight: FontWeight.w400,
+                                  height: 0.15,
+                                ),
+                              ))
                         ],
-                      ))
+                      )),
                 ]),
               )
             ],
@@ -145,12 +133,18 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   }
 }
 
-class LoginForm extends StatelessWidget {
-  const LoginForm({super.key, required this.controller, required this.hint});
+class InputForm extends StatelessWidget {
+  const InputForm(
+      {super.key,
+      required this.controller,
+      required this.hint,
+      required this.ratio});
   final TextEditingController controller;
   final String hint;
+  final double ratio;
   Widget build(BuildContext context) {
     return Container(
+        width: MediaQuery.of(context).size.width * ratio,
         padding: EdgeInsets.only(left: 10),
         margin: EdgeInsets.only(bottom: 6),
         decoration: BoxDecoration(
@@ -170,6 +164,40 @@ class LoginForm extends StatelessWidget {
               fontSize: 14,
               color: Color(0xFFA4A4A4),
             ),
+          ),
+        ));
+  }
+}
+
+class clickButton extends StatelessWidget {
+  const clickButton({super.key, required this.text});
+  final String text;
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {},
+        child: Container(
+          margin: EdgeInsets.only(top: 4),
+          height: MediaQuery.of(context).size.height * 0.08,
+          decoration: ShapeDecoration(
+            color: Color(0xFFFF3A46),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ));
   }
