@@ -11,6 +11,7 @@ class SignUpService extends ChangeNotifier {
   bool isSuccess = false;
   Future<void> SignUp(SignUpUser user) async {
     Map<String, dynamic> data = user.toJson();
+
     try {
       Response response = await Dio()
           .post("https://api.kudog.devkor.club/auth/signup", data: data);
@@ -28,8 +29,6 @@ class SignUpService extends ChangeNotifier {
   }
 
   Future<void> SendEmail(String address) async {
-    // Map<String, dynamic> data = mail.toJson();
-    print(address);
     try {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/mail/verify/send",

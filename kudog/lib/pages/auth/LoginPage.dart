@@ -275,119 +275,41 @@ class InputForm extends StatelessWidget {
   final double ratio;
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: MediaQuery.of(context).size.width * ratio,
-        padding: EdgeInsets.only(left: 10),
-        margin: EdgeInsets.only(bottom: 6),
-        decoration: BoxDecoration(
-          color: Color(0xffF4F2F2),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: TextFormField(
-          cursorColor: Colors.black,
-          controller: controller,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hint,
-            fillColor: const Color(0xffF4F2F2),
-            hintStyle: TextStyle(
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              color: Color(0xFFA4A4A4),
+    return GestureDetector(
+        // onTap: () {
+        //   setState(() {
+        //     _isFocused = !_isFocused;
+        //   });
+        // },
+        child: Container(
+            width: MediaQuery.of(context).size.width * ratio,
+            // padding: EdgeInsets.only(left: 10),
+            margin: EdgeInsets.only(bottom: 6),
+            decoration: BoxDecoration(
+              color: Color(0xffF4F2F2),
+              borderRadius: BorderRadius.circular(8),
             ),
-          ),
-        ));
-  }
-}
-
-class clickButton extends StatelessWidget {
-  const clickButton(
-      {super.key,
-      required this.text,
-      required this.email,
-      required this.password,
-      required this.destination});
-  final String text;
-  final String email;
-  final String password;
-  final Widget destination;
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<SignInService>(
-      builder: (context, signInService, child) {
-        return GestureDetector(
-            onTap: () async {
-              LoginUser user = LoginUser(email: email, password: password);
-              await signInService.Signin(user);
-              if (signInService.successLogin) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => destination));
-              } else {
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                        title: const Column(
-                          children: <Widget>[
-                            Text("로그인 실패"),
-                          ],
-                        ),
-                        content: const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "아이디와 비밀번호를 확인해주십시오.",
-                            ),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(20.0),
-                              foregroundColor: primary,
-                              textStyle: const TextStyle(fontSize: 20),
-                            ),
-                            child: const Text("확인"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      );
-                    });
-              }
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 4),
-              height: MediaQuery.of(context).size.height * 0.08,
-              decoration: ShapeDecoration(
-                color: Color(0xFFFF3A46),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w600,
-                    ),
+            child: TextFormField(
+              cursorColor: Colors.black,
+              controller: controller,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    width: 2,
+                    color: Color(0xffFF3B47),
                   ),
-                ],
+                ),
+                border: InputBorder.none,
+                hintText: hint,
+                fillColor: const Color(0xffF4F2F2),
+                hintStyle: TextStyle(
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Color(0xFFA4A4A4),
+                ),
               ),
-            ));
-      },
-    );
+            )));
   }
 }

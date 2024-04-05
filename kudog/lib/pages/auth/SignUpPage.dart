@@ -23,6 +23,10 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordConfirmController = TextEditingController();
   bool isSame = false;
+  bool isSend = false; //인증이메일 보내졌는지
+  bool isVerified = false; //코드 맞는지
+  String firstAnswer = "";
+  String secondAnswer = "";
 
   @override
   void initState() {
@@ -68,7 +72,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                         margin: EdgeInsets.only(bottom: 20),
                         child: signUpForm(
                             headText: "이름",
-                            hintText: "이름",
+                            hintText: "  이름",
                             controller: nameController),
                       ),
                       Container(
@@ -94,12 +98,24 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 children: [
                                   InputForm(
                                       controller: emailController,
-                                      hint: "학교 이메일 입력",
+                                      hint: "  학교 이메일 입력",
                                       ratio: 0.72),
                                   GestureDetector(
-                                      onTap: () {
-                                        signUpService.SendEmail(
+                                      onTap: () async {
+                                        await signUpService.SendEmail(
                                             emailController.text);
+                                        if (signUpService.isSend) {
+                                          setState(() {
+                                            isSend = true;
+                                            firstAnswer =
+                                                signUpService.firstAnswer;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            firstAnswer =
+                                                signUpService.firstAnswer;
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         margin: EdgeInsets.only(left: 15),
@@ -141,13 +157,37 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                 children: [
                                   InputForm(
                                       controller: codeController,
-                                      hint: "6자리 인증번호",
+                                      hint: "  6자리 인증번호",
                                       ratio: 0.72),
                                   GestureDetector(
-                                      onTap: () {
-                                        signUpService.VerifyEmail(
-                                            emailController.text,
-                                            codeController.text);
+                                      onTap: () async {
+                                        if (isSend) {
+                                          await signUpService.VerifyEmail(
+                                              emailController.text,
+                                              codeController.text);
+                                          if (signUpService.secondId == 1) {
+                                            setState(() {
+                                              isVerified = true;
+                                              firstAnswer =
+                                                  signUpService.secondAnswer;
+                                            });
+                                          } else {
+                                            setState(() {
+                                              firstAnswer =
+                                                  signUpService.secondAnswer;
+                                            });
+                                          }
+                                        } else {
+                                          showDialog(
+                                              context: context,
+                                              barrierDismissible: false,
+                                              builder: (BuildContext context) {
+                                                return AlertMessage(
+                                                    title: "인증 번호 전송 필요",
+                                                    content:
+                                                        "인증 번호가 전송되지 않았습니다.");
+                                              });
+                                        }
                                       },
                                       child: Container(
                                         margin: EdgeInsets.only(left: 15),
@@ -158,7 +198,9 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                             MediaQuery.of(context).size.height *
                                                 0.067,
                                         decoration: ShapeDecoration(
-                                          color: Color(0xFFFF3A46),
+                                          color: isSend
+                                              ? Color(0xFFFF3A46)
+                                              : Color(0xffCCC9C9),
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(8)),
@@ -184,24 +226,34 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                                       ))
                                 ],
                               ),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Message(
+                                        text: firstAnswer,
+                                        color: isSend
+                                            ? Color(0xFF06C755)
+                                            : Color(0xffFF3B47),
+                                        visible: true),
+                                  ]),
                             ]),
                       ),
                       Container(
                         margin: EdgeInsets.only(bottom: 20),
                         child: signUpForm(
                             headText: "비밀번호",
-                            hintText: "비밀번호",
+                            hintText: "  비밀번호",
                             controller: passwordController),
                       ),
                       signUpForm(
                           headText: "비밀번호 확인",
-                          hintText: "비밀번호 확인",
+                          hintText: "  비밀번호 확인",
                           controller: passwordConfirmController),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Message(
-                                text: "ⓘ 앞서 입력한 비밀번호와 일치하지 않아요.",
+                                text: secondAnswer,
                                 color: Color(0xffFF3B47),
                                 visible: passwordController.text ==
                                     passwordConfirmController.text),
@@ -213,17 +265,36 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                             children: [
                               GestureDetector(
                                   onTap: () async {
-                                    signUpService.SignUp(SignUpUser(
-                                        name: nameController.text,
-                                        email: emailController.text,
-                                        password: passwordController.text));
-                                    if (signUpService.isSuccess) {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  LoginPageWidget()));
-                                    } else {}
+                                    if (isVerified) {
+                                      print(nameController.text);
+                                      print(emailController.text);
+                                      print(passwordController.text);
+                                      await signUpService.SignUp(SignUpUser(
+                                          name: nameController.text,
+                                          email: emailController.text,
+                                          password: passwordController.text));
+                                      if (signUpService.isSuccess) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginPageWidget()));
+                                      } else {
+                                        setState(() {
+                                          secondAnswer =
+                                              "ⓘ 앞서 입력한 비밀번호와 일치하지 않아요.";
+                                        });
+                                      }
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (BuildContext context) {
+                                            return AlertMessage(
+                                                title: "이메일 인증 필요",
+                                                content: "이메일 인증이 필요합니다.");
+                                          });
+                                    }
                                   },
                                   child: Container(
                                     margin: EdgeInsets.only(top: 4),
@@ -320,6 +391,45 @@ class Message extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
           )),
+    );
+  }
+}
+
+class AlertMessage extends StatelessWidget {
+  const AlertMessage({super.key, required this.title, required this.content});
+  final String title;
+  final String content;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      title: Column(
+        children: <Widget>[
+          Text(title),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            content,
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.all(20.0),
+            foregroundColor: primary,
+            textStyle: const TextStyle(fontSize: 20),
+          ),
+          child: const Text("확인"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }
