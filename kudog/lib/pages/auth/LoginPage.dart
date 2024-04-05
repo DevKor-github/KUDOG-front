@@ -4,7 +4,9 @@ import 'package:kudog/model/AuthModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/SignInService.dart';
+import 'package:kudog/util/DioClient.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({Key? key}) : super(key: key);
@@ -18,15 +20,45 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String? accessToken = "";
+  String? refreshToken = "";
 
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _checkLoginStatus() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    accessToken = sharedPreferences.getString("access_token");
+    refreshToken = sharedPreferences.getString("refresh_token");
+
+    if (accessToken != null && refreshToken != null) {
+      //토큰이 있을 때
+      if (await _validateTokens()) {
+        //유효한 토큰일 때
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => NavigationPageWidget()));
+        });
+      } else {}
+    }
+  }
+
+  Future<bool> _validateTokens() async {
+    try {
+      DioClient dioClient = DioClient();
+      await dioClient.get("/users/info");
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -276,11 +308,6 @@ class InputForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        // onTap: () {
-        //   setState(() {
-        //     _isFocused = !_isFocused;
-        //   });
-        // },
         child: Container(
             width: MediaQuery.of(context).size.width * ratio,
             // padding: EdgeInsets.only(left: 10),

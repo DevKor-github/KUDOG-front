@@ -37,6 +37,6 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
-        home: SignUpPageWidget());
+        home: LoginPageWidget());
   }
 }
