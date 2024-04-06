@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
+import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/SignInService.dart';
@@ -43,10 +45,17 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     if (accessToken != null && refreshToken != null) {
       //토큰이 있을 때
       if (await _validateTokens()) {
+        String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+            .format(DateTime.now().subtract(Duration(days: 7)));
         //유효한 토큰일 때
         Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => NavigationPageWidget()));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => NavigationPageWidget(
+                  filter: Filter(
+                      startDate: sevenDaysAgo,
+                      endDate: formattedDate,
+                      page: 1))));
         });
       } else {}
     }
@@ -168,11 +177,20 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 password: passwordController.text);
                             await signInService.Signin(user);
                             if (signInService.successLogin) {
+                              String formattedDate = DateFormat('yyyy-MM-dd')
+                                  .format(DateTime.now());
+                              String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+                                  .format(DateTime.now()
+                                      .subtract(Duration(days: 7)));
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          NavigationPageWidget()));
+                                          NavigationPageWidget(
+                                              filter: Filter(
+                                                  startDate: sevenDaysAgo,
+                                                  endDate: formattedDate,
+                                                  page: 1))));
                             } else {
                               showDialog(
                                   context: context,

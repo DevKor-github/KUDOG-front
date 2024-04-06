@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kudog/model/CategoryModel.dart';
+import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +17,26 @@ class SetFilterPageWidget extends StatefulWidget {
 class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> dates = ["오늘", "1주", "1개월", "3개월"];
-
+  Filter setFilter = Filter();
+  Map<String, dynamic> filters = {
+    "providers": [],
+    "categories": [],
+    "startDate": "",
+    "endDate": ""
+  };
   @override
   void initState() {
     super.initState();
+  }
+
+  void changeFilter(String filter, String whichFilter) {
+    setState(() {
+      if (whichFilter == "providers" || whichFilter == "categories") {
+        filters[whichFilter].add(filter);
+      } else {
+        filters[whichFilter] = filter;
+      }
+    });
   }
 
   @override
@@ -40,7 +59,19 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                   GestureDetector(
                       child: Icon(Icons.arrow_back_ios),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pushReplacement<void, void>(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) =>
+                                NavigationPageWidget(
+                                    filter: Filter(
+                                        categories: ["공지사항"],
+                                        providers: ["정보대학"],
+                                        startDate: "2024-04-01",
+                                        endDate: "2024-04-06",
+                                        page: 1)),
+                          ),
+                        );
                       }),
                   Text("필터",
                       style: TextStyle(
@@ -148,6 +179,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                     children: [
                       Container(
                           child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             margin: EdgeInsets.only(bottom: 20),
@@ -172,16 +204,17 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                               ],
                             ),
                           ),
-                          GridView.builder(
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      mainAxisSpacing: 10,
-                                      crossAxisSpacing: 10),
-                              itemCount: majors.length,
-                              itemBuilder: (context, index) =>
-                                  MajorCard(major: majors[index]))
+                          Wrap(
+                              spacing: 5.0,
+                              runSpacing: 5.0,
+                              children: List.generate(
+                                  majors.length,
+                                  (index) => GestureDetector(
+                                      onTap: () {
+                                        changeFilter(
+                                            majors[index], "providers");
+                                      },
+                                      child: MajorCard(major: majors[index]))))
                         ],
                       )),
                       Container(
@@ -212,12 +245,58 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                               )),
                           Container(
                               child: Row(
-                            children: [
-                              DateCard(date: dates[0]),
-                              DateCard(date: dates[1]),
-                              DateCard(date: dates[2]),
-                              DateCard(date: dates[3])
-                            ],
+                            children: List.generate(
+                                dates.length,
+                                (index) => GestureDetector(
+                                    onTap: () {
+                                      if (dates[index] == "오늘") {
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now()),
+                                            "startDate");
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now()),
+                                            "endDate");
+                                      } else if (dates[index] == "1주") {
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd').format(
+                                                DateTime.now().subtract(
+                                                    Duration(days: 7))),
+                                            "startDate");
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now()),
+                                            "endDate");
+                                      } else if (dates[index] == "1개월") {
+                                        DateTime currentDate = DateTime.now();
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd').format(
+                                                DateTime(
+                                                    currentDate.year,
+                                                    currentDate.month - 1,
+                                                    currentDate.day)),
+                                            "startDate");
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now()),
+                                            "endDate");
+                                      } else {
+                                        DateTime currentDate = DateTime.now();
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd').format(
+                                                DateTime(
+                                                    currentDate.year - 1,
+                                                    currentDate.month,
+                                                    currentDate.day)),
+                                            "startDate");
+                                        changeFilter(
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(DateTime.now()),
+                                            "endDate");
+                                      }
+                                    },
+                                    child: DateCard(date: dates[index]))),
                           )),
                           Row(
                             children: [
@@ -294,6 +373,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                       )),
                       Container(
                           child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
@@ -311,28 +391,21 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                   ))
                             ],
                           ),
-                          Row(
-                            children: [
-                              Column(
-                                children: [
-                                  CategoryCard(category: categories[0]),
-                                  CategoryCard(category: categories[1]),
-                                  CategoryCard(category: categories[2]),
-                                  CategoryCard(category: categories[3]),
-                                  CategoryCard(category: categories[4])
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  CategoryCard(category: categories[5]),
-                                  CategoryCard(category: categories[6]),
-                                  CategoryCard(category: categories[7]),
-                                  CategoryCard(category: categories[8]),
-                                  CategoryCard(category: categories[9])
-                                ],
-                              )
-                            ],
-                          )
+                          Container(
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              child: Wrap(
+                                spacing: 5.0,
+                                runSpacing: 5.0,
+                                children: List.generate(
+                                    categories.length,
+                                    (index) => GestureDetector(
+                                        onTap: () {
+                                          changeFilter(
+                                              categories[index], "categories");
+                                        },
+                                        child: CategoryCard(
+                                            category: categories[index]))),
+                              ))
                         ],
                       ))
                     ],
@@ -369,8 +442,6 @@ class _MajorCardState extends State<MajorCard> {
     return GestureDetector(
         onTap: changeColor,
         child: Container(
-          width: 100.0, // 너비
-          height: 100.0,
           margin: EdgeInsets.all(3),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: ShapeDecoration(
@@ -391,7 +462,7 @@ class _MajorCardState extends State<MajorCard> {
                   ? Icon(Icons.check, color: Color(0xFFFF3A46))
                   : Container(),
               Text(
-                widget.major!,
+                widget.major,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF423C3C),
@@ -484,7 +555,7 @@ class _CategoryCardState extends State<CategoryCard> {
     return GestureDetector(
         onTap: changeColor,
         child: Container(
-          width: 125,
+          width: 135,
           margin: EdgeInsets.all(3),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: ShapeDecoration(

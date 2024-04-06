@@ -120,7 +120,7 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=1&keyword=${filter.keyword}",
+        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&keyword=${filter.keyword}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',

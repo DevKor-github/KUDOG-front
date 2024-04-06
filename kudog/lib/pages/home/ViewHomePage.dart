@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class ViewHomePageWidget extends StatefulWidget {
-  const ViewHomePageWidget({super.key});
+  const ViewHomePageWidget({super.key, required this.filterInfo});
+  final Filter filterInfo;
   @override
   _ViewHomePageWidgetState createState() => _ViewHomePageWidgetState();
 }
@@ -25,16 +26,38 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   int selectedIndex = 0; //선택된 단과대학
   void initState() {
     super.initState();
-    _loadAllNotices();
+    if (widget.filterInfo.categories == null) {
+      _loadAllNotices(widget.filterInfo);
+    } else {
+      _loadFilteredNotices(widget.filterInfo);
+    }
   }
 
-  void _loadAllNotices() async {
+  void _loadAllNotices(Filter defaultFilter) async {
     //전체 공지사항을 가져옵니다.
-    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
-        .format(DateTime.now().subtract(Duration(days: 7)));
     await Provider.of<NoticeService>(context, listen: false).getAllNotices(
-        Filter(startDate: sevenDaysAgo, endDate: formattedDate, page: 1));
+        Filter(
+            startDate: defaultFilter.startDate,
+            endDate: defaultFilter.endDate,
+            page: defaultFilter.page));
+
+    setState(() {
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .noticeList
+          .notices!;
+    });
+  }
+
+  void _loadFilteredNotices(Filter filter) async {
+    //전체 공지사항을 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false).getFilteredNotices(
+        Filter(
+            providers: filter.providers,
+            categories: filter.categories,
+            startDate: filter.startDate,
+            endDate: filter.endDate,
+            page: filter.page));
 
     setState(() {
       selectedIndex = 0;
@@ -65,7 +88,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   }
 
   void _loadSearchedNotices(Filter filter) async {
-    //선택한 단과대학의 공지사항을 가져옵니다.
+    //검색된 공지사항을 가져옵니다.
     String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     String sevenDaysAgo = DateFormat('yyyy-MM-dd')
         .format(DateTime.now().subtract(Duration(days: 7)));
@@ -196,7 +219,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                           providers: [majors[index]], page: 1),
                                       index);
                                 } else {
-                                  _loadAllNotices();
+                                  _loadAllNotices(widget.filterInfo);
                                 }
                               },
                               child: Container(

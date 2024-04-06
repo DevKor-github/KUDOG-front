@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kudog/model/AuthModel.dart';
+import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/alarm/ViewAlarmPage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/my/ViewMyPage.dart';
@@ -13,7 +15,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationPageWidget extends StatefulWidget {
-  const NavigationPageWidget({super.key});
+  const NavigationPageWidget({super.key, required this.filter});
+  final Filter filter;
   @override
   _NavigationPageWidgetState createState() => _NavigationPageWidgetState();
 }
@@ -31,21 +34,17 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
     });
   }
 
-  Future<String> tempLogin() async {
-    //임시 로그인 : 로그인 페이지 미구현
-    await Provider.of<SignInService>(context, listen: false)
-        .Signin(LoginUser(email: "ryan0102@korea.ac.kr", password: "car0814"));
-    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
-    print("로그인: " + sharedPreference.getString("access_token")!);
-    return sharedPreference.getString("access_token")!;
-  }
-
   @override
   Widget build(BuildContext context) {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 7)));
     final List<Widget> _widgetOptions = <Widget>[
       ViewScrabPageWidget(),
       ViewSubscribePageWidget(),
-      ViewHomePageWidget(),
+      ViewHomePageWidget(
+        filterInfo: widget.filter,
+      ),
       ViewAlarmPageWidget(),
       ViewMyPageWidget()
     ];
