@@ -1,27 +1,91 @@
+class NoticeList {
+  List<Notice>? notices;
+  String? page;
+  int? totalPage;
+  int? totalNotice;
+
+  NoticeList({this.notices, this.page, this.totalPage, this.totalNotice});
+
+  NoticeList.fromJson(Map<String, dynamic> json) {
+    if (json['notices'] != null) {
+      notices = <Notice>[];
+      json['notices'].forEach((v) {
+        notices!.add(new Notice.fromJson(v));
+      });
+    }
+    page = json['page'];
+    totalPage = json['totalPage'];
+    totalNotice = json['totalNotice'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.notices != null) {
+      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
+    }
+    data['page'] = this.page;
+    data['totalPage'] = this.totalPage;
+    data['totalNotice'] = this.totalNotice;
+    return data;
+  }
+}
+
 class Notice {
-  //글 간단 정보
   int? id;
   String? title;
-  String? date;
   bool? scrapped;
+  String? date;
+  String? mappedCategory;
+  String? provider;
+  List<int>? scrapBoxId;
 
-  Notice({this.id, this.title, this.date, this.scrapped});
+  Notice(
+      {this.id,
+      this.title,
+      this.scrapped,
+      this.date,
+      this.mappedCategory,
+      this.provider,
+      this.scrapBoxId});
 
   Notice.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
-    date = json['date'];
     scrapped = json['scrapped'];
+    date = json['date'];
+    mappedCategory = json['mappedCategory'];
+    provider = json['provider'];
+    scrapBoxId = json['scrapBoxId'].cast<int>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['title'] = this.title;
-    data['date'] = this.date;
     data['scrapped'] = this.scrapped;
+    data['date'] = this.date;
+    data['mappedCategory'] = this.mappedCategory;
+    data['provider'] = this.provider;
+    data['scrapBoxId'] = this.scrapBoxId;
     return data;
   }
+}
+
+class Filter {
+  List<String>? categories;
+  List<String>? providers;
+  String? startDate;
+  String? endDate;
+  int? page;
+  String? keyword;
+
+  Filter(
+      {this.categories,
+      this.providers,
+      this.startDate,
+      this.endDate,
+      this.page,
+      this.keyword});
 }
 
 class NoticeDetail {
@@ -77,138 +141,6 @@ class NoticeDetail {
     data['scrapCount'] = this.scrapCount;
     data['category'] = this.category;
     data['provider'] = this.provider;
-    return data;
-  }
-}
-
-class NoticeList {
-  List<Notice>? notices;
-  String? page;
-  int? totalNotice;
-  int? totalPage;
-
-  NoticeList({this.notices, this.page, this.totalNotice, this.totalPage});
-
-  NoticeList.fromJson(Map<String, dynamic> json) {
-    if (json['notices'] != null) {
-      notices = <Notice>[];
-      json['notices'].forEach((v) {
-        notices!.add(new Notice.fromJson(v));
-      });
-    }
-
-    page = json['page'];
-    totalNotice = json['totalNotice'];
-    totalPage = json['totalPage'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.notices != null) {
-      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
-    }
-    data['page'] = this.page;
-    data['totalNotice'] = this.totalNotice;
-    data['totalPage'] = this.totalPage;
-    return data;
-  }
-}
-
-class SelectedNoticeList {
-  List<Notice>? notices;
-  String? page;
-  int? totalNotice;
-  int? totalPage;
-
-  SelectedNoticeList(
-      {this.notices, this.page, this.totalNotice, this.totalPage});
-
-  SelectedNoticeList.fromJson(Map<String, dynamic> json) {
-    if (json['notices'] != null) {
-      notices = <Notice>[];
-      json['notices'].forEach((v) {
-        notices!.add(new Notice.fromJson(v));
-      });
-    }
-    page = json['page'];
-    totalNotice = json['totalNotice'];
-    totalPage = json['totalPage'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.notices != null) {
-      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
-    }
-    data['page'] = this.page;
-    data['totalNotice'] = this.totalNotice;
-    data['totalPage'] = this.totalPage;
-    return data;
-  }
-}
-
-class ScrappedNoticeList {
-  List<Notice>? notices;
-  int? page;
-  int? totalNotice;
-  int? totalPage;
-
-  ScrappedNoticeList(
-      {this.notices, this.page, this.totalNotice, this.totalPage});
-
-  ScrappedNoticeList.fromJson(Map<String, dynamic> json) {
-    if (json['notices'] != null) {
-      notices = <Notice>[];
-      json['notices'].forEach((v) {
-        notices!.add(new Notice.fromJson(v));
-      });
-    }
-    page = json['page'];
-    totalNotice = json['totalNotice'];
-    totalPage = json['totalPage'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.notices != null) {
-      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
-    }
-    data['page'] = this.page;
-    data['totalNotice'] = this.totalNotice;
-    data['totalPage'] = this.totalPage;
-    return data;
-  }
-}
-
-class SearchedNoticeList {
-  List<Notice>? notices;
-  int? page;
-  int? totalNotice;
-  int? totalPage;
-
-  SearchedNoticeList(
-      {this.notices, this.page, this.totalNotice, this.totalPage});
-
-  SearchedNoticeList.fromJson(Map<String, dynamic> json) {
-    if (json['notices'] != null) {
-      notices = <Notice>[];
-      json['notices'].forEach((v) {
-        notices!.add(new Notice.fromJson(v));
-      });
-    }
-    page = json['page'];
-    totalNotice = json['totalNotice'];
-    totalPage = json['totalPage'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.notices != null) {
-      data['notices'] = this.notices!.map((v) => v.toJson()).toList();
-    }
-    data['page'] = this.page;
-    data['totalNotice'] = this.totalNotice;
-    data['totalPage'] = this.totalPage;
     return data;
   }
 }

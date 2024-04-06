@@ -6,7 +6,9 @@ import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class ViewHomePageWidget extends StatefulWidget {
   const ViewHomePageWidget({super.key});
@@ -19,9 +21,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   TextEditingController _searchController = TextEditingController();
   @override
   List<Notice> noticeList = []; //보여지는 공지사항들
-  UpperCategory selectedUpperCategory = UpperCategory(name: "전체");
-  int selectedIndex = 0;
-  List<UpperCategory> upperCategoryList = [];
+
+  int selectedIndex = 0; //선택된 단과대학
   void initState() {
     super.initState();
     _loadAllNotices();
@@ -29,9 +30,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   void _loadAllNotices() async {
     //전체 공지사항을 가져옵니다.
-    await Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 7)));
+    await Provider.of<NoticeService>(context, listen: false).getAllNotices(
+        Filter(startDate: sevenDaysAgo, endDate: formattedDate, page: 1));
+
     setState(() {
-      selectedUpperCategory = upperCategoryList[0];
       selectedIndex = 0;
       noticeList = Provider.of<NoticeService>(context, listen: false)
           .noticeList
@@ -39,27 +44,44 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void selectUpperCategory(int index) async {
-    //선택한 카테고리의 공지사항을 가져옵니다.
-    await Provider.of<NoticeService>(context, listen: false)
-        .getUpperCategoryNotice(1, index);
+  void _loadProviderNotices(Filter filter, int idx) async {
+    //선택한 단과대학의 공지사항을 가져옵니다.
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 7)));
+    await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
+        Filter(
+            providers: filter.providers,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1));
+
     setState(() {
-      selectedUpperCategory = upperCategoryList[index];
-      selectedIndex = index;
+      selectedIndex = idx;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .selectedNoticeList
+          .noticeList
           .notices!;
     });
   }
 
-  Future<List<UpperCategory>> _loadUpperCategories() async {
-    //학과 리스트를 가져옵니다.
-    await Provider.of<NoticeService>(context, listen: false)
-        .getUpperCategories();
-    upperCategoryList =
-        Provider.of<NoticeService>(context, listen: false).upperCategoryList;
-    upperCategoryList.insert(0, UpperCategory(name: "전체"));
-    return upperCategoryList;
+  void _loadSearchedNotices(Filter filter) async {
+    //선택한 단과대학의 공지사항을 가져옵니다.
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 7)));
+    await Provider.of<NoticeService>(context, listen: false).getSearchedNotices(
+        Filter(
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1,
+            keyword: filter.keyword));
+
+    setState(() {
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .noticeList
+          .notices!;
+    });
   }
 
   @override
@@ -142,14 +164,17 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                     controller: _searchController,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey[200], // 배경색 변경
+                      fillColor: Color(0xffF4F2F2), // 배경색 변경
                       labelText: '키워드로 검색하세요.',
                       labelStyle:
                           TextStyle(fontSize: 14, color: Color(0xFFD9D9D9)),
                       contentPadding: EdgeInsets.all(24.0),
                       suffixIcon: IconButton(
                           icon: Icon(Icons.search, color: Color(0xffFF3B47)),
-                          onPressed: () {}),
+                          onPressed: () {
+                            _loadSearchedNotices(
+                                Filter(keyword: _searchController.text));
+                          }),
                       border: OutlineInputBorder(
                         borderSide: BorderSide.none,
                         borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -157,59 +182,45 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                     ),
                   ),
                 ),
-                FutureBuilder(
-                    future: _loadUpperCategories(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData == false) {
-                        return CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Error: ${snapshot.error}',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        );
-                      } else {
-                        return Container(
-                            height: MediaQuery.of(context).size.height * 0.04,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: upperCategoryList.length,
-                                itemBuilder: (context, index) {
-                                  return GestureDetector(
-                                      onTap: () {
-                                        if (index != 0) {
-                                          selectUpperCategory(index);
-                                        } else {
-                                          _loadAllNotices();
-                                        }
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                            border: selectedIndex != index
-                                                ? Border()
-                                                : Border(
-                                                    bottom: BorderSide(
-                                                      color: Color(0xffFF3B47),
-                                                      width: 2.0,
-                                                    ),
-                                                  ),
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.04,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: majors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                              onTap: () {
+                                if (index != 0) {
+                                  _loadProviderNotices(
+                                      Filter(
+                                          providers: [majors[index]], page: 1),
+                                      index);
+                                } else {
+                                  _loadAllNotices();
+                                }
+                              },
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    border: selectedIndex != index
+                                        ? Border()
+                                        : Border(
+                                            bottom: BorderSide(
+                                              color: Color(0xffFF3B47),
+                                              width: 2.0,
+                                            ),
                                           ),
-                                          margin: EdgeInsets.only(right: 40),
-                                          child: Text(
-                                              upperCategoryList[index].name!,
-                                              style: TextStyle(
-                                                color: selectedIndex != index
-                                                    ? Color(0xFF787474)
-                                                    : Color(0xffFF3B47),
-                                                fontSize: 18,
-                                                fontFamily: 'Pretendard',
-                                                fontWeight: FontWeight.w500,
-                                              ))));
-                                }));
-                      }
-                    })
+                                  ),
+                                  margin: EdgeInsets.only(right: 40),
+                                  child: Text(majors[index],
+                                      style: TextStyle(
+                                        color: selectedIndex != index
+                                            ? Color(0xFF787474)
+                                            : Color(0xffFF3B47),
+                                        fontSize: 18,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w500,
+                                      ))));
+                        }))
               ],
             )),
         Container(
@@ -235,7 +246,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            '오늘',
+                            '일주일',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Color(0xFFFF3A46),
@@ -325,7 +336,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   }
 }
 
-
 class noticeCard extends StatefulWidget {
   const noticeCard({super.key, required this.notice});
   final Notice notice;
@@ -365,7 +375,6 @@ class _noticeCardState extends State<noticeCard> {
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -425,11 +434,9 @@ class _noticeCardState extends State<noticeCard> {
                       )
                     ],
                   ),
-
                   GestureDetector(
                     onTap: () {
                       changeIcon();
-                      noticeService.scrapNotice(widget.notice.id!);
                     },
                     child: Container(
                       width: 22,
@@ -441,7 +448,6 @@ class _noticeCardState extends State<noticeCard> {
                         color: widget.notice.scrapped!
                             ? Color(0xffFF3B47)
                             : Color(0xffCCC9C9),
-
                       ),
                     ),
                   )

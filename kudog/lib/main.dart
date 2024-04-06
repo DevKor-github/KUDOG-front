@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
+import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -34,7 +36,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
         home: LoginPageWidget());

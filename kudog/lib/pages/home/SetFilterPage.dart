@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 
 class SetFilterPageWidget extends StatefulWidget {
@@ -12,32 +13,7 @@ class SetFilterPageWidget extends StatefulWidget {
 
 class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> majors = ["전체", "정보대학", "공과대학", "디자인조형학부", "미디어학부", "경영대학"];
   List<String> dates = ["오늘", "1주", "1개월", "3개월"];
-  List<String> categories = [
-    "학부",
-    "대학원",
-    "교내 장학",
-    "교외 장학",
-    "근로 장학",
-    "학사 일정",
-    "학사자료실",
-    "자유게시판",
-    "공모전",
-    "채용정보",
-    "행사"
-  ];
-  List<UpperCategory> upperCategoryList = [];
-
-  Future<List<UpperCategory>> _loadUpperCategories() async {
-    //학과 리스트를 가져옵니다.
-    await Provider.of<NoticeService>(context, listen: false)
-        .getUpperCategories();
-    upperCategoryList =
-        Provider.of<NoticeService>(context, listen: false).upperCategoryList;
-    upperCategoryList.insert(0, UpperCategory(name: "전체"));
-    return upperCategoryList;
-  }
 
   @override
   void initState() {
@@ -196,34 +172,16 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                               ],
                             ),
                           ),
-                          FutureBuilder(
-                              future: _loadUpperCategories(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot snapshot) {
-                                if (snapshot.hasData == false) {
-                                  return CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'Error: ${snapshot.error}',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  );
-                                } else {
-                                  return GridView.builder(
-                                      shrinkWrap: true,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              mainAxisSpacing: 10,
-                                              crossAxisSpacing: 10),
-                                      itemCount: upperCategoryList.length,
-                                      itemBuilder: (context, index) =>
-                                          MajorCard(
-                                              major: upperCategoryList[index]));
-                                }
-                              }),
+                          GridView.builder(
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      mainAxisSpacing: 10,
+                                      crossAxisSpacing: 10),
+                              itemCount: majors.length,
+                              itemBuilder: (context, index) =>
+                                  MajorCard(major: majors[index]))
                         ],
                       )),
                       Container(
@@ -389,7 +347,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
 
 class MajorCard extends StatefulWidget {
   const MajorCard({super.key, required this.major});
-  final UpperCategory major;
+  final String major;
   @override
   _MajorCardState createState() => _MajorCardState();
 }
@@ -433,7 +391,7 @@ class _MajorCardState extends State<MajorCard> {
                   ? Icon(Icons.check, color: Color(0xFFFF3A46))
                   : Container(),
               Text(
-                widget.major.name!,
+                widget.major!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF423C3C),

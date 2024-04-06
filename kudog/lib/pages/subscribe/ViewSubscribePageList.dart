@@ -39,8 +39,8 @@ class _ViewSubscribePageListWidgetState
     Provider.of<CategoryService>(context, listen: false)
         .getFullLowerCategoryList();
     Provider.of<CategoryService>(context, listen: false).getSubList();
-    Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(currentPage);
+    // Provider.of<NoticeService>(context, listen: false)
+    //     .getSubscribedNotices(currentPage);
   }
 
   @override
@@ -53,17 +53,17 @@ class _ViewSubscribePageListWidgetState
     setState(() {
       currentPage = page;
     });
-    Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(currentPage);
+    // Provider.of<NoticeService>(context, listen: false)
+    //     .getSubscribedNotices(currentPage);
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer2<CategoryService, NoticeService>(
         builder: (context, categoryService, noticeService, child) {
-      noticeList = noticeService.subscribedNoticeList.notices!;
-      int totalPage = noticeService.subscribedNoticeList.totalPage ?? 1;
-      List<int> subIdList = categoryService.subIdList;
+      // noticeList = noticeService.subscribedNoticeList.notices!;
+      // int totalPage = noticeService.subscribedNoticeList.totalPage ?? 1;
+      // List<int> subIdList = categoryService.subIdList;
       List<int> unsubIdList = categoryService.unsubIdList;
       List<String> subNameList = categoryService.subNameList;
       List<String> fullLowerCategoryList =
@@ -78,23 +78,15 @@ class _ViewSubscribePageListWidgetState
               height: 40,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(208),
-                color:
-                    subIdList.contains(id) ? Color(0xFFCE4040) : Colors.white,
-                border: Border.all(
-                  width: 1.0,
-                  color: subIdList.contains(id)
-                      ? Colors.transparent
-                      : Color(0xFFCDCDCD),
-                ),
+                color: Color(0xFFCE4040),
+                border: Border.all(width: 1.0, color: Colors.transparent),
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
                 child: Text(
                   fullLowerCategoryList[id - 1],
                   style: TextStyle(
-                    color: subIdList.contains(id)
-                        ? Colors.white
-                        : Color(0xFF696969),
+                    color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -188,7 +180,7 @@ class _ViewSubscribePageListWidgetState
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: List.generate(
-                              totalPage,
+                              3,
                               (index) => InkWell(
                                 onTap: () => onPageClick(index + 1),
                                 child: Container(

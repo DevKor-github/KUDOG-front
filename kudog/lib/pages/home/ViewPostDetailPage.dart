@@ -25,6 +25,8 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
     """;
 
   bool isClicked = false;
+  bool isButton1Clicked = false;
+  bool isButton2Clicked = false;
 
   List<String> extractAttachmentUrls(String htmlContent) {
     List<String> attachmentUrls = [];
@@ -47,7 +49,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
     setState(() {
       widget.notice.scrapped = !widget.notice.scrapped!;
       isClicked = !isClicked;
-      NoticeService().scrapNotice(widget.notice.id!);
+      // NoticeService().scrapNotice(widget.notice.id!);
     });
   }
 
@@ -56,7 +58,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
     super.initState();
     Provider.of<NoticeService>(context, listen: false)
         .getNotice(widget.notice.id!);
-    print(widget.notice.id!);
   }
 
   @override
@@ -80,16 +81,34 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
               child: Icon(Icons.upload_sharp),
             ),
             SizedBox(height: 16), // 버튼 간 간격 조절
-            FloatingActionButton(
-              backgroundColor: Color(0xffFF4F59),
-              shape: CircleBorder(),
-              onPressed: () {
-                scrapOrNot();
-                print(noticeDetail.scrapCount);
-              },
-              tooltip: '스크랩',
-              child: Icon(Icons.bookmark, color: Colors.white),
-            ),
+            widget.notice.scrapped!
+                ? FloatingActionButton(
+                    backgroundColor: Color(0xffFF4F59),
+                    shape: CircleBorder(),
+                    onPressed: () {
+                      scrapOrNot();
+                      print(noticeDetail.scrapCount);
+                      setState(() {
+                        isButton1Clicked = !isButton1Clicked;
+                      });
+                    },
+                    tooltip: '스크랩',
+                    child: Icon(Icons.bookmark, color: Colors.white),
+                  )
+                : FloatingActionButton(
+                    backgroundColor: Colors.white,
+                    shape: CircleBorder(),
+                    onPressed: () {
+                      scrapOrNot();
+                      print(noticeDetail.scrapCount);
+                      setState(() {
+                        isButton2Clicked = !isButton2Clicked;
+                      });
+                    },
+                    tooltip: '스크랩',
+                    child:
+                        Icon(Icons.bookmark_outline, color: Color(0xffFF4F59)),
+                  )
           ],
         ),
         backgroundColor: Colors.white,

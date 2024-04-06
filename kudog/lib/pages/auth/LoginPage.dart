@@ -38,6 +38,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     accessToken = sharedPreferences.getString("access_token");
     refreshToken = sharedPreferences.getString("refresh_token");
+    print(accessToken);
 
     if (accessToken != null && refreshToken != null) {
       //토큰이 있을 때
