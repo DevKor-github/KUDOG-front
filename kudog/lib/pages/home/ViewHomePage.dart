@@ -12,8 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class ViewHomePageWidget extends StatefulWidget {
-  const ViewHomePageWidget({super.key, required this.filterInfo});
-  final Filter filterInfo;
+  const ViewHomePageWidget({super.key});
   @override
   _ViewHomePageWidgetState createState() => _ViewHomePageWidgetState();
 }
@@ -27,39 +26,49 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   int selectedIndex = 0; //선택된 단과대학
   void initState() {
     super.initState();
+    print(overallFilter.categories);
+    print(overallFilter.providers);
 
-    if (DateTime.parse(widget.filterInfo.endDate!)
-            .difference(DateTime.parse(widget.filterInfo.startDate!))
+    if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
             .inDays ==
         0) {
       filterDate = "오늘";
-    } else if (DateTime.parse(widget.filterInfo.endDate!)
-            .difference(DateTime.parse(widget.filterInfo.startDate!))
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
             .inDays ==
         7) {
       filterDate = "1주";
-    } else if (DateTime.parse(widget.filterInfo.endDate!)
-            .difference(DateTime.parse(widget.filterInfo.startDate!))
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
             .inDays >=
         50) {
       filterDate = "3개월";
     } else {
       filterDate = "1개월";
     }
-    // if (widget.filterInfo.categories == null) {
-    //   _loadInitNotices(widget.filterInfo);
-    // } else {
-    //   _loadFilteredNotices(widget.filterInfo);
-    // }
+    if (overallFilter.categories == null && overallFilter.providers == null) {
+      //처음에 가져올 때
+      _loadInitNotices(overallFilter);
+    } else if (overallFilter.categories == null &&
+        overallFilter.providers != null) {
+      _loadProvidersNotices(overallFilter);
+    } else if (overallFilter.categories != null &&
+        overallFilter.providers == null) {
+      _loadCategoriesNotices(overallFilter);
+    } else {
+      //provider, categories 두 개 다 있을 때
+      _loadFilteredNotices(overallFilter);
+    }
   }
 
-  void _loadInitNotices(Filter defaultFilter) async {
+  void _loadInitNotices(Filter filter) async {
     //filter설정된 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getAllNotices(
         Filter(
-            startDate: defaultFilter.startDate,
-            endDate: defaultFilter.endDate,
-            page: defaultFilter.page));
+            startDate: filter.startDate,
+            endDate: filter.endDate,
+            page: filter.page));
 
     setState(() {
       selectedIndex = 0;
@@ -89,9 +98,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   void _loadProviderNotices(Filter filter, int idx) async {
     //선택한 단과대학의 공지사항을 가져옵니다.
-    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
-        .format(DateTime.now().subtract(Duration(days: 7)));
+
     await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
         Filter(
             providers: filter.providers,
@@ -101,6 +108,40 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
     setState(() {
       selectedIndex = idx;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .noticeList
+          .notices!;
+    });
+  }
+
+  void _loadProvidersNotices(Filter filter) async {
+    //선택한 단과대학들의 공지사항을 가져옵니다.
+
+    await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
+        Filter(
+            providers: filter.providers,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1));
+
+    setState(() {
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .noticeList
+          .notices!;
+    });
+  }
+
+  void _loadCategoriesNotices(Filter filter) async {
+    //선택한 카테고리들의 공지사항을 가져옵니다.
+
+    await Provider.of<NoticeService>(context, listen: false).getCategoryNotices(
+        Filter(
+            categories: filter.categories,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1));
+
+    setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
           .noticeList
           .notices!;
@@ -238,8 +279,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                       Filter(
                                           providers: [majors[index]], page: 1),
                                       index);
+                                  overallFilter = Filter(
+                                      providers: [majors[index]],
+                                      page: 1,
+                                      startDate: overallFilter.startDate,
+                                      endDate: overallFilter.endDate);
                                 } else {
-                                  _loadInitNotices(widget.filterInfo);
+                                  _loadInitNotices(overallFilter);
                                 }
                               },
                               child: Container(
@@ -273,16 +319,16 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
               children: [
                 Row(children: [
                   FilterCard(content: filterDate, type: "dates"),
-                  widget.filterInfo.providers != null
+                  overallFilter.providers != null
                       ? FilterCard(
-                          content: widget.filterInfo.providers!.join(', '),
+                          content: overallFilter.providers!.join(', '),
                           type: "majors")
-                      : Container(),
-                  widget.filterInfo.categories != null
+                      : FilterCard(content: "전체", type: "majors"),
+                  overallFilter.categories != null
                       ? FilterCard(
-                          content: widget.filterInfo.categories!.join(', '),
+                          content: overallFilter.categories!.join(', '),
                           type: "categories")
-                      : Container(),
+                      : FilterCard(content: "전체", type: "categories"),
                 ]),
                 GestureDetector(
                     onTap: () {

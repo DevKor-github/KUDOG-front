@@ -41,9 +41,7 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
     final List<Widget> _widgetOptions = <Widget>[
       ViewScrabPageWidget(),
       ViewSubscribePageWidget(),
-      ViewHomePageWidget(
-        filterInfo: overallFilter,
-      ),
+      ViewHomePageWidget(),
       ViewAlarmPageWidget(),
       ViewMyPageWidget()
     ];

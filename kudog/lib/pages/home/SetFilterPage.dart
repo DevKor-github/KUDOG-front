@@ -192,12 +192,34 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                             _categories.map((e) => e.toString()).toList();
                         List<String> _pros =
                             _providers.map((e) => e.toString()).toList();
-                        overallFilter = Filter(
-                            categories: _cts,
-                            providers: _pros,
-                            startDate: filters["startDate"],
-                            endDate: filters["endDate"],
-                            page: 1);
+
+                        if (_cts[0] == "전체" && _pros[0] == "전체") {
+                          overallFilter = Filter(
+                              startDate: filters["startDate"],
+                              endDate: filters["endDate"],
+                              page: 1);
+                        } else if (_cts[0] == "전체") {
+                          overallFilter = Filter(
+                              providers: _pros,
+                              startDate: filters["startDate"],
+                              endDate: filters["endDate"],
+                              page: 1);
+                        } else if (_pros[0] == "전체") {
+                          overallFilter = Filter(
+                              categories: _cts,
+                              startDate: filters["startDate"],
+                              endDate: filters["endDate"],
+                              page: 1);
+                        } else {
+                          print("hello");
+                          overallFilter = Filter(
+                              categories: _cts,
+                              providers: _pros,
+                              startDate: filters["startDate"],
+                              endDate: filters["endDate"],
+                              page: 1);
+                        }
+
                         Navigator.pushReplacement<void, void>(
                           context,
                           MaterialPageRoute<void>(
@@ -331,72 +353,75 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                 right: 20,
                               )),
                           Container(
+                              margin: EdgeInsets.only(bottom: 10),
                               child: Row(
-                            children: List.generate(
-                                dates.length,
-                                (index) => GestureDetector(
-                                    onTap: () {
-                                      changeColor(index, 2);
-                                      if (dates[index] == "오늘") {
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now()),
-                                            "startDate",
-                                            index);
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now()),
-                                            "endDate",
-                                            index);
-                                      } else if (dates[index] == "1주") {
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd').format(
-                                                DateTime.now().subtract(
-                                                    Duration(days: 7))),
-                                            "startDate",
-                                            index);
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now()),
-                                            "endDate",
-                                            index);
-                                      } else if (dates[index] == "1개월") {
-                                        DateTime currentDate = DateTime.now();
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd').format(
-                                                DateTime(
-                                                    currentDate.year,
-                                                    currentDate.month - 1,
-                                                    currentDate.day)),
-                                            "startDate",
-                                            index);
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now()),
-                                            "endDate",
-                                            index);
-                                      } else {
-                                        DateTime currentDate = DateTime.now();
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd').format(
-                                                DateTime(
-                                                    currentDate.year - 1,
-                                                    currentDate.month,
-                                                    currentDate.day)),
-                                            "startDate",
-                                            index);
-                                        changeFilter(
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now()),
-                                            "endDate",
-                                            index);
-                                      }
-                                    },
-                                    child: DateCard(
-                                      date: dates[index],
-                                      isClicked: isDatesClickedList[index],
-                                    ))),
-                          )),
+                                children: List.generate(
+                                    dates.length,
+                                    (index) => GestureDetector(
+                                        onTap: () {
+                                          changeColor(index, 2);
+                                          if (dates[index] == "오늘") {
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(DateTime.now()),
+                                                "startDate",
+                                                index);
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(DateTime.now()),
+                                                "endDate",
+                                                index);
+                                          } else if (dates[index] == "1주") {
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd').format(
+                                                    DateTime.now().subtract(
+                                                        Duration(days: 7))),
+                                                "startDate",
+                                                index);
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(DateTime.now()),
+                                                "endDate",
+                                                index);
+                                          } else if (dates[index] == "1개월") {
+                                            DateTime currentDate =
+                                                DateTime.now();
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd').format(
+                                                    DateTime(
+                                                        currentDate.year,
+                                                        currentDate.month - 1,
+                                                        currentDate.day)),
+                                                "startDate",
+                                                index);
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(DateTime.now()),
+                                                "endDate",
+                                                index);
+                                          } else {
+                                            DateTime currentDate =
+                                                DateTime.now();
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd').format(
+                                                    DateTime(
+                                                        currentDate.year - 1,
+                                                        currentDate.month,
+                                                        currentDate.day)),
+                                                "startDate",
+                                                index);
+                                            changeFilter(
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(DateTime.now()),
+                                                "endDate",
+                                                index);
+                                          }
+                                        },
+                                        child: DateCard(
+                                          date: dates[index],
+                                          isClicked: isDatesClickedList[index],
+                                        ))),
+                              )),
                           Row(
                             children: [
                               Container(
@@ -677,7 +702,7 @@ class FilterCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.all(5),
-      decoration: type == "dates"
+      decoration: type != "dates"
           ? ShapeDecoration(
               color: Color(0x7FFFD8DA),
               shape: RoundedRectangleBorder(
