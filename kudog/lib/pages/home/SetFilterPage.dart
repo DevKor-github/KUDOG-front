@@ -211,7 +211,6 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                               endDate: filters["endDate"],
                               page: 1);
                         } else {
-                          print("hello");
                           overallFilter = Filter(
                               categories: _cts,
                               providers: _pros,
@@ -236,108 +235,283 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                   Container(width: 20)
                 ],
               )),
-          Column(
-            children: [
-              Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text("적용된 필터",
+          Container(
+            color: Color(0xffF4F2F2),
+            child: Column(
+              children: [
+                Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.only(top: 20, left: 20, bottom: 10),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "적용된 필터",
                               style: TextStyle(
+                                color: Color(0xFF1B1616),
                                 fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              )),
-                          Container(
-                              padding: EdgeInsets.only(left: 10),
-                              child: Image.asset("assets/images/trash.png",
-                                  color: Color(0xff787474)))
-                        ],
-                      ),
-                      Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  FilterCard(content: date, type: "dates"),
-                                  FilterCard(
-                                      content: filters["providers"].join(', '),
-                                      type: "majors"),
-                                  FilterCard(
-                                      content: filters["categories"].join(', '),
-                                      type: "categories"),
-                                ],
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
-                          )),
-                    ],
-                  )),
-              Container(
-                  color: Colors.white,
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Container(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(bottom: 20),
-                            child: Row(
-                              children: [
-                                Container(
-                                    child: Text(
-                                      '학과',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFF1B1616),
-                                        fontSize: 16,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    margin: EdgeInsets.only(
-                                      right: 20,
-                                    )),
-                                Icon(Icons.edit_outlined,
-                                    color: Color(0xff787474))
-                              ],
                             ),
-                          ),
-                          Wrap(
-                              spacing: 5.0,
-                              runSpacing: 5.0,
-                              children: List.generate(
-                                  majors.length,
-                                  (index) => GestureDetector(
-                                        onTap: () {
-                                          changeColor(index, 1);
-                                          changeFilter(majors[index],
-                                              "providers", index);
-                                        },
-                                        child: MajorCard(
-                                          major: majors[index],
-                                          isClicked: isMajorClickedList[index],
-                                        ),
-                                      )))
-                        ],
-                      )),
-                      Container(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
+                          ],
+                        ),
+                      ],
+                    )),
+                Container(
+                    color: Colors.white,
+                    margin: EdgeInsets.only(bottom: 10),
+                    padding: EdgeInsets.only(left: 20, bottom: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            FilterCard(content: date, type: "dates"),
+                            FilterCard(
+                                content: filters["providers"].join(', '),
+                                type: "majors"),
+                            FilterCard(
+                                content: filters["categories"].join(', '),
+                                type: "categories"),
+                          ],
+                        ),
+                      ],
+                    )),
+                Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Container(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(bottom: 20),
                               child: Row(
                                 children: [
                                   Container(
+                                      child: Text(
+                                        '학과',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFF1B1616),
+                                          fontSize: 16,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      margin: EdgeInsets.only(
+                                        right: 20,
+                                      )),
+                                  Icon(Icons.edit_outlined,
+                                      color: Color(0xff787474))
+                                ],
+                              ),
+                            ),
+                            Wrap(
+                                spacing: 5.0,
+                                runSpacing: 5.0,
+                                children: List.generate(
+                                    majors.length,
+                                    (index) => GestureDetector(
+                                          onTap: () {
+                                            changeColor(index, 1);
+                                            changeFilter(majors[index],
+                                                "providers", index);
+                                          },
+                                          child: MajorCard(
+                                            major: majors[index],
+                                            isClicked:
+                                                isMajorClickedList[index],
+                                          ),
+                                        )))
+                          ],
+                        )),
+                        Container(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(top: 30, bottom: 10),
+                                      child: Text(
+                                        '조회기간',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFF1B1616),
+                                          fontSize: 16,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                margin: EdgeInsets.only(
+                                  right: 20,
+                                )),
+                            Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: List.generate(
+                                      dates.length,
+                                      (index) => GestureDetector(
+                                          onTap: () {
+                                            changeColor(index, 2);
+                                            if (dates[index] == "오늘") {
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()),
+                                                  "startDate",
+                                                  index);
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()),
+                                                  "endDate",
+                                                  index);
+                                            } else if (dates[index] == "1주") {
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()
+                                                          .subtract(Duration(
+                                                              days: 7))),
+                                                  "startDate",
+                                                  index);
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()),
+                                                  "endDate",
+                                                  index);
+                                            } else if (dates[index] == "1개월") {
+                                              DateTime currentDate =
+                                                  DateTime.now();
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime(
+                                                          currentDate.year,
+                                                          currentDate.month - 1,
+                                                          currentDate.day)),
+                                                  "startDate",
+                                                  index);
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()),
+                                                  "endDate",
+                                                  index);
+                                            } else {
+                                              DateTime currentDate =
+                                                  DateTime.now();
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime(
+                                                          currentDate.year - 1,
+                                                          currentDate.month,
+                                                          currentDate.day)),
+                                                  "startDate",
+                                                  index);
+                                              changeFilter(
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateTime.now()),
+                                                  "endDate",
+                                                  index);
+                                            }
+                                          },
+                                          child: DateCard(
+                                            date: dates[index],
+                                            isClicked:
+                                                isDatesClickedList[index],
+                                          ))),
+                                )),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 9, left: 14, right: 8, bottom: 9),
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: ShapeDecoration(
+                                    color: Color(0xFFF4F1F1),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '2023. 10. 01',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFF423C3C),
+                                          fontSize: 16,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      Container(
+                                          margin: EdgeInsets.only(left: 30),
+                                          child: Icon(
+                                              Icons.calendar_month_outlined))
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 8, right: 8),
+                                  child:
+                                      Text("-", style: TextStyle(fontSize: 30)),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 9, left: 14, right: 8, bottom: 9),
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: ShapeDecoration(
+                                    color: Color(0xFFF4F1F1),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '2023. 10. 05',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFF423C3C),
+                                          fontSize: 16,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      Container(
+                                          margin: EdgeInsets.only(left: 30),
+                                          child: Icon(
+                                              Icons.calendar_month_outlined))
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )),
+                        Container(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
                                     margin:
                                         EdgeInsets.only(top: 30, bottom: 10),
                                     child: Text(
-                                      '조회기간',
+                                      '카테고리',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Color(0xFF1B1616),
@@ -345,201 +519,35 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                         fontFamily: 'Pretendard',
                                         fontWeight: FontWeight.w600,
                                       ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              margin: EdgeInsets.only(
-                                right: 20,
-                              )),
-                          Container(
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: Row(
-                                children: List.generate(
-                                    dates.length,
-                                    (index) => GestureDetector(
-                                        onTap: () {
-                                          changeColor(index, 2);
-                                          if (dates[index] == "오늘") {
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(DateTime.now()),
-                                                "startDate",
-                                                index);
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(DateTime.now()),
-                                                "endDate",
-                                                index);
-                                          } else if (dates[index] == "1주") {
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateTime.now().subtract(
-                                                        Duration(days: 7))),
-                                                "startDate",
-                                                index);
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(DateTime.now()),
-                                                "endDate",
-                                                index);
-                                          } else if (dates[index] == "1개월") {
-                                            DateTime currentDate =
-                                                DateTime.now();
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateTime(
-                                                        currentDate.year,
-                                                        currentDate.month - 1,
-                                                        currentDate.day)),
-                                                "startDate",
-                                                index);
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(DateTime.now()),
-                                                "endDate",
-                                                index);
-                                          } else {
-                                            DateTime currentDate =
-                                                DateTime.now();
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateTime(
-                                                        currentDate.year - 1,
-                                                        currentDate.month,
-                                                        currentDate.day)),
-                                                "startDate",
-                                                index);
-                                            changeFilter(
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(DateTime.now()),
-                                                "endDate",
-                                                index);
-                                          }
-                                        },
-                                        child: DateCard(
-                                          date: dates[index],
-                                          isClicked: isDatesClickedList[index],
-                                        ))),
-                              )),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(
-                                    top: 9, left: 14, right: 8, bottom: 9),
-                                clipBehavior: Clip.antiAlias,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF4F1F1),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '2023. 10. 01',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFF423C3C),
-                                        fontSize: 16,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Container(
-                                        margin: EdgeInsets.only(left: 30),
-                                        child:
-                                            Icon(Icons.calendar_month_outlined))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 8, right: 8),
-                                child:
-                                    Text("-", style: TextStyle(fontSize: 30)),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.only(
-                                    top: 9, left: 14, right: 8, bottom: 9),
-                                clipBehavior: Clip.antiAlias,
-                                decoration: ShapeDecoration(
-                                  color: Color(0xFFF4F1F1),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '2023. 10. 05',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFF423C3C),
-                                        fontSize: 16,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Container(
-                                        margin: EdgeInsets.only(left: 30),
-                                        child:
-                                            Icon(Icons.calendar_month_outlined))
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )),
-                      Container(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                  margin: EdgeInsets.only(top: 30, bottom: 10),
-                                  child: Text(
-                                    '카테고리',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Color(0xFF1B1616),
-                                      fontSize: 16,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ))
-                            ],
-                          ),
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              child: Wrap(
-                                spacing: 5.0,
-                                runSpacing: 5.0,
-                                children: List.generate(
-                                    categories.length,
-                                    (index) => GestureDetector(
-                                        onTap: () {
-                                          changeColor(index, 3);
-                                          changeFilter(categories[index],
-                                              "categories", index);
-                                        },
-                                        child: CategoryCard(
-                                          category: categories[index],
-                                          isClicked:
-                                              isCategoriesClickedList[index],
-                                        ))),
-                              ))
-                        ],
-                      ))
-                    ],
-                  ))
-            ],
-          ),
+                                    ))
+                              ],
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: Wrap(
+                                  spacing: 5.0,
+                                  runSpacing: 5.0,
+                                  children: List.generate(
+                                      categories.length,
+                                      (index) => GestureDetector(
+                                          onTap: () {
+                                            changeColor(index, 3);
+                                            changeFilter(categories[index],
+                                                "categories", index);
+                                          },
+                                          child: CategoryCard(
+                                            category: categories[index],
+                                            isClicked:
+                                                isCategoriesClickedList[index],
+                                          ))),
+                                ))
+                          ],
+                        ))
+                      ],
+                    ))
+              ],
+            ),
+          )
         ],
       ),
     ));
