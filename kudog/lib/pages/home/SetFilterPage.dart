@@ -4,6 +4,7 @@ import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 
@@ -16,25 +17,149 @@ class SetFilterPageWidget extends StatefulWidget {
 
 class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> dates = ["오늘", "1주", "1개월", "3개월"];
-  Filter setFilter = Filter();
+
+  late String date;
   Map<String, dynamic> filters = {
-    "providers": [],
-    "categories": [],
+    "providers": Set(),
+    "categories": Set(),
     "startDate": "",
     "endDate": ""
   };
+  List<bool> isMajorClickedList = List.generate(majors.length, (_) => false);
+  List<bool> isDatesClickedList = List.generate(dates.length, (_) => false);
+  List<bool> isCategoriesClickedList =
+      List.generate(categories.length, (_) => false);
   @override
   void initState() {
     super.initState();
+    //overallFilter를 filters에 반영하기
+
+    if (overallFilter.providers != null) {
+      filters["providers"] = overallFilter.providers!.toSet();
+    } else {
+      filters["providers"] = ["전체"].toSet();
+    }
+    if (overallFilter.categories != null) {
+      filters["categories"] = overallFilter.categories!.toSet();
+    } else {
+      filters["categories"] = ["전체"].toSet();
+    }
+    filters["startDate"] = overallFilter.startDate;
+    filters["endDate"] = overallFilter.endDate;
+
+    if (filters["providers"] != null) {
+      for (String element in filters["providers"]) {
+        int index = majors.indexOf(element);
+        isMajorClickedList[index] = true;
+      }
+    }
+    if (filters["categories"] != null) {
+      for (String element in filters["categories"]) {
+        int index = categories.indexOf(element);
+        isCategoriesClickedList[index] = true;
+      }
+    }
+    if (DateTime.parse(filters["endDate"])
+            .difference(DateTime.parse(filters["startDate"]))
+            .inDays ==
+        0) {
+      isDatesClickedList[0] = true;
+      date = "오늘";
+    } else if (DateTime.parse(filters["endDate"])
+            .difference(DateTime.parse(filters["startDate"]))
+            .inDays ==
+        7) {
+      isDatesClickedList[1] = true;
+      date = "1주";
+    } else if (DateTime.parse(filters["endDate"])
+            .difference(DateTime.parse(filters["startDate"]))
+            .inDays >=
+        50) {
+      isDatesClickedList[3] = true;
+      date = "3개월";
+    } else {
+      isDatesClickedList[2] = true;
+      date = "1개월";
+    }
   }
 
-  void changeFilter(String filter, String whichFilter) {
+  void changeFilter(String filter, String whichFilter, int idx) {
     setState(() {
-      if (whichFilter == "providers" || whichFilter == "categories") {
-        filters[whichFilter].add(filter);
+      if (whichFilter == "providers") {
+        if (isMajorClickedList[idx]) {
+          filters[whichFilter].add(filter);
+          if (idx != 0) {
+            filters[whichFilter].remove("전체");
+          } else {
+            filters[whichFilter] = ["전체"].toSet();
+          }
+        } else {
+          filters[whichFilter].remove(filter);
+        }
+      } else if (whichFilter == "categories") {
+        if (isCategoriesClickedList[idx]) {
+          filters[whichFilter].add(filter);
+          if (idx != 0) {
+            filters[whichFilter].remove("전체");
+          } else {
+            filters[whichFilter] = ["전체"].toSet();
+          }
+        } else {
+          filters[whichFilter].remove(filter);
+        }
       } else {
         filters[whichFilter] = filter;
+        if (DateTime.parse(filters["endDate"])
+                .difference(DateTime.parse(filters["startDate"]))
+                .inDays ==
+            0) {
+          isDatesClickedList[0] = true;
+          date = "오늘";
+        } else if (DateTime.parse(filters["endDate"])
+                .difference(DateTime.parse(filters["startDate"]))
+                .inDays ==
+            7) {
+          isDatesClickedList[1] = true;
+          date = "1주";
+        } else if (DateTime.parse(filters["endDate"])
+                .difference(DateTime.parse(filters["startDate"]))
+                .inDays >=
+            50) {
+          isDatesClickedList[3] = true;
+          date = "3개월";
+        } else {
+          isDatesClickedList[2] = true;
+          date = "1개월";
+        }
+      }
+    });
+    print(filters);
+  }
+
+  void changeColor(int idx, int type) {
+    //type = 1 -> major, type = 2 -> dates, type = 3 -> categories
+    setState(() {
+      if (type == 1) {
+        //
+        if (idx == 0) {
+          isMajorClickedList = List.generate(majors.length, (_) => false);
+          isMajorClickedList[idx] = !isMajorClickedList[idx];
+        } else {
+          isMajorClickedList[0] = false;
+          isMajorClickedList[idx] = !isMajorClickedList[idx];
+        }
+      } else if (type == 2) {
+        isDatesClickedList = List.generate(dates.length, (_) => false);
+        isDatesClickedList[idx] = !isDatesClickedList[idx];
+      } else {
+        if (idx == 0) {
+          isCategoriesClickedList =
+              List.generate(categories.length, (_) => false);
+          isCategoriesClickedList[idx] = !isCategoriesClickedList[idx];
+        } else {
+          isCategoriesClickedList[0] = false;
+          isCategoriesClickedList[idx] = !isCategoriesClickedList[idx];
+        }
       }
     });
   }
@@ -59,17 +184,25 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                   GestureDetector(
                       child: Icon(Icons.arrow_back_ios),
                       onTap: () {
+                        List<dynamic> _categories =
+                            filters["categories"].toList();
+                        List<dynamic> _providers =
+                            filters["providers"].toList();
+                        List<String> _cts =
+                            _categories.map((e) => e.toString()).toList();
+                        List<String> _pros =
+                            _providers.map((e) => e.toString()).toList();
+                        overallFilter = Filter(
+                            categories: _cts,
+                            providers: _pros,
+                            startDate: filters["startDate"],
+                            endDate: filters["endDate"],
+                            page: 1);
                         Navigator.pushReplacement<void, void>(
                           context,
                           MaterialPageRoute<void>(
                             builder: (BuildContext context) =>
-                                NavigationPageWidget(
-                                    filter: Filter(
-                                        categories: ["공지사항"],
-                                        providers: ["정보대학"],
-                                        startDate: "2024-04-01",
-                                        endDate: "2024-04-06",
-                                        page: 1)),
+                                NavigationPageWidget(),
                           ),
                         );
                       }),
@@ -108,64 +241,13 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                             children: [
                               Row(
                                 children: [
-                                  Container(
-                                    padding: EdgeInsets.all(5),
-                                    decoration: ShapeDecoration(
-                                      color: Color(0xFFF4F1F1),
-                                      shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xFFFFD8DA)),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '오늘',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: Color(0xFFFF3A46),
-                                            fontSize: 14,
-                                            fontFamily: 'Pretendard',
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 5),
-                                    padding: EdgeInsets.all(5),
-                                    decoration: ShapeDecoration(
-                                      color: Color(0x7FFFD8DA),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '공지사항, 학사일정',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: Color(0xFFFF3A46),
-                                            fontSize: 14,
-                                            fontFamily: 'Pretendard',
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                  FilterCard(content: date, type: "dates"),
+                                  FilterCard(
+                                      content: filters["providers"].join(', '),
+                                      type: "majors"),
+                                  FilterCard(
+                                      content: filters["categories"].join(', '),
+                                      type: "categories"),
                                 ],
                               ),
                             ],
@@ -210,11 +292,16 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                               children: List.generate(
                                   majors.length,
                                   (index) => GestureDetector(
-                                      onTap: () {
-                                        changeFilter(
-                                            majors[index], "providers");
-                                      },
-                                      child: MajorCard(major: majors[index]))))
+                                        onTap: () {
+                                          changeColor(index, 1);
+                                          changeFilter(majors[index],
+                                              "providers", index);
+                                        },
+                                        child: MajorCard(
+                                          major: majors[index],
+                                          isClicked: isMajorClickedList[index],
+                                        ),
+                                      )))
                         ],
                       )),
                       Container(
@@ -249,25 +336,30 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                 dates.length,
                                 (index) => GestureDetector(
                                     onTap: () {
+                                      changeColor(index, 2);
                                       if (dates[index] == "오늘") {
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now()),
-                                            "startDate");
+                                            "startDate",
+                                            index);
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now()),
-                                            "endDate");
+                                            "endDate",
+                                            index);
                                       } else if (dates[index] == "1주") {
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd').format(
                                                 DateTime.now().subtract(
                                                     Duration(days: 7))),
-                                            "startDate");
+                                            "startDate",
+                                            index);
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now()),
-                                            "endDate");
+                                            "endDate",
+                                            index);
                                       } else if (dates[index] == "1개월") {
                                         DateTime currentDate = DateTime.now();
                                         changeFilter(
@@ -276,11 +368,13 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                                     currentDate.year,
                                                     currentDate.month - 1,
                                                     currentDate.day)),
-                                            "startDate");
+                                            "startDate",
+                                            index);
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now()),
-                                            "endDate");
+                                            "endDate",
+                                            index);
                                       } else {
                                         DateTime currentDate = DateTime.now();
                                         changeFilter(
@@ -289,14 +383,19 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                                     currentDate.year - 1,
                                                     currentDate.month,
                                                     currentDate.day)),
-                                            "startDate");
+                                            "startDate",
+                                            index);
                                         changeFilter(
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now()),
-                                            "endDate");
+                                            "endDate",
+                                            index);
                                       }
                                     },
-                                    child: DateCard(date: dates[index]))),
+                                    child: DateCard(
+                                      date: dates[index],
+                                      isClicked: isDatesClickedList[index],
+                                    ))),
                           )),
                           Row(
                             children: [
@@ -400,11 +499,15 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                                     categories.length,
                                     (index) => GestureDetector(
                                         onTap: () {
-                                          changeFilter(
-                                              categories[index], "categories");
+                                          changeColor(index, 3);
+                                          changeFilter(categories[index],
+                                              "categories", index);
                                         },
                                         child: CategoryCard(
-                                            category: categories[index]))),
+                                          category: categories[index],
+                                          isClicked:
+                                              isCategoriesClickedList[index],
+                                        ))),
                               ))
                         ],
                       ))
@@ -419,169 +522,190 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
 }
 
 class MajorCard extends StatefulWidget {
-  const MajorCard({super.key, required this.major});
+  const MajorCard({super.key, required this.major, required this.isClicked});
   final String major;
+  final bool isClicked;
+
   @override
   _MajorCardState createState() => _MajorCardState();
 }
 
 class _MajorCardState extends State<MajorCard> {
   @override
-  bool isClicked = false;
   void initState() {
     super.initState();
   }
 
-  void changeColor() {
-    setState(() {
-      isClicked = !isClicked;
-    });
-  }
-
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: changeColor,
-        child: Container(
-          margin: EdgeInsets.all(3),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: ShapeDecoration(
-            color: isClicked ? Color(0xFFFFD8DA) : Colors.white,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                  width: 1,
-                  color: isClicked ? Color(0xFFFF3A46) : Color(0xFF423C3C)),
-              borderRadius: BorderRadius.circular(6),
+    return Container(
+      margin: EdgeInsets.all(3),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: ShapeDecoration(
+        color: widget.isClicked ? Color(0xFFFFD8DA) : Colors.white,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+              width: 1,
+              color: widget.isClicked ? Color(0xFFFF3A46) : Color(0xFF423C3C)),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          widget.isClicked
+              ? Icon(Icons.check, color: Color(0xFFFF3A46))
+              : Container(),
+          Text(
+            widget.major,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFF423C3C),
+              fontSize: 16,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400,
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              isClicked
-                  ? Icon(Icons.check, color: Color(0xFFFF3A46))
-                  : Container(),
-              Text(
-                widget.major,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFF423C3C),
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ));
+        ],
+      ),
+    );
   }
 }
 
 class DateCard extends StatefulWidget {
-  const DateCard({super.key, required this.date});
+  const DateCard({super.key, required this.date, required this.isClicked});
   final String date;
+  final bool isClicked;
   @override
   _DateCardState createState() => _DateCardState();
 }
 
 class _DateCardState extends State<DateCard> {
   @override
-  bool isClicked = false;
   void initState() {
     super.initState();
   }
 
-  void changeColor() {
-    setState(() {
-      isClicked = !isClicked;
-    });
-  }
-
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: changeColor,
-        child: Container(
-          margin: EdgeInsets.all(3),
-          height: 40,
-          width: 70,
-          decoration: ShapeDecoration(
-            color: isClicked ? Color(0xE5FF3A46) : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
+    return Container(
+      margin: EdgeInsets.all(3),
+      height: 40,
+      width: 70,
+      decoration: ShapeDecoration(
+        color: widget.isClicked ? Color(0xE5FF3A46) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            widget.date,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: widget.isClicked ? Colors.white : Color(0xFF423C3C),
+              fontSize: 16,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400,
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                widget.date,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isClicked ? Colors.white : Color(0xFF423C3C),
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ));
+        ],
+      ),
+    );
   }
 }
 
 class CategoryCard extends StatefulWidget {
-  const CategoryCard({super.key, required this.category});
+  const CategoryCard(
+      {super.key, required this.category, required this.isClicked});
   final String category;
+  final bool isClicked;
   @override
   _CategoryCardState createState() => _CategoryCardState();
 }
 
 class _CategoryCardState extends State<CategoryCard> {
   @override
-  bool isClicked = false;
   void initState() {
     super.initState();
   }
 
-  void changeColor() {
-    setState(() {
-      isClicked = !isClicked;
-    });
-  }
-
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: changeColor,
-        child: Container(
-          width: 135,
-          margin: EdgeInsets.all(3),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: ShapeDecoration(
-            color: isClicked ? Color(0xFFFFD8DA) : Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
+    return Container(
+      width: 135,
+      margin: EdgeInsets.all(3),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: ShapeDecoration(
+        color: widget.isClicked ? Color(0xFFFFD8DA) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            widget.category,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: widget.isClicked ? Color(0xFFFF3A46) : Colors.black,
+              fontSize: 16,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400,
             ),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.category,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isClicked ? Color(0xFFFF3A46) : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
-                ),
+          widget.isClicked
+              ? Icon(Icons.close, color: Colors.white)
+              : Container(),
+        ],
+      ),
+    );
+  }
+}
+
+class FilterCard extends StatelessWidget {
+  const FilterCard({super.key, required this.type, required this.content});
+  final String type;
+  final String content;
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 5),
+      padding: EdgeInsets.all(5),
+      decoration: type == "dates"
+          ? ShapeDecoration(
+              color: Color(0x7FFFD8DA),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+            )
+          : ShapeDecoration(
+              color: Color(0xFFF4F1F1),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(width: 1, color: Color(0xFFFFD8DA)),
+                borderRadius: BorderRadius.circular(6),
               ),
-              isClicked ? Icon(Icons.close, color: Colors.white) : Container(),
-            ],
+            ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            content,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFFFF3A46),
+              fontSize: 14,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ));
+        ],
+      ),
+    );
   }
 }

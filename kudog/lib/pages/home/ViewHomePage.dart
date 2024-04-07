@@ -6,6 +6,7 @@ import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -22,19 +23,38 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   TextEditingController _searchController = TextEditingController();
   @override
   List<Notice> noticeList = []; //보여지는 공지사항들
-
+  late String filterDate; //filter의 date
   int selectedIndex = 0; //선택된 단과대학
   void initState() {
     super.initState();
-    if (widget.filterInfo.categories == null) {
-      _loadAllNotices(widget.filterInfo);
+
+    if (DateTime.parse(widget.filterInfo.endDate!)
+            .difference(DateTime.parse(widget.filterInfo.startDate!))
+            .inDays ==
+        0) {
+      filterDate = "오늘";
+    } else if (DateTime.parse(widget.filterInfo.endDate!)
+            .difference(DateTime.parse(widget.filterInfo.startDate!))
+            .inDays ==
+        7) {
+      filterDate = "1주";
+    } else if (DateTime.parse(widget.filterInfo.endDate!)
+            .difference(DateTime.parse(widget.filterInfo.startDate!))
+            .inDays >=
+        50) {
+      filterDate = "3개월";
     } else {
-      _loadFilteredNotices(widget.filterInfo);
+      filterDate = "1개월";
     }
+    // if (widget.filterInfo.categories == null) {
+    //   _loadInitNotices(widget.filterInfo);
+    // } else {
+    //   _loadFilteredNotices(widget.filterInfo);
+    // }
   }
 
-  void _loadAllNotices(Filter defaultFilter) async {
-    //전체 공지사항을 가져옵니다.
+  void _loadInitNotices(Filter defaultFilter) async {
+    //filter설정된 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getAllNotices(
         Filter(
             startDate: defaultFilter.startDate,
@@ -50,7 +70,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   }
 
   void _loadFilteredNotices(Filter filter) async {
-    //전체 공지사항을 가져옵니다.
+    //이 페이지에서 필터링된 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getFilteredNotices(
         Filter(
             providers: filter.providers,
@@ -219,7 +239,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                           providers: [majors[index]], page: 1),
                                       index);
                                 } else {
-                                  _loadAllNotices(widget.filterInfo);
+                                  _loadInitNotices(widget.filterInfo);
                                 }
                               },
                               child: Container(
@@ -251,64 +271,19 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 5),
-                      padding: EdgeInsets.all(5),
-                      decoration: ShapeDecoration(
-                        color: Color(0xFFF4F1F1),
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(width: 1, color: Color(0xFFFFD8DA)),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '일주일',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFFFF3A46),
-                              fontSize: 14,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 5),
-                      padding: EdgeInsets.all(5),
-                      decoration: ShapeDecoration(
-                        color: Color(0x7FFFD8DA),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '공지사항, 학사일정',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFFFF3A46),
-                              fontSize: 14,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                Row(children: [
+                  FilterCard(content: filterDate, type: "dates"),
+                  widget.filterInfo.providers != null
+                      ? FilterCard(
+                          content: widget.filterInfo.providers!.join(', '),
+                          type: "majors")
+                      : Container(),
+                  widget.filterInfo.categories != null
+                      ? FilterCard(
+                          content: widget.filterInfo.categories!.join(', '),
+                          type: "categories")
+                      : Container(),
+                ]),
                 GestureDetector(
                     onTap: () {
                       Navigator.push(

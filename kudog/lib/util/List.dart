@@ -12,3 +12,4 @@ List<String> categories = [
   "대학원 학사 일정"
 ];
 List<String> majors = ["전체", "정보대학", "공과대학", "디자인조형학부", "미디어학부", "경영대학"];
+List<String> dates = ["오늘", "1주", "1개월", "3개월"];

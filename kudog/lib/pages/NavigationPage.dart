@@ -10,13 +10,15 @@ import 'package:kudog/pages/subscribe/ViewSubscribePage.dart';
 
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
+import 'package:kudog/util/Filter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationPageWidget extends StatefulWidget {
-  const NavigationPageWidget({super.key, required this.filter});
-  final Filter filter;
+  const NavigationPageWidget({
+    super.key,
+  });
   @override
   _NavigationPageWidgetState createState() => _NavigationPageWidgetState();
 }
@@ -36,14 +38,11 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
-        .format(DateTime.now().subtract(Duration(days: 7)));
     final List<Widget> _widgetOptions = <Widget>[
       ViewScrabPageWidget(),
       ViewSubscribePageWidget(),
       ViewHomePageWidget(
-        filterInfo: widget.filter,
+        filterInfo: overallFilter,
       ),
       ViewAlarmPageWidget(),
       ViewMyPageWidget()

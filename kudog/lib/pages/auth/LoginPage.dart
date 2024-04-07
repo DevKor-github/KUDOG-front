@@ -7,6 +7,7 @@ import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/util/DioClient.dart';
+import 'package:kudog/util/Filter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,12 +51,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
             .format(DateTime.now().subtract(Duration(days: 7)));
         //유효한 토큰일 때
         Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => NavigationPageWidget(
-                  filter: Filter(
-                      startDate: sevenDaysAgo,
-                      endDate: formattedDate,
-                      page: 1))));
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => NavigationPageWidget()));
         });
       } else {}
     }
@@ -186,11 +183,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          NavigationPageWidget(
-                                              filter: Filter(
-                                                  startDate: sevenDaysAgo,
-                                                  endDate: formattedDate,
-                                                  page: 1))));
+                                          NavigationPageWidget()));
                             } else {
                               showDialog(
                                   context: context,
