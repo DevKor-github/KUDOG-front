@@ -7,7 +7,10 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
-  const ViewSubscribeFilterPageWidget({Key? key}) : super(key: key);
+  const ViewSubscribeFilterPageWidget({Key? key, this.isEdit = false})
+      : super(key: key);
+
+  final bool isEdit;
 
   @override
   _ViewSubscribeFilterPageWidgetState createState() =>
@@ -32,6 +35,8 @@ class _ViewSubscribeFilterPageWidgetState
     "행사"
   ];
 
+  TimeOfDay alarmTime = TimeOfDay.now();
+
   @override
   void initState() {
     super.initState();
@@ -54,7 +59,10 @@ class _ViewSubscribeFilterPageWidgetState
               Navigator.pop(context);
             },
           ),
-          title: Text('구독 설정'),
+          title: Text(
+            widget.isEdit ? '구독 설정' : '구독함 만들기',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
           centerTitle: true,
         ),
         body: Padding(
@@ -62,9 +70,17 @@ class _ViewSubscribeFilterPageWidgetState
           child: ListView(children: [
             Container(
               margin: EdgeInsets.only(bottom: 21),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (!widget.isEdit)
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(top: 68, bottom: 48),
+                      child: Image.asset(
+                        "assets/images/artboard_big.png",
+                      ),
+                    ),
                   Text(
                     '이름',
                     style: TextStyle(
@@ -79,8 +95,10 @@ class _ViewSubscribeFilterPageWidgetState
                     decoration: InputDecoration(
                         filled: true,
                         fillColor: gray4,
-                        enabledBorder:
-                            OutlineInputBorder(borderSide: BorderSide.none)),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8)))),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                   )
                 ],
@@ -105,10 +123,60 @@ class _ViewSubscribeFilterPageWidgetState
                     decoration: InputDecoration(
                         filled: true,
                         fillColor: gray4,
-                        enabledBorder:
-                            OutlineInputBorder(borderSide: BorderSide.none)),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8)))),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                   )
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 21),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '수신 시간',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  WeekPicker(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                      onTap: () async {
+                        final TimeOfDay? time = await showTimePicker(
+                            context: context, initialTime: alarmTime);
+                        if (time != null) {
+                          setState(() {
+                            alarmTime = time;
+                          });
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            color: gray4),
+                        alignment: Alignment.center,
+                        height: 44,
+                        width: double.infinity,
+                        child: Text(
+                          alarmTime.format(context),
+                          //"AM\t${alarmTime.hourOfPeriod}\t:\t${alarmTime.minute}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                      ))
                 ],
               ),
             ),
@@ -198,11 +266,13 @@ class _ViewSubscribeFilterPageWidgetState
                   ],
                 )),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                //구독함 새로 추가하는 api호출
+              },
               style: TextButton.styleFrom(
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8))),
-                  minimumSize: Size.fromHeight(40),
+                  minimumSize: Size.fromHeight(44),
                   backgroundColor: red1),
               child: const Text(
                 '저장',
@@ -273,6 +343,58 @@ class _MajorCardState extends State<MajorCard> {
   }
 }
 
+class WeekPicker extends StatefulWidget {
+  const WeekPicker({super.key});
+
+  @override
+  _WeekPickerState createState() => _WeekPickerState();
+}
+
+class _WeekPickerState extends State<WeekPicker> {
+  List<String> days = ['일', '월', '화', '수', '목', '금', '토'];
+  List<bool> selected = List.filled(7, false);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void changeColor() {
+    setState(() {});
+  }
+
+  Widget build(BuildContext context) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: List.generate(days.length, (index) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selected[index] = !selected[index];
+              });
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              child: Text(
+                days[index],
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: selected[index] ? white : gray1,
+                ),
+              ),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: selected[index] ? red1_5 : Colors.transparent,
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+            ),
+          );
+        }));
+  }
+}
+
 class CategoryCard extends StatefulWidget {
   const CategoryCard({super.key, required this.category});
   final String category;
@@ -297,7 +419,7 @@ class _CategoryCardState extends State<CategoryCard> {
     return GestureDetector(
         onTap: changeColor,
         child: Container(
-          width: 135,
+          width: 125,
           margin: EdgeInsets.all(3),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: ShapeDecoration(

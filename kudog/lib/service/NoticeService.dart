@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NoticeService extends ChangeNotifier {
   NoticeList noticeList = NoticeList();
   NoticeDetail noticeDetail = NoticeDetail();
+  SelectedNoticeList subscribedNoticeList = SelectedNoticeList(notices: []);
   Future<void> getAllNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -215,6 +216,80 @@ class NoticeService extends ChangeNotifier {
       print("GET 요청 에러");
       print(e.toString());
     }
+    notifyListeners();
+  }
+
+  void getSubscribedNotices(int page) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/notice/list?page=$page",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        subscribedNoticeList = SelectedNoticeList.fromJson(response.data);
+        print(subscribedNoticeList);
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getSubscribedNotices(page);
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  void addSubscribedNotices(int page) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/notice/list?page=$page",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        subscribedNoticeList.addFromJson(response.data);
+        print(subscribedNoticeList);
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        addSubscribedNotices(page);
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
     notifyListeners();
   }
 }
