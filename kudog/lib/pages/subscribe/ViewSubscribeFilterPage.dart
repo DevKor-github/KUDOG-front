@@ -1,10 +1,14 @@
 import 'dart:html';
+import 'dart:js_util';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/util/List.dart';
+import 'package:provider/provider.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
   const ViewSubscribeFilterPageWidget({Key? key, this.isEdit = false})
@@ -35,7 +39,17 @@ class _ViewSubscribeFilterPageWidgetState
     "행사"
   ];
 
-  TimeOfDay alarmTime = TimeOfDay.now();
+  String? name;
+  String? email;
+  String? provider;
+  Set<String?> selectedCategories = Set();
+
+  void AddSubscribe() async {
+    print(selectedCategories);
+    await Provider.of<NoticeService>(context, listen: false)
+        .addSubscribes(name, email, provider, selectedCategories.toList());
+    Navigator.pop(context);
+  }
 
   @override
   void initState() {
@@ -100,13 +114,14 @@ class _ViewSubscribeFilterPageWidgetState
                             borderRadius:
                                 BorderRadius.all(Radius.circular(8)))),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    onChanged: (value) => {name = value},
                   )
                 ],
               ),
             ),
             Container(
               margin: EdgeInsets.only(bottom: 21),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -128,55 +143,8 @@ class _ViewSubscribeFilterPageWidgetState
                             borderRadius:
                                 BorderRadius.all(Radius.circular(8)))),
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    onChanged: (value) => {email = value},
                   )
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 21),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '수신 시간',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  WeekPicker(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                      onTap: () async {
-                        final TimeOfDay? time = await showTimePicker(
-                            context: context, initialTime: alarmTime);
-                        if (time != null) {
-                          setState(() {
-                            alarmTime = time;
-                          });
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                            color: gray4),
-                        alignment: Alignment.center,
-                        height: 44,
-                        width: double.infinity,
-                        child: Text(
-                          alarmTime.format(context),
-                          //"AM\t${alarmTime.hourOfPeriod}\t:\t${alarmTime.minute}",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ))
                 ],
               ),
             ),
@@ -207,16 +175,58 @@ class _ViewSubscribeFilterPageWidgetState
                 ),
                 Row(
                   children: [
-                    MajorCard(major: majors[0]),
-                    MajorCard(major: majors[1]),
-                    MajorCard(major: majors[2])
+                    MajorCard(
+                        major: majors[0],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[0];
+                              })
+                            },
+                        isSelect: provider == majors[0]),
+                    MajorCard(
+                        major: majors[1],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[1];
+                              })
+                            },
+                        isSelect: provider == majors[1]),
+                    MajorCard(
+                        major: majors[2],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[2];
+                              })
+                            },
+                        isSelect: provider == majors[2])
                   ],
                 ),
                 Row(
                   children: [
-                    MajorCard(major: majors[3]),
-                    MajorCard(major: majors[4]),
-                    MajorCard(major: majors[5])
+                    MajorCard(
+                        major: majors[3],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[3];
+                              })
+                            },
+                        isSelect: provider == majors[3]),
+                    MajorCard(
+                        major: majors[4],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[4];
+                              })
+                            },
+                        isSelect: provider == majors[4]),
+                    MajorCard(
+                        major: majors[5],
+                        onSelect: (val) => {
+                              setState(() {
+                                provider = majors[5];
+                              })
+                            },
+                        isSelect: provider == majors[5])
                   ],
                 )
               ],
@@ -244,30 +254,44 @@ class _ViewSubscribeFilterPageWidgetState
                     Row(
                       children: [
                         Column(
-                          children: [
-                            CategoryCard(category: categories[0]),
-                            CategoryCard(category: categories[1]),
-                            CategoryCard(category: categories[2]),
-                            CategoryCard(category: categories[3]),
-                            CategoryCard(category: categories[4])
-                          ],
-                        ),
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: List.generate((categories.length ~/ 2),
+                                (index) {
+                              return CategoryCard(
+                                category: categories[index],
+                                onSelect: (val) => {
+                                  val
+                                      ? selectedCategories
+                                          .add(categories[index])
+                                      : selectedCategories
+                                          .remove(categories[index])
+                                },
+                              );
+                            })),
                         Column(
-                          children: [
-                            CategoryCard(category: categories[5]),
-                            CategoryCard(category: categories[6]),
-                            CategoryCard(category: categories[7]),
-                            CategoryCard(category: categories[8]),
-                            CategoryCard(category: categories[9])
-                          ],
-                        )
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: List.generate(
+                                categories.length - (categories.length ~/ 2),
+                                (index) {
+                              index = index + (categories.length ~/ 2);
+                              return CategoryCard(
+                                category: categories[index],
+                                onSelect: (val) => {
+                                  val
+                                      ? selectedCategories
+                                          .add(categories[index])
+                                      : selectedCategories
+                                          .remove(categories[index])
+                                },
+                              );
+                            }))
                       ],
                     )
                   ],
                 )),
             TextButton(
               onPressed: () {
-                //구독함 새로 추가하는 api호출
+                AddSubscribe();
               },
               style: TextButton.styleFrom(
                   shape: const RoundedRectangleBorder(
@@ -285,22 +309,26 @@ class _ViewSubscribeFilterPageWidgetState
 }
 
 class MajorCard extends StatefulWidget {
-  const MajorCard({super.key, required this.major});
+  MajorCard(
+      {super.key, required this.major, this.onSelect, this.isSelect = false});
   final String major;
+  final Function? onSelect;
+  bool isSelect = false;
   @override
   _MajorCardState createState() => _MajorCardState();
 }
 
 class _MajorCardState extends State<MajorCard> {
   @override
-  bool isClicked = false;
   void initState() {
     super.initState();
   }
 
   void changeColor() {
     setState(() {
-      isClicked = !isClicked;
+      widget.isSelect = !widget.isSelect;
+
+      widget.onSelect!(widget.isSelect);
     });
   }
 
@@ -311,11 +339,12 @@ class _MajorCardState extends State<MajorCard> {
           margin: EdgeInsets.all(3),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: ShapeDecoration(
-            color: isClicked ? Color(0xFFFFD8DA) : Colors.white,
+            color: widget.isSelect ? Color(0xFFFFD8DA) : Colors.white,
             shape: RoundedRectangleBorder(
               side: BorderSide(
                   width: 1,
-                  color: isClicked ? Color(0xFFFF3A46) : Color(0xFF423C3C)),
+                  color:
+                      widget.isSelect ? Color(0xFFFF3A46) : Color(0xFF423C3C)),
               borderRadius: BorderRadius.circular(6),
             ),
           ),
@@ -324,7 +353,7 @@ class _MajorCardState extends State<MajorCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              isClicked
+              widget.isSelect
                   ? Icon(Icons.check, color: Color(0xFFFF3A46))
                   : Container(),
               Text(
@@ -396,8 +425,9 @@ class _WeekPickerState extends State<WeekPicker> {
 }
 
 class CategoryCard extends StatefulWidget {
-  const CategoryCard({super.key, required this.category});
+  const CategoryCard({super.key, required this.category, this.onSelect});
   final String category;
+  final Function? onSelect;
   @override
   _CategoryCardState createState() => _CategoryCardState();
 }
@@ -412,6 +442,8 @@ class _CategoryCardState extends State<CategoryCard> {
   void changeColor() {
     setState(() {
       isClicked = !isClicked;
+
+      widget.onSelect!(isClicked);
     });
   }
 

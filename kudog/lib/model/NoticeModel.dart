@@ -1,15 +1,17 @@
 class NoticeList {
   List<Notice>? notices;
-  String? page;
+  int? page;
   int? totalPage;
   int? totalNotice;
 
   NoticeList({this.notices, this.page, this.totalPage, this.totalNotice});
 
-  NoticeList.fromJson(Map<String, dynamic> json) {
-    if (json['notices'] != null) {
+  NoticeList.fromJson(Map<String, dynamic> json, {String key = 'notices'}) {
+    if (key == null) key = 'notices';
+
+    if (json[key] != null) {
       notices = <Notice>[];
-      json['notices'].forEach((v) {
+      json[key].forEach((v) {
         notices!.add(new Notice.fromJson(v));
       });
     }
