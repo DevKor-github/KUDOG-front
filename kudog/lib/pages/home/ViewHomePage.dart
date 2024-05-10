@@ -28,6 +28,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     super.initState();
     print(overallFilter.categories);
     print(overallFilter.providers);
+    print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
 
     if (DateTime.parse(overallFilter.endDate!)
             .difference(DateTime.parse(overallFilter.startDate!))
@@ -73,8 +74,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     setState(() {
       selectedIndex = 0;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
-          .notices!;
+              .noticeList
+              .notices ??
+          [];
     });
   }
 
@@ -126,8 +128,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
-          .notices!;
+              .noticeList
+              .notices ??
+          [];
     });
   }
 
