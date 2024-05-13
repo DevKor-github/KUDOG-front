@@ -5,7 +5,7 @@ import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/alarm/ViewAlarmPage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/my/ViewMyPage.dart';
-import 'package:kudog/pages/scrab/ViewScrabPage.dart';
+import 'package:kudog/pages/scrap/ViewScrapPage.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribePage.dart';
 
 import 'package:kudog/service/NoticeService.dart';
@@ -39,7 +39,7 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
-      ViewScrabPageWidget(),
+      ViewScrapPageWidget(),
       ViewSubscribePageWidget(),
       ViewHomePageWidget(),
       ViewAlarmPageWidget(),

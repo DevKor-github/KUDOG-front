@@ -4,7 +4,6 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribePageList.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
-import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 
@@ -222,7 +221,7 @@ class SubscribeCard extends StatefulWidget {
 }
 
 class _SubscribeCardState extends State<SubscribeCard> {
-  bool scrabState = false;
+  bool scrapState = false;
 
   @override
   Widget build(BuildContext context) {

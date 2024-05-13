@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Subscribe {
   String? name;
   String? email;
@@ -23,8 +21,6 @@ class Subscribe {
   static List<Subscribe> FromJson(
       Map<String, List<Map<String, dynamic>>> jsonMap) {
     List<Subscribe> list = List<Subscribe>.empty();
-
-    print(jsonMap['records']![0]);
 
     list.add(Subscribe.fromJson(jsonMap['records']![0]));
 
