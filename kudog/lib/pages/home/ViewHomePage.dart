@@ -6,6 +6,7 @@ import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/TokenService.dart';
 import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +62,12 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
       //provider, categories 두 개 다 있을 때
       _loadFilteredNotices(overallFilter);
     }
+    testToken();
+  }
+
+  Future<void> testToken() async {
+    await Provider.of<TokenService>(context, listen: false)
+        .getFcmTokenStatusAndPostToken();
   }
 
   void _loadInitNotices(Filter filter) async {
@@ -181,64 +188,64 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.04,
+                      child: Image.asset("assets/images/login_icon.png"),
+                      margin: EdgeInsets.only(top: 20, bottom: 15),
+                    ),
+                  ],
+                ),
                 Container(
-                  padding: EdgeInsets.only(bottom: 40),
+                  margin: EdgeInsets.only(bottom: 10),
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  padding: const EdgeInsets.only(
+                      top: 6, left: 16, right: 12, bottom: 6),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFFF3A46),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                            alignment: Alignment.center,
-                            width: 32,
-                            height: 18,
-                            decoration: ShapeDecoration(
-                              color: Color(0xFFF4F1F1),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
-                            ),
-                            child: Text(
-                              '알림',
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '구독함A ',
                               style: TextStyle(
-                                color: Color(0xFFFF4F59),
-                                fontSize: 10,
+                                color: Colors.white,
+                                fontSize: 14,
                                 fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.20,
+                                fontWeight: FontWeight.w600,
+                                height: 0.11,
                               ),
                             ),
-                          ),
-                          Text.rich(
                             TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '구독함A',
-                                  style: TextStyle(
-                                    color: Color(0xFFFF3A46),
-                                    fontSize: 18,
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '에\n새로운 글이 올라왔어요!',
-                                  style: TextStyle(
-                                    color: Color(0xFF222222),
-                                    fontSize: 18,
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                              text: '에 새로운 소식이 들어왔어요!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          )
-                        ],
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                       Container(
-                          padding: EdgeInsets.only(right: 20),
-                          child: Image.asset("assets/images/alarm.png"))
+                          child: Icon(
+                              color: Colors.white,
+                              Icons.arrow_circle_right_outlined))
                     ],
                   ),
                 ),

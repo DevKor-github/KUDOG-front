@@ -6,12 +6,14 @@ import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
+import 'package:kudog/pages/my/ViewMyPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/SignUpService.dart';
+import 'package:kudog/service/TokenService.dart';
 import 'package:kudog/service/UserInfoService.dart';
 import 'package:kudog/service/WithdrawalService.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,7 @@ void main() {
     ChangeNotifierProvider(create: (context) => CategoryService()),
     ChangeNotifierProvider(create: (context) => SignOutService()),
     ChangeNotifierProvider(create: (context) => WithdrawalService()),
+    ChangeNotifierProvider(create: (context) => TokenService()),
   ], child: const MainApp()));
 }
 
