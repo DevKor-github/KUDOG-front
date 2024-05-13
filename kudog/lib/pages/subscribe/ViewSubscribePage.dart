@@ -5,11 +5,8 @@ import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribePageList.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
 import 'package:kudog/service/CategoryService.dart';
+import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
-
-//for testing
-SubscribeList testSubscribe =
-    SubscribeList(title: '초전도채짱', department: '신소재공학부');
 
 class ViewSubscribePageWidget extends StatefulWidget {
   const ViewSubscribePageWidget({Key? key}) : super(key: key);
@@ -23,24 +20,47 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isEditting = false;
 
-  List<SubscribeList> subscribeLists = [testSubscribe, testSubscribe];
-  List<bool> selectedLists = [false, false];
-  int selectedCount = 0;
-
+  List<Subscribe> subscribeList = List.empty();
+  Set<int> selectedLists = Set();
   void startEditting() {
+    selectedLists.clear();
     setState(() {
       isEditting = true;
     });
-    selectedLists.clear();
-    selectedLists = List.filled(subscribeLists.length, false, growable: true);
-    selectedCount = 0;
   }
 
-  void endEditting() {}
+  void endEditting() async {
+    if (isEditting) {
+      await Provider.of<NoticeService>(context, listen: false)
+          .deleteSubscribes(selectedLists.toList(growable: false));
+    }
+
+    await Provider.of<NoticeService>(context, listen: false).getSubscribes();
+
+    setState(() {
+      isEditting = false;
+
+      subscribeList =
+          Provider.of<NoticeService>(context, listen: false).subscribeList;
+      selectedLists.clear();
+    });
+  }
+
+  void _loadSubscirbes() async {
+    //filter설정된 공지사항을 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false).getSubscribes();
+
+    setState(() {
+      subscribeList =
+          Provider.of<NoticeService>(context, listen: false).subscribeList;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+
+    _loadSubscirbes();
   }
 
   @override
@@ -78,7 +98,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                   ? Row(
                       children: [
                         Text(
-                          '$selectedCount개 선택',
+                          '${selectedLists.length}개 선택',
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -95,17 +115,16 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                         BorderRadius.all(Radius.circular(8))),
                                 backgroundColor: red3),
                             onPressed: () async {
-                              if (selectedCount == 0) {
+                              if (selectedLists.isEmpty) {
                                 setState(() {
                                   isEditting = false;
                                 });
                               } else {
-                                //삭제요청 api 호출
-                                setState(() {});
+                                endEditting();
                               }
                             },
                             child: Text(
-                              selectedCount == 0 ? '돌아가기' : '삭제',
+                              selectedLists.isEmpty ? '돌아가기' : '삭제',
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -128,9 +147,9 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: subscribeLists.length + (isEditting ? 1 : 0),
+                itemCount: subscribeList.length + 1,
                 itemBuilder: (context, index) {
-                  return index == subscribeLists.length && isEditting
+                  return index == subscribeList.length
                       ? Container(
                           margin: EdgeInsets.zero,
                           width: double.infinity,
@@ -147,10 +166,11 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                               ),
                               onPressed: () => {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ViewSubscribeFilterPageWidget()))
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewSubscribeFilterPageWidget()))
+                                        .then((value) => endEditting())
                                   },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: gray1,
@@ -163,20 +183,26 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                           onTap: () {
                             if (isEditting)
                               setState(() {
-                                selectedLists[index] = !selectedLists[index];
-                                selectedCount +=
-                                    (selectedLists[index] ? 1 : -1);
+                                selectedLists.contains(subscribeList[index].id!)
+                                    ? selectedLists
+                                        .remove(subscribeList[index].id!)
+                                    : selectedLists
+                                        .add(subscribeList[index].id!);
                               });
                             else
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ViewSubscribePageListWidget()));
+                                          ViewSubscribePageListWidget(
+                                            boxId: subscribeList[index].id,
+                                            date: DateTime.now(),
+                                          )));
                           },
                           child: SubscribeCard(
-                              subscribeList: subscribeLists[index],
-                              selected: selectedLists[index]));
+                              subscribe: subscribeList[index],
+                              selected: selectedLists
+                                  .contains(subscribeList[index].id)));
                 }),
           ),
         ]),
@@ -187,8 +213,8 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
 
 class SubscribeCard extends StatefulWidget {
   const SubscribeCard(
-      {super.key, required this.subscribeList, this.selected = false});
-  final SubscribeList subscribeList;
+      {super.key, required this.subscribe, this.selected = false});
+  final Subscribe subscribe;
   final bool selected;
 
   @override
@@ -218,7 +244,7 @@ class _SubscribeCardState extends State<SubscribeCard> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Text(
-                widget.subscribeList.title!,
+                widget.subscribe.name!,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               widget.selected
@@ -234,34 +260,33 @@ class _SubscribeCardState extends State<SubscribeCard> {
             ],
           ),
           Row(
-            children: [
-              Flexible(
-                child: Container(
+              children: List.generate(widget.subscribe.categories!.length + 1,
+                  ((index) {
+            return index == 0
+                ? Flexible(
+                    child: Container(
+                        margin: EdgeInsets.only(right: 4),
+                        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                        height: 26,
+                        child: Text(widget.subscribe.provider!,
+                            style: TextStyle(
+                                color: red1, fontWeight: FontWeight.w500)),
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: red2),
+                            borderRadius: BorderRadius.all(Radius.circular(6)),
+                            color: white)),
+                  )
+                : Container(
                     margin: EdgeInsets.only(right: 4),
                     padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
                     height: 26,
-                    child: Text(widget.subscribeList.department!,
-                        style: TextStyle(
-                            color: red1, fontWeight: FontWeight.w500)),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: red2),
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                        color: white)),
-              ),
-              Flexible(
-                child: Container(
-                    margin: EdgeInsets.only(right: 4),
-                    padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-                    height: 26,
-                    child: Text('학과..',
+                    child: Text(widget.subscribe.categories![index - 1],
                         style: TextStyle(
                             color: red1, fontWeight: FontWeight.w500)),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(6)),
-                        color: red2)),
-              ),
-            ],
-          )
+                        color: red2));
+          })))
         ],
       ),
     );
