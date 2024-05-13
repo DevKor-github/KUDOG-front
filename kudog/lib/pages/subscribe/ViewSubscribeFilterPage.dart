@@ -45,7 +45,6 @@ class _ViewSubscribeFilterPageWidgetState
   Set<String?> selectedCategories = Set();
 
   void AddSubscribe() async {
-    print(selectedCategories);
     await Provider.of<NoticeService>(context, listen: false)
         .addSubscribes(name, email, provider, selectedCategories.toList());
     Navigator.pop(context);

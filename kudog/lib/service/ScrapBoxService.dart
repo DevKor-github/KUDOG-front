@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:kudog/model/ScrapBoxModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScrapBoxService extends ChangeNotifier {
-  List<ScrapBox> scrapBoxes = [];
+  List<Scrap> scrapBoxes = [];
   Future<void> getScrapBoxes() async {
     try {
       SharedPreferences sharedPreferences =
@@ -24,8 +24,8 @@ class ScrapBoxService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         for (Map<String, dynamic> item in response.data) {
-          print(ScrapBox.fromJson(item));
-          scrapBoxes.add(ScrapBox.fromJson(item));
+          print(Scrap.fromJson(item));
+          scrapBoxes.add(Scrap.fromJson(item));
         }
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");

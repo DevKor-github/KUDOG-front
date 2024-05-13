@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
 
-class ViewScrabPageWidget extends StatefulWidget {
-  const ViewScrabPageWidget({Key? key}) : super(key: key);
+class ViewScrapPageWidget extends StatefulWidget {
+  const ViewScrapPageWidget({Key? key}) : super(key: key);
 
   @override
-  _ViewScrabPageWidgetState createState() => _ViewScrabPageWidgetState();
+  _ViewScrapPageWidgetState createState() => _ViewScrapPageWidgetState();
 }
 
-class _ViewScrabPageWidgetState extends State<ViewScrabPageWidget> {
+class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   bool isEditting = false;

@@ -20,6 +20,7 @@ const Color red2 = Color(0xFFFFD8DA);
 const Color red3 = Color(0xFFE85D65);
 const Color black = Color(0xFF1B1717);
 const Color gray1 = Color(0xFF423D3D);
+const Color gray1_5 = Color(0xFF544F4F);
 const Color gray2 = Color(0xFF787474);
 const Color gray3 = Color(0xFFCCC9C9);
 const Color gray4 = Color(0xFFF4F2F2);

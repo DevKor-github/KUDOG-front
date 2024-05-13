@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:kudog/model/CategoryModel.dart';
+import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
@@ -177,6 +179,34 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
           .notices!;
     });
   }
+
+  int showScrapList =
+      0; //0 at default, notice id value when showing scrap list.
+  List<Scrap> scrapList = [];
+
+  void _showScrapList(int noticeId) async {
+    await Provider.of<NoticeService>(context, listen: false).getScraps();
+
+    setState(() {
+      scrapList =
+          Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
+      showScrapList = noticeId;
+    });
+  }
+
+  void _hideScrapList() {
+    _loadInitNotices(overallFilter);
+
+    if (showScrapList != 0) {
+      setState(() {
+        showScrapList = 0;
+      });
+    }
+  }
+
+  void addToScrap(int noticeId) {}
+
+  void removeFromScrap(int noticeId) {}
 
   @override
   Widget build(BuildContext context) {
