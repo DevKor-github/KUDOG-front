@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/etc/TempToken.dart';
 import 'package:kudog/model/CategoryModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/TokenService.dart';
@@ -12,6 +13,9 @@ class NoticeService extends ChangeNotifier {
   NoticeList noticeList = NoticeList();
   NoticeDetail noticeDetail = NoticeDetail();
   List<Subscribe> subscribeList = List.empty();
+
+  ScrapList scrapList = ScrapList();
+
   Future<void> getAllNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -279,7 +283,6 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         //subscribeList.addFromJson(response.data);
-        print(subscribeList);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -318,7 +321,6 @@ class NoticeService extends ChangeNotifier {
         subscribeList = List<Subscribe>.empty(growable: true);
 
         for (Map<String, dynamic> item in response.data['records']) {
-          print(Subscribe.fromJson(item));
           subscribeList.add(Subscribe.fromJson(item));
         }
       } else if (response.statusCode == 401) {
@@ -363,7 +365,6 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 201 && response.data != null) {
         print("POST 요청 성공");
-        print(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -408,6 +409,181 @@ class NoticeService extends ChangeNotifier {
       }
     } catch (e) {
       print("DELETE 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getScraps() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/scrap/box?page=1&pageSize=10",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        scrapList = ScrapList.fromJson(response.data, key: 'records');
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> addScrap(name, description) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().post(
+        "https://api.kudog.devkor.club/scrap/box",
+        data: {
+          'name': name,
+          'description': description,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 201 && response.data != null) {
+        print("POST 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("POST 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("POST 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> deleteScraps(List<int> scrapIdList) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      for (int i = 0; i < scrapIdList.length; i++) {
+        Response response = await Dio().delete(
+          "https://api.kudog.devkor.club/scrap/box/${scrapIdList[i]}",
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          print("DELETE 요청 성공");
+        } else if (response.statusCode == 401) {
+          print("ACCESS_TOKEN 만료");
+          TokenService().refreshToken();
+        } else {
+          print("DELETE 요청 실패");
+          print("Status Code : ${response.statusCode}");
+        }
+      }
+    } catch (e) {
+      print("DELETE 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getScrappedNotices(int boxId) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/scrap/box/${boxId}",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("GET 요청 성공");
+        noticeList = NoticeList.fromJson(response.data, key: 'notices');
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> addToScrap(int noticeId, int scrapBoxId) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/notice/${noticeId}/scrap/${scrapBoxId}",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
       print(e.toString());
     }
 
