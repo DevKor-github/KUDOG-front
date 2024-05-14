@@ -13,9 +13,7 @@ class NoticeService extends ChangeNotifier {
   NoticeList noticeList = NoticeList();
   NoticeDetail noticeDetail = NoticeDetail();
   List<Subscribe> subscribeList = List.empty();
-
   ScrapList scrapList = ScrapList();
-
   Future<void> getAllNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =

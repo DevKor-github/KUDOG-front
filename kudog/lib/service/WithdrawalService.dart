@@ -4,7 +4,7 @@ import 'package:kudog/service/TokenService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WithdrawalService extends ChangeNotifier {
-  void Withdrawal() async {
+  Future<void> Withdrawal() async {
     SharedPreferences sharedPreference = await SharedPreferences.getInstance();
     try {
       String? token = sharedPreference.getString("access_token");
@@ -16,11 +16,11 @@ class WithdrawalService extends ChangeNotifier {
           },
         ),
       );
+      sharedPreference.remove("access_token");
+      sharedPreference.remove("refresh_token");
 
       if (response.statusCode == 200) {
         print('DELETE 요청 성공');
-        sharedPreference.remove("access_token");
-        sharedPreference.remove("refresh_token");
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();

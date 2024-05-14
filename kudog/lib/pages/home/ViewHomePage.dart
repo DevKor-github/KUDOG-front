@@ -1,14 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kudog/etc/Colors.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:kudog/model/CategoryModel.dart';
-import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/ScrapModel.dart';
+import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/TokenService.dart';
 import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
@@ -64,6 +64,12 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
       //provider, categories 두 개 다 있을 때
       _loadFilteredNotices(overallFilter);
     }
+    testToken();
+  }
+
+  Future<void> testToken() async {
+    await Provider.of<TokenService>(context, listen: false)
+        .getFcmTokenStatusAndPostToken();
   }
 
   void _loadInitNotices(Filter filter) async {
@@ -204,197 +210,59 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Scaffold(
-          body: Container(
-              child: Column(
-        children: [
-          Container(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(bottom: 40),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+        body: Container(
+            child: Column(
+      children: [
+        Container(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.04,
+                      child: Image.asset("assets/images/login_icon.png"),
+                      margin: EdgeInsets.only(top: 20, bottom: 15),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  padding: const EdgeInsets.only(
+                      top: 6, left: 16, right: 12, bottom: 6),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFFFF3A46),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text.rich(
+                        TextSpan(
                           children: [
-                            Container(
-                              margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                              alignment: Alignment.center,
-                              width: 32,
-                              height: 18,
-                              decoration: ShapeDecoration(
-                                color: Color(0xFFF4F1F1),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4)),
-                              ),
-                              child: Text(
-                                '알림',
-                                style: TextStyle(
-                                  color: Color(0xFFFF4F59),
-                                  fontSize: 10,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 0.20,
-                                ),
+                            TextSpan(
+                              text: '구독함A ',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w600,
+                                height: 0.11,
                               ),
                             ),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '구독함A',
-                                    style: TextStyle(
-                                      color: Color(0xFFFF3A46),
-                                      fontSize: 18,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: '에\n새로운 글이 올라왔어요!',
-                                    style: TextStyle(
-                                      color: Color(0xFF222222),
-                                      fontSize: 18,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                        Container(
-                            padding: EdgeInsets.only(right: 20),
-                            child: Image.asset("assets/images/alarm.png"))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                      bottom: 10,
-                    ),
-                    height: MediaQuery.of(context).size.height * 0.07,
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color(0xffF4F2F2), // 배경색 변경
-                        labelText: '키워드로 검색하세요.',
-                        labelStyle:
-                            TextStyle(fontSize: 14, color: Color(0xFFD9D9D9)),
-                        contentPadding: EdgeInsets.all(24.0),
-                        suffixIcon: IconButton(
-                            icon: Icon(Icons.search, color: Color(0xffFF3B47)),
-                            onPressed: () {
-                              _loadSearchedNotices(
-                                  Filter(keyword: _searchController.text));
-                            }),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: majors.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                                onTap: () {
-                                  if (index != 0) {
-                                    _loadProviderNotices(
-                                        Filter(
-                                            providers: [majors[index]],
-                                            page: 1),
-                                        index);
-                                    overallFilter = Filter(
-                                        providers: [majors[index]],
-                                        page: 1,
-                                        startDate: overallFilter.startDate,
-                                        endDate: overallFilter.endDate);
-                                  } else {
-                                    _loadInitNotices(overallFilter);
-                                  }
-                                },
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      border: selectedIndex != index
-                                          ? Border()
-                                          : Border(
-                                              bottom: BorderSide(
-                                                color: Color(0xffFF3B47),
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                    ),
-                                    margin: EdgeInsets.only(right: 40),
-                                    child: Text(majors[index],
-                                        style: TextStyle(
-                                          color: selectedIndex != index
-                                              ? Color(0xFF787474)
-                                              : Color(0xffFF3B47),
-                                          fontSize: 18,
-                                          fontFamily: 'Pretendard',
-                                          fontWeight: FontWeight.w500,
-                                        ))));
-                          }))
-                ],
-              )),
-          Container(
-              margin: EdgeInsets.only(left: 18, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(children: [
-                    FilterCard(content: filterDate, type: "dates"),
-                    overallFilter.providers != null
-                        ? FilterCard(
-                            content: overallFilter.providers!.join(', '),
-                            type: "majors")
-                        : FilterCard(content: "전체", type: "majors"),
-                    overallFilter.categories != null
-                        ? FilterCard(
-                            content: overallFilter.categories!.join(', '),
-                            type: "categories")
-                        : FilterCard(content: "전체", type: "categories"),
-                  ]),
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SetFilterPageWidget()));
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(right: 18, bottom: 10),
-                        padding: EdgeInsets.all(5),
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFF4F1F1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                                width: 20,
-                                height: 20,
-                                child: Image.asset("assets/images/filter.png")),
-                            Text(
-                              '전체',
-                              textAlign: TextAlign.center,
+                            TextSpan(
+                              text: '에 새로운 소식이 들어왔어요!',
                               style: TextStyle(
-                                color: Color(0xFF787474),
+                                color: Colors.white,
                                 fontSize: 14,
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w500,
@@ -402,77 +270,170 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             ),
                           ],
                         ),
-                      ))
-                ],
-              )),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: noticeList.length,
-                  itemBuilder: (context, index) {
-                    return noticeCard(
-                      notice: noticeList[index],
-                      showScrap: _showScrapList,
-                    );
-                  }))
-        ],
-      ))),
-      if (showScrapList != 0)
-        GestureDetector(
-          onTap: _hideScrapList,
-          child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                  color: Color(0x661B1717),
-                  backgroundBlendMode: BlendMode.multiply),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(scrapList.length, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      child: TextButton(
+                        textAlign: TextAlign.center,
+                      ),
+                      Container(
+                          child: Icon(
+                              color: Colors.white,
+                              Icons.arrow_circle_right_outlined))
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                    bottom: 10,
+                  ),
+                  height: MediaQuery.of(context).size.height * 0.07,
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0xffF4F2F2), // 배경색 변경
+                      labelText: '키워드로 검색하세요.',
+                      labelStyle:
+                          TextStyle(fontSize: 14, color: Color(0xFFD9D9D9)),
+                      contentPadding: EdgeInsets.all(24.0),
+                      suffixIcon: IconButton(
+                          icon: Icon(Icons.search, color: Color(0xffFF3B47)),
                           onPressed: () {
-                            Provider.of<NoticeService>(context, listen: false)
-                                .addToScrap(
-                                    showScrapList, scrapList[index].id!);
-                          },
-                          style: TextButton.styleFrom(
-                              backgroundColor: white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      topRight: Radius.circular(8),
-                                      bottomLeft: Radius.circular(8))),
-                              fixedSize: Size(227, 44)),
-                          child: Row(
-                            children: [
-                              Icon(Icons.drive_file_move),
-                              Text(scrapList[index].name!)
-                            ],
-                          )),
-                    );
-                  }))),
-        )
-    ]);
+                            _loadSearchedNotices(
+                                Filter(keyword: _searchController.text));
+                          }),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.04,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: majors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                              onTap: () {
+                                if (index != 0) {
+                                  _loadProviderNotices(
+                                      Filter(
+                                          providers: [majors[index]], page: 1),
+                                      index);
+                                  overallFilter = Filter(
+                                      providers: [majors[index]],
+                                      page: 1,
+                                      startDate: overallFilter.startDate,
+                                      endDate: overallFilter.endDate);
+                                } else {
+                                  _loadInitNotices(overallFilter);
+                                }
+                              },
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    border: selectedIndex != index
+                                        ? Border()
+                                        : Border(
+                                            bottom: BorderSide(
+                                              color: Color(0xffFF3B47),
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                  ),
+                                  margin: EdgeInsets.only(right: 40),
+                                  child: Text(majors[index],
+                                      style: TextStyle(
+                                        color: selectedIndex != index
+                                            ? Color(0xFF787474)
+                                            : Color(0xffFF3B47),
+                                        fontSize: 18,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w500,
+                                      ))));
+                        }))
+              ],
+            )),
+        Container(
+            margin: EdgeInsets.only(left: 18, bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  FilterCard(content: filterDate, type: "dates"),
+                  overallFilter.providers != null
+                      ? FilterCard(
+                          content: overallFilter.providers!.join(', '),
+                          type: "majors")
+                      : FilterCard(content: "전체", type: "majors"),
+                  overallFilter.categories != null
+                      ? FilterCard(
+                          content: overallFilter.categories!.join(', '),
+                          type: "categories")
+                      : FilterCard(content: "전체", type: "categories"),
+                ]),
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SetFilterPageWidget()));
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(right: 18, bottom: 10),
+                      padding: EdgeInsets.all(5),
+                      decoration: ShapeDecoration(
+                        color: Color(0xFFF4F1F1),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                              width: 20,
+                              height: 20,
+                              child: Image.asset("assets/images/filter.png")),
+                          Text(
+                            '전체',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF787474),
+                              fontSize: 14,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ))
+              ],
+            )),
+        Expanded(
+            child: ListView.builder(
+                itemCount: noticeList.length,
+                itemBuilder: (context, index) {
+                  return noticeCard(notice: noticeList[index]);
+                }))
+      ],
+    )));
   }
 }
 
 class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, required this.notice, this.showScrap});
+  const noticeCard({super.key, required this.notice});
   final Notice notice;
-  final Function? showScrap;
-
   @override
   _noticeCardState createState() => _noticeCardState();
 }
 
 class _noticeCardState extends State<noticeCard> {
-  bool scrapState = false;
+  bool scrabState = false;
 
   void changeIcon() {
     setState(() {
       widget.notice.scrapped = !widget.notice.scrapped!;
-      scrapState = !scrapState;
+      scrabState = !scrabState;
     });
   }
 
@@ -559,8 +520,7 @@ class _noticeCardState extends State<noticeCard> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (widget.showScrap != null)
-                        widget.showScrap!(widget.notice.id);
+                      changeIcon();
                     },
                     child: Container(
                       width: 22,
