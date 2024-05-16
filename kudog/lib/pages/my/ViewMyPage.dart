@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:kudog/model/ScrapBoxModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/ScrapBoxService.dart';
@@ -49,7 +49,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   Future<void> loadScrapCount() async {
     await Provider.of<ScrapBoxService>(context, listen: false).getScrapBoxes();
     setState(() {
-      List<ScrapBox> scrapBoxes =
+      List<Scrap> scrapBoxes =
           Provider.of<ScrapBoxService>(context, listen: false).scrapBoxes;
       for (int i = 0; i < scrapBoxes.length; i++) {
         scrapCount += scrapBoxes[i].noticeCount!;
