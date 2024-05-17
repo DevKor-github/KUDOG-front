@@ -343,14 +343,13 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       String sendTime = DateFormat.Hm().format(DateTime.now());
-
       Response response = await Dio().post(
         "https://api.kudog.devkor.club/subscribe/box",
         data: {
           'name': name,
           'email': email,
           'provider': provider,
-          'categories': ["학부 공지사항", "진로정보 - 인턴"],
+          'categories': categories,
           'sendTime': sendTime
         },
         options: Options(

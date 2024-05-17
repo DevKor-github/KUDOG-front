@@ -1,0 +1,146 @@
+[
+  {
+    "id": 9,
+    "providerId": 1,
+    "mappedCategory": "공모전 소식",
+    "name": "정보대학"
+  },
+  {
+    "id": 8,
+    "providerId": 1,
+    "mappedCategory": "채용 정보",
+    "name": "정보대학"
+  },
+  {
+    "id": 7,
+    "providerId": 1,
+    "mappedCategory": "진로 정보",
+    "name": "정보대학"
+  },
+  {
+    "id": 6,
+    "providerId": 1,
+    "mappedCategory": "대학원 장학 공지",
+    "name": "정보대학"
+  },
+  {
+    "id": 5,
+    "providerId": 1,
+    "mappedCategory": "장학 공지",
+    "name": "정보대학"
+  },
+  {
+    "id": 4,
+    "providerId": 1,
+    "mappedCategory": "대학원 공지사항",
+    "name": "정보대학"
+  },
+  {
+    "id": 3,
+    "providerId": 1,
+    "mappedCategory": "채용 정보",
+    "name": "정보대학"
+  },
+  {
+    "id": 2,
+    "providerId": 1,
+    "mappedCategory": "행사 소식",
+    "name": "정보대학"
+  },
+  {
+    "id": 1,
+    "providerId": 1,
+    "mappedCategory": "공지사항",
+    "name": "정보대학"
+  },
+  {
+    "id": 14,
+    "providerId": 2,
+    "mappedCategory": "채용 정보",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 12,
+    "providerId": 2,
+    "mappedCategory": "대학원 공지사항",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 11,
+    "providerId": 2,
+    "mappedCategory": "학사 일정",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 13,
+    "providerId": 2,
+    "mappedCategory": "대학원 학사 일정",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 15,
+    "providerId": 2,
+    "mappedCategory": "공모전 소식",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 16,
+    "providerId": 2,
+    "mappedCategory": "공지사항",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 10,
+    "providerId": 2,
+    "mappedCategory": "공지사항",
+    "name": "디자인조형학부"
+  },
+  {
+    "id": 19,
+    "providerId": 3,
+    "mappedCategory": "채용 정보",
+    "name": "미디어학부"
+  },
+  {
+    "id": 18,
+    "providerId": 3,
+    "mappedCategory": "공지사항",
+    "name": "미디어학부"
+  },
+  {
+    "id": 20,
+    "providerId": 3,
+    "mappedCategory": "공모전 소식",
+    "name": "미디어학부"
+  },
+  {
+    "id": 21,
+    "providerId": 4,
+    "mappedCategory": "공지사항",
+    "name": "자유전공학부"
+  },
+  {
+    "id": 22,
+    "providerId": 5,
+    "mappedCategory": "공지사항",
+    "name": "정경대학"
+  },
+  {
+    "id": 25,
+    "providerId": 6,
+    "mappedCategory": "학사 일정",
+    "name": "KUPID"
+  },
+  {
+    "id": 24,
+    "providerId": 6,
+    "mappedCategory": "장학 공지",
+    "name": "KUPID"
+  },
+  {
+    "id": 23,
+    "providerId": 6,
+    "mappedCategory": "공지사항",
+    "name": "KUPID"
+  }
+]
