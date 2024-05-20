@@ -73,26 +73,23 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     return Consumer<SignInService>(
       builder: (context, signInService, child) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xffFF4F59),
           body: Container(
               margin: EdgeInsets.only(left: 14, right: 14),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                       height: MediaQuery.of(context).size.height * 0.7,
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(
-                            height: 100,
+                            height: 170,
                           ),
                           Container(
-                            margin: EdgeInsets.only(
-                              left: 10,
-                            ),
                             child: Image.asset(
                               "assets/images/login_icon.png",
                               width: 120,
@@ -103,7 +100,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             child: Text(
                               "관심있는 소식만 모아서 \n빠르게 보내드려요.",
                               style: TextStyle(
-                                color: Color(0xff423D3D),
+                                color: Color(0xffF4F2F2),
                                 fontFamily: 'Pretendard',
                               ),
                             ),
@@ -117,7 +114,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           padding: EdgeInsets.only(left: 10),
                           margin: EdgeInsets.only(bottom: 6),
                           decoration: BoxDecoration(
-                            color: Color(0xffF4F2F2),
+                            color: Color(0xffE5A4A7),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: TextFormField(
@@ -125,29 +122,22 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             controller: emailController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: "이메일",
+                              hintText: "아이디",
                               fillColor: const Color(0xffF4F2F2),
                               hintStyle: TextStyle(
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
-                                color: Color(0xFFA4A4A4),
+                                color: Color(0xFFF4F2F2),
                               ),
                             ),
                           )),
-                      // InputForm(
-                      //   controller: emailController,
-                      //   hint: "이메일",
-                      //   ratio: 1,
-                      // ),
-                      // InputForm(
-                      //     controller: passwordController, hint: "비밀번호", ratio: 1),
                       Container(
                           width: MediaQuery.of(context).size.width * 1,
                           padding: EdgeInsets.only(left: 10),
                           margin: EdgeInsets.only(bottom: 6),
                           decoration: BoxDecoration(
-                            color: Color(0xffF4F2F2),
+                            color: Color(0xffE5A4A7),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: TextFormField(
@@ -162,11 +152,10 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
-                                color: Color(0xFFA4A4A4),
+                                color: Color(0xFFF4F2F2),
                               ),
                             ),
                           )),
-
                       GestureDetector(
                           onTap: () async {
                             LoginUser user = LoginUser(
@@ -228,9 +217,9 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                           },
                           child: Container(
                             margin: EdgeInsets.only(top: 4),
-                            height: MediaQuery.of(context).size.height * 0.08,
+                            height: MediaQuery.of(context).size.height * 0.07,
                             decoration: ShapeDecoration(
-                              color: Color(0xFFFF3A46),
+                              color: Color(0xFFffffff),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8)),
                             ),
@@ -242,7 +231,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                   "로그인",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Color(0xffFF3B47),
                                     fontSize: 18,
                                     fontFamily: 'Pretendard',
                                     fontWeight: FontWeight.w600,
@@ -261,7 +250,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 '비밀번호 찾기',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Color(0xFF787474),
+                                  color: Color(0xFFF4F2F2),
                                   fontSize: 12,
                                   fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w400,
@@ -271,7 +260,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 '|',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Color(0xFF787474),
+                                  color: Color(0xFFF4F2F2),
                                   fontSize: 12,
                                   fontFamily: 'Pretendard',
                                   fontWeight: FontWeight.w400,
@@ -289,7 +278,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     '회원가입',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Color(0xFF787474),
+                                      color: Color(0xFFF4F2F2),
                                       fontSize: 12,
                                       fontFamily: 'Pretendard',
                                       fontWeight: FontWeight.w400,
