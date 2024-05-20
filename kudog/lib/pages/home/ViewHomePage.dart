@@ -223,7 +223,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                   children: [
                     Container(
                       height: MediaQuery.of(context).size.height * 0.04,
-                      child: Image.asset("assets/images/login_icon.png"),
+                      child: Image.asset("assets/images/kudog_home.png"),
                       margin: EdgeInsets.only(top: 20, bottom: 15),
                     ),
                   ],
@@ -489,8 +489,8 @@ class _noticeCardState extends State<noticeCard> {
                       Row(
                         children: [
                           Text(
-                            widget.notice.title!.length > 30
-                                ? widget.notice.title!.substring(0, 30) + "..."
+                            widget.notice.title!.length > 25
+                                ? widget.notice.title!.substring(0, 25) + "..."
                                 : widget.notice.title!,
                             style: TextStyle(
                               color: Color(0xFF3D3D3D),
@@ -499,11 +499,6 @@ class _noticeCardState extends State<noticeCard> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          Container(
-                              margin: EdgeInsets.only(left: 10),
-                              width: 12,
-                              height: 12,
-                              child: Image.asset("assets/images/new.png"))
                         ],
                       ),
                       Text(
@@ -518,22 +513,31 @@ class _noticeCardState extends State<noticeCard> {
                       )
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      changeIcon();
-                    },
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      child: Icon(
-                        widget.notice.scrapped!
-                            ? Icons.bookmark
-                            : Icons.bookmark_outline,
-                        color: widget.notice.scrapped!
-                            ? Color(0xffFF3B47)
-                            : Color(0xffCCC9C9),
+                  Row(
+                    children: [
+                      Container(
+                          margin: EdgeInsets.only(right: 10),
+                          width: 12,
+                          height: 12,
+                          child: Image.asset("assets/images/new.png")),
+                      GestureDetector(
+                        onTap: () {
+                          changeIcon();
+                        },
+                        child: Container(
+                          width: 22,
+                          height: 22,
+                          child: Icon(
+                            widget.notice.scrapped!
+                                ? Icons.bookmark
+                                : Icons.bookmark_outline,
+                            color: widget.notice.scrapped!
+                                ? Color(0xffFF3B47)
+                                : Color(0xffCCC9C9),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   )
                 ],
               )));

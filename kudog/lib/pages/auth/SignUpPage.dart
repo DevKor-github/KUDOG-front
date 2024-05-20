@@ -266,19 +266,122 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                               GestureDetector(
                                   onTap: () async {
                                     if (isVerified) {
-                                      print(nameController.text);
-                                      print(emailController.text);
-                                      print(passwordController.text);
                                       await signUpService.SignUp(SignUpUser(
                                           name: nameController.text,
                                           email: emailController.text,
                                           password: passwordController.text));
                                       if (signUpService.isSuccess) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginPageWidget()));
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0)),
+                                                content: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Stack(
+                                                          alignment: Alignment
+                                                              .center, // 이미지들이 서로 겹치도록 정렬
+                                                          children: [
+                                                            Image.asset(
+                                                              'assets/images/signup_success_background.png', // 기울어진 이미지 URL 또는 로컬 이미지 경로
+                                                              width: 200,
+                                                              height: 200,
+                                                            ),
+                                                            Image.asset(
+                                                              'assets/images/signup_success_foreground.png', // 위에 겹쳐질 이미지 URL 또는 로컬 이미지 경로
+                                                              width: 100,
+                                                              height: 100,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Text(
+                                                      '회원가입 완료!',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color:
+                                                            Color(0xFF1B1616),
+                                                        fontSize: 18,
+                                                        fontFamily:
+                                                            'Pretendard',
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                actions: <Widget>[
+                                                  GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        LoginPageWidget()));
+                                                      },
+                                                      child: Container(
+                                                        margin: EdgeInsets.only(
+                                                            top: 4),
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.05,
+                                                        decoration:
+                                                            ShapeDecoration(
+                                                          color:
+                                                              Color(0xffFF3B47),
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              "확인",
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: TextStyle(
+                                                                color: Color(
+                                                                    0xFFffffff),
+                                                                fontSize: 14,
+                                                                fontFamily:
+                                                                    'Pretendard',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ))
+                                                ],
+                                              );
+                                            });
                                       } else {
                                         setState(() {
                                           secondAnswer =

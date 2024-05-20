@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
@@ -18,9 +19,9 @@ import 'package:kudog/service/UserInfoService.dart';
 import 'package:kudog/service/WithdrawalService.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // runApp(const MainApp());
+  await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => NoticeService()),
     ChangeNotifierProvider(create: (context) => SignInService()),
