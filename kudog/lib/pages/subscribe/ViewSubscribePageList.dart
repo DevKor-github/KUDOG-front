@@ -30,7 +30,7 @@ class _ViewSubscribePageListWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> iconStates = [false, false, false];
   late Dio dio;
-  List<Notice>? noticeList;
+  NoticeList noticeList = NoticeList();
   int currentPage = 1;
 
   void changeIcon(int index) {
@@ -53,7 +53,7 @@ class _ViewSubscribePageListWidgetState
 
     setState(() {
       noticeList =
-          Provider.of<NoticeService>(context, listen: false).noticeList.notices;
+          Provider.of<NoticeService>(context, listen: false).noticeList;
     });
   }
 
@@ -103,8 +103,13 @@ class _ViewSubscribePageListWidgetState
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ViewSubscribeFilterPageWidget(
-                                        isEdit: true,
-                                      )))
+                                        id: noticeList.id,
+                                        name: noticeList.name,
+                                        email: noticeList.email,
+                                        provider: noticeList.provider,
+                                        selectedCategories:
+                                            noticeList.categories,
+                                      ))).then((value) => _loadNotices())
                         },
                     icon: Icon(Icons.settings_rounded))
               ]),
@@ -157,10 +162,12 @@ class _ViewSubscribePageListWidgetState
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: noticeList != null ? noticeList!.length : 0,
+                  itemCount: noticeList.notices != null
+                      ? noticeList.notices!.length
+                      : 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
-                      notice: noticeList![index],
+                      notice: noticeList.notices![index],
                     );
                   },
                 ),

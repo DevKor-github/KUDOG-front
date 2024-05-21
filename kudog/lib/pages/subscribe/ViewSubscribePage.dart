@@ -146,7 +146,9 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: subscribeList.length + 1,
+                itemCount: subscribeList.length == 0 || isEditting
+                    ? subscribeList.length + 1
+                    : subscribeList.length,
                 itemBuilder: (context, index) {
                   return index == subscribeList.length
                       ? Container(

@@ -175,7 +175,9 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 10),
                     children: List.generate(
-                        scrapList.length + 1,
+                        scrapList.length == 0 || isEditting
+                            ? scrapList.length + 1
+                            : scrapList.length,
                         (index) => index != scrapList.length
                             ? GestureDetector(
                                 key: ValueKey(index),

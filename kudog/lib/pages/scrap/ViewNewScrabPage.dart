@@ -4,10 +4,13 @@ import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 
 class ViewNewScrapPageWidget extends StatefulWidget {
-  const ViewNewScrapPageWidget({Key? key, this.isEdit = false})
+  const ViewNewScrapPageWidget(
+      {Key? key, this.name, this.description, this.boxId})
       : super(key: key);
 
-  final bool isEdit;
+  final String? name;
+  final String? description;
+  final int? boxId;
 
   @override
   _ViewNewScrapPageWidgetState createState() => _ViewNewScrapPageWidgetState();
@@ -19,15 +22,32 @@ class _ViewNewScrapPageWidgetState extends State<ViewNewScrapPageWidget> {
   String? name;
   String? description;
 
+  final _formKey = GlobalKey<FormState>();
+
+  bool get isEdit {
+    return widget.name != null ? true : false;
+  }
+
   void AddScrap() async {
     await Provider.of<NoticeService>(context, listen: false)
         .addScrap(name, description);
     Navigator.pop(context);
   }
 
+  void EditScrap() async {
+    await Provider.of<NoticeService>(context, listen: false)
+        .editScrap(widget.boxId, name, description);
+    Navigator.pop(context);
+  }
+
   @override
   void initState() {
     super.initState();
+
+    if (isEdit) {
+      name = widget.name;
+      description = widget.description;
+    }
   }
 
   @override
@@ -48,92 +68,114 @@ class _ViewNewScrapPageWidgetState extends State<ViewNewScrapPageWidget> {
             },
           ),
           title: Text(
-            widget.isEdit ? '폴더 설정' : '폴더 만들기',
+            isEdit ? '폴더 설정' : '폴더 만들기',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 21),
-          child: ListView(children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 21),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(top: 68, bottom: 48),
-                    child: Image.asset(
-                      "assets/images/artboard_big.png",
+          child: Form(
+            key: _formKey,
+            child: ListView(children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 21),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(top: 68, bottom: 48),
+                      child: Image.asset(
+                        "assets/images/artboard_big.png",
+                      ),
                     ),
-                  ),
-                  Text(
-                    '이름',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    Text(
+                      '이름',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
                         filled: true,
                         fillColor: gray4,
                         enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {name = value},
-                  ),
-                  SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    '설명',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                            borderRadius: BorderRadius.all(Radius.circular(8))),
+                      ),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {name = value},
+                      initialValue: name,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      },
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    keyboardType: TextInputType.multiline,
-                    minLines: 3,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: gray4,
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {description = value},
-                  )
-                ],
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Text(
+                      '설명',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      minLines: 3,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: gray4,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)))),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {description = value},
+                      initialValue: description,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                AddScrap();
-              },
-              style: TextButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  minimumSize: Size.fromHeight(44),
-                  backgroundColor: red1),
-              child: const Text(
-                '완료',
-                style: TextStyle(color: white),
-              ),
-            )
-          ]),
+              TextButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    if (isEdit)
+                      EditScrap();
+                    else
+                      AddScrap();
+                  }
+                },
+                style: TextButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                    minimumSize: Size.fromHeight(44),
+                    backgroundColor: red1),
+                child: const Text(
+                  '완료',
+                  style: TextStyle(color: white),
+                ),
+              )
+            ]),
+          ),
         ));
   }
 }

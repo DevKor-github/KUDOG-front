@@ -13,10 +13,20 @@ import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
-  const ViewSubscribeFilterPageWidget({Key? key, this.isEdit = false})
+  ViewSubscribeFilterPageWidget(
+      {Key? key,
+      this.name = '',
+      this.email = '',
+      this.provider = '',
+      this.selectedCategories = const [],
+      this.id})
       : super(key: key);
 
-  final bool isEdit;
+  int? id;
+  String? name = '';
+  String? email = '';
+  String? provider = '';
+  List<String>? selectedCategories = [];
 
   @override
   _ViewSubscribeFilterPageWidgetState createState() =>
@@ -27,16 +37,24 @@ class _ViewSubscribeFilterPageWidgetState
     extends State<ViewSubscribeFilterPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> majors = [];
-  Map<String, List<String>> categories = {'': List.empty()};
+  Map<String, List<String>> categories = {'': []};
 
-  String? name;
-  String? email;
+  String name = '';
+  String email = '';
   String provider = '';
   Set<String?> selectedCategories = Set();
+
+  final _formKey = GlobalKey<FormState>();
 
   void AddSubscribe() async {
     await Provider.of<NoticeService>(context, listen: false)
         .addSubscribes(name, email, provider, selectedCategories.toList());
+    Navigator.pop(context);
+  }
+
+  void EditSubscribe() async {
+    await Provider.of<NoticeService>(context, listen: false).editSubscribes(
+        widget.id, name, email, provider, selectedCategories.toList());
     Navigator.pop(context);
   }
 
@@ -63,9 +81,20 @@ class _ViewSubscribeFilterPageWidgetState
     });
   }
 
+  bool get isEdit {
+    return (widget.id == null || widget.id == 0) ? false : true;
+  }
+
   @override
   void initState() {
     super.initState();
+
+    name = widget.name ?? '';
+    email = widget.email ?? '';
+    provider = widget.provider ?? '';
+    selectedCategories = widget.selectedCategories == null
+        ? {}
+        : widget.selectedCategories!.toSet();
 
     _loadProvidersAndCategories();
   }
@@ -88,143 +117,106 @@ class _ViewSubscribeFilterPageWidgetState
             },
           ),
           title: Text(
-            widget.isEdit ? '구독 설정' : '구독함 만들기',
+            isEdit ? '구독 설정' : '구독함 만들기',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 21),
-          child: ListView(children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 21),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!widget.isEdit)
-                    Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(top: 68, bottom: 48),
-                      child: Image.asset(
-                        "assets/images/artboard_big.png",
+          child: Form(
+            key: _formKey,
+            child: ListView(children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 21),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!isEdit)
+                      Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(top: 68, bottom: 48),
+                        child: Image.asset(
+                          "assets/images/artboard_big.png",
+                        ),
+                      ),
+                    Text(
+                      '이름',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  Text(
-                    '이름',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: gray4,
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {name = value},
-                  )
-                ],
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 21),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '이메일',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: gray4,
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {email = value},
-                  )
-                ],
-              ),
-            ),
-            Container(
-                child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: Row(
-                    children: [
-                      Container(
-                          child: Text(
-                            '학과',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: black,
-                              fontSize: 16,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          margin: EdgeInsets.only(
-                            right: 12,
-                          )),
-                      Icon(Icons.edit_outlined)
-                    ],
-                  ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: gray4,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)))),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {name = value},
+                      initialValue: name,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      },
+                    )
+                  ],
                 ),
-                Row(
-                    children: List.generate(
-                        majors.length ~/ 2,
-                        (index) => MajorCard(
-                            major: majors[index],
-                            onSelect: (val) => {
-                                  setState(() {
-                                    provider = majors[index];
-                                    selectedCategories.clear();
-                                  })
-                                },
-                            isSelect: provider == majors[index]))),
-                Row(
-                    children: List.generate(
-                        majors.length - (majors.length ~/ 2),
-                        (index) => MajorCard(
-                            major: majors[index + (majors.length ~/ 2)],
-                            onSelect: (val) => {
-                                  setState(() {
-                                    provider =
-                                        majors[index + (majors.length ~/ 2)];
-                                    selectedCategories.clear();
-                                  })
-                                },
-                            isSelect: provider ==
-                                majors[index + (majors.length ~/ 2)]))),
-              ],
-            )),
-            Container(
-                margin: EdgeInsets.only(bottom: 26),
+              ),
+              Container(
+                margin: EdgeInsets.only(bottom: 21),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Text(
+                      '이메일',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: gray4,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)))),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {email = value},
+                      initialValue: email,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                  child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: Row(
                       children: [
                         Container(
-                            margin: EdgeInsets.only(top: 30, bottom: 10),
                             child: Text(
-                              '카테고리',
+                              '학과',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: black,
@@ -232,69 +224,132 @@ class _ViewSubscribeFilterPageWidgetState
                                 fontFamily: 'Pretendard',
                                 fontWeight: FontWeight.w600,
                               ),
-                            ))
+                            ),
+                            margin: EdgeInsets.only(
+                              right: 12,
+                            )),
+                        Icon(Icons.edit_outlined)
                       ],
                     ),
-                    Row(
-                      children: [
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: provider == ''
-                                ? []
-                                : List.generate(
-                                    (categories[provider]!.length ~/ 2),
-                                    (index) {
-                                    return CategoryCard(
-                                      category: categories[provider]![index],
-                                      onSelect: (val) => {
-                                        val
-                                            ? selectedCategories.add(
-                                                categories[provider]![index])
-                                            : selectedCategories.remove(
-                                                categories[provider]![index])
-                                      },
-                                    );
-                                  })),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: provider == ''
-                                ? []
-                                : List.generate(
-                                    categories[provider]!.length -
-                                        (categories[provider]!.length ~/ 2),
-                                    (index) {
-                                    index = index +
-                                        (categories[provider]!.length ~/ 2);
-                                    return CategoryCard(
-                                      category: categories[provider]![index],
-                                      onSelect: (val) => {
-                                        val
-                                            ? selectedCategories.add(
-                                                categories[provider]![index])
-                                            : selectedCategories.remove(
-                                                categories[provider]![index])
-                                      },
-                                    );
-                                  }))
-                      ],
-                    )
-                  ],
-                )),
-            TextButton(
-              onPressed: () {
-                AddSubscribe();
-              },
-              style: TextButton.styleFrom(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8))),
-                  minimumSize: Size.fromHeight(44),
-                  backgroundColor: red1),
-              child: const Text(
-                '저장',
-                style: TextStyle(color: white),
-              ),
-            )
-          ]),
+                  ),
+                  Row(
+                      children: List.generate(
+                          majors.length ~/ 2,
+                          (index) => MajorCard(
+                              major: majors[index],
+                              onSelect: (val) => {
+                                    setState(() {
+                                      provider = majors[index];
+                                      selectedCategories.clear();
+                                    })
+                                  },
+                              isSelect: provider == majors[index]))),
+                  Row(
+                      children: List.generate(
+                          majors.length - (majors.length ~/ 2),
+                          (index) => MajorCard(
+                              major: majors[index + (majors.length ~/ 2)],
+                              onSelect: (val) => {
+                                    setState(() {
+                                      provider =
+                                          majors[index + (majors.length ~/ 2)];
+                                      selectedCategories.clear();
+                                    })
+                                  },
+                              isSelect: provider ==
+                                  majors[index + (majors.length ~/ 2)]))),
+                ],
+              )),
+              Container(
+                  margin: EdgeInsets.only(bottom: 26),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                              margin: EdgeInsets.only(top: 30, bottom: 10),
+                              child: Text(
+                                '카테고리',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: black,
+                                  fontSize: 16,
+                                  fontFamily: 'Pretendard',
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ))
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: provider == ''
+                                  ? []
+                                  : List.generate(
+                                      (categories[provider]?.length ?? 0) ~/ 2,
+                                      (index) {
+                                      return CategoryCard(
+                                        category: categories[provider]![index],
+                                        onSelect: (val) => {
+                                          val
+                                              ? selectedCategories.add(
+                                                  categories[provider]![index])
+                                              : selectedCategories.remove(
+                                                  categories[provider]![index])
+                                        },
+                                      );
+                                    })),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: provider == ''
+                                  ? []
+                                  : List.generate(
+                                      (categories[provider]?.length ?? 0) -
+                                          ((categories[provider]?.length ??
+                                                  0) ~/
+                                              2), (index) {
+                                      index = index +
+                                          (categories[provider]!.length ~/ 2);
+                                      return CategoryCard(
+                                        category: categories[provider]![index],
+                                        onSelect: (val) => {
+                                          val
+                                              ? selectedCategories.add(
+                                                  categories[provider]![index])
+                                              : selectedCategories.remove(
+                                                  categories[provider]![index])
+                                        },
+                                      );
+                                    }))
+                        ],
+                      )
+                    ],
+                  )),
+              TextButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    if (isEdit) {
+                      EditSubscribe();
+                      print('edit');
+                    } else {
+                      AddSubscribe();
+                      print('addsubscribe');
+                    }
+                  }
+                },
+                style: TextButton.styleFrom(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                    minimumSize: Size.fromHeight(44),
+                    backgroundColor: red1),
+                child: const Text(
+                  '저장',
+                  style: TextStyle(color: white),
+                ),
+              )
+            ]),
+          ),
         ));
   }
 }
