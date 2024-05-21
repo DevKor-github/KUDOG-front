@@ -6,6 +6,7 @@ import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
   const ViewPostDetailPageWidget({super.key, required this.notice});
@@ -76,8 +77,11 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
             FloatingActionButton(
               backgroundColor: Color(0xffFAF8F8),
               shape: CircleBorder(),
-              onPressed: () {},
-              tooltip: '파일 저장',
+              onPressed: () {
+                String textToShare = noticeDetail.url!;
+                Share.share(textToShare);
+              },
+              tooltip: '공유하기',
               child: Icon(Icons.upload_sharp),
             ),
             SizedBox(height: 16), // 버튼 간 간격 조절

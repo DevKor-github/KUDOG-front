@@ -52,7 +52,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
         //유효한 토큰일 때
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => NavigationPageWidget(idx: 4)));
+              builder: (context) => NavigationPageWidget(idx: 2)));
         });
       } else {}
     }

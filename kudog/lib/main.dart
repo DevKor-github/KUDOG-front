@@ -47,6 +47,16 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
-        home: LoginPageWidget());
+        home: LoginPageWidget()
+        // home: ViewPostDetailPageWidget(
+        //     notice: Notice(
+        //         id: 1,
+        //         title: "2023학년도 제1학기 복수전공 면접",
+        //         scrapped: false,
+        //         date: "2023-11-07",
+        //         mappedCategory: "학사일정",
+        //         provider: "컴퓨터학과",
+        //         scrapBoxId: [1, 2, 3]))
+        );
   }
 }
