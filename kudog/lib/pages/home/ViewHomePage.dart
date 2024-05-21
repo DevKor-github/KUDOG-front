@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/NotificationService.dart';
 import 'package:kudog/service/TokenService.dart';
 import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
@@ -27,12 +30,9 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   List<Notice> noticeList = []; //보여지는 공지사항들
   late String filterDate; //filter의 date
   int selectedIndex = 0; //선택된 단과대학
+  List<Records> newNotifications = [];
   void initState() {
     super.initState();
-    print(overallFilter.categories);
-    print(overallFilter.providers);
-    print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
-
     if (DateTime.parse(overallFilter.endDate!)
             .difference(DateTime.parse(overallFilter.startDate!))
             .inDays ==
@@ -52,7 +52,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
       filterDate = "1개월";
     }
     if (overallFilter.categories == null && overallFilter.providers == null) {
-      //처음에 가져올 때
       _loadInitNotices(overallFilter);
     } else if (overallFilter.categories == null &&
         overallFilter.providers != null) {
@@ -61,10 +60,10 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
         overallFilter.providers == null) {
       _loadCategoriesNotices(overallFilter);
     } else {
-      //provider, categories 두 개 다 있을 때
       _loadFilteredNotices(overallFilter);
     }
-    testToken();
+    // testToken();
+    loadNewNotifications();
   }
 
   Future<void> testToken() async {
@@ -204,6 +203,16 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     }
   }
 
+  void loadNewNotifications() async {
+    await Provider.of<NotificationService>(context, listen: false)
+        .getNewNotifications();
+    setState(() {
+      newNotifications =
+          Provider.of<NotificationService>(context, listen: false)
+              .newNotificationRecords;
+    });
+  }
+
   void addToScrap(int noticeId) {}
 
   void removeFromScrap(int noticeId) {}
@@ -241,42 +250,36 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '구독함A ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w600,
-                                height: 0.11,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '에 새로운 소식이 들어왔어요!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  NavigationPageWidget(idx: 3)));
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          newNotifications.length == 0
+                              ? "새로운 공지사항이 없어요."
+                              : newNotifications[0].title!,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Container(
-                          child: Icon(
-                              color: Colors.white,
-                              Icons.arrow_circle_right_outlined))
-                    ],
+                        Container(
+                            child: Icon(
+                                color: Colors.white,
+                                Icons.arrow_circle_right_outlined))
+                      ],
+                    ),
                   ),
                 ),
                 Container(

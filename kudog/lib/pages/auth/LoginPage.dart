@@ -51,8 +51,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
             .format(DateTime.now().subtract(Duration(days: 7)));
         //유효한 토큰일 때
         Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => NavigationPageWidget()));
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => NavigationPageWidget(idx: 2)));
         });
       } else {}
     }
@@ -181,7 +181,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            NavigationPageWidget()));
+                                            NavigationPageWidget(idx: 2)));
                               } else {
                                 showDialog(
                                     context: context,

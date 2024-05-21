@@ -11,6 +11,7 @@ import 'package:kudog/pages/my/ViewMyPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/NotificationService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/SignUpService.dart';
@@ -21,7 +22,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => NoticeService()),
     ChangeNotifierProvider(create: (context) => SignInService()),
@@ -32,6 +33,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => SignOutService()),
     ChangeNotifierProvider(create: (context) => WithdrawalService()),
     ChangeNotifierProvider(create: (context) => TokenService()),
+    ChangeNotifierProvider(create: (context) => NotificationService()),
   ], child: const MainApp()));
 }
 

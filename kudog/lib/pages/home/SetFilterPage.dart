@@ -223,7 +223,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget> {
                           context,
                           MaterialPageRoute<void>(
                             builder: (BuildContext context) =>
-                                NavigationPageWidget(),
+                                NavigationPageWidget(idx: 2),
                           ),
                         );
                       }),
