@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
@@ -22,6 +23,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ko_KR', null);
   // await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => NoticeService()),

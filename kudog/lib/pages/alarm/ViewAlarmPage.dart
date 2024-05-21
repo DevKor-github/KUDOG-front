@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/service/NotificationService.dart';
-import 'package:kudog/service/TokenService.dart';
 import 'package:provider/provider.dart';
 
 class ViewAlarmPageWidget extends StatefulWidget {
@@ -96,10 +95,8 @@ class DailyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime _date = DateTime.parse(date);
-
-    int weekday = _date.weekday;
-
     String weekdayName = DateFormat('EEEE', 'ko_KR').format(_date);
+
     return Container(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -108,7 +105,7 @@ class DailyCard extends StatelessWidget {
           Container(
             margin: EdgeInsets.only(bottom: 20),
             child: Text(
-              date + "(" + weekdayName + ")",
+              '$date (${weekdayName.substring(0, 1)})',
               style: TextStyle(
                 color: Color(0xff787474),
                 fontSize: 14,
@@ -134,7 +131,9 @@ class DailyCard extends StatelessWidget {
                         ),
                       ),
                       if (notifications[index].isNew ?? false)
-                        Image.asset("assets/images/new.png")
+                        Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: Image.asset("assets/images/new.png"))
                     ],
                   ),
                 );

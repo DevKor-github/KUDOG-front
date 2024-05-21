@@ -66,7 +66,7 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        unselectedItemColor: const Color(0xffC6C6C6),
+        unselectedItemColor: Colors.black,
         selectedItemColor: const Color(0xffFF3B47),
         showUnselectedLabels: true,
       ),
