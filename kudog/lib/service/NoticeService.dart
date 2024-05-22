@@ -343,14 +343,13 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       String sendTime = DateFormat.Hm().format(DateTime.now());
-
       Response response = await Dio().post(
         "https://api.kudog.devkor.club/subscribe/box",
         data: {
           'name': name,
           'email': email,
           'provider': provider,
-          'categories': ["학부 공지사항", "진로정보 - 인턴"],
+          'categories': categories,
           'sendTime': sendTime
         },
         options: Options(
@@ -372,6 +371,56 @@ class NoticeService extends ChangeNotifier {
       }
     } catch (e) {
       print("POST 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> editSubscribes(boxId, name, email, provider, categories) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      String sendTime = DateFormat.Hm().format(DateTime.now());
+
+      print({
+        'name': name,
+        'email': email,
+        'provider': provider,
+        'categories': categories,
+        'sendTime': sendTime,
+        'boxid': boxId
+      });
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/subscribe/box/${boxId}",
+        data: {
+          'name': name,
+          'email': email,
+          'provider': provider,
+          'categories': categories,
+          'sendTime': sendTime
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
       print(e.toString());
     }
 
@@ -478,6 +527,43 @@ class NoticeService extends ChangeNotifier {
       }
     } catch (e) {
       print("POST 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> editScrap(boxId, name, description) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/scrap/box/${boxId}",
+        data: {
+          'name': name,
+          'description': description,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
       print(e.toString());
     }
 

@@ -1,14 +1,26 @@
+import 'dart:convert';
+
 class NoticeList {
   List<Notice>? notices;
   int? page;
   int? totalPage;
   int? totalNotice;
 
-  NoticeList({this.notices, this.page, this.totalPage, this.totalNotice});
+  String? name;
+  String? email;
+  String? provider;
+  List<String>? categories;
+  String? sendTime;
+
+  int? id;
+
+  NoticeList(
+      {this.notices, this.page, this.totalPage, this.totalNotice, this.id});
 
   NoticeList.fromJson(Map<String, dynamic> json, {String key = 'notices'}) {
-    if (key == null) key = 'notices';
+    id = json['id'];
 
+    if (key == null) key = 'notices';
     if (json[key] != null) {
       notices = <Notice>[];
       json[key].forEach((v) {
@@ -18,6 +30,16 @@ class NoticeList {
     page = json['page'];
     totalPage = json['totalPage'];
     totalNotice = json['totalNotice'];
+
+    name = json['name'];
+    email = json['email'];
+    provider = json['provider'];
+    sendTime = json['sendTime'];
+
+    json['categories']?.forEach((v) {
+      categories = [];
+      categories!.add(v);
+    });
   }
 
   Map<String, dynamic> toJson() {

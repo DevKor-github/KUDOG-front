@@ -7,6 +7,7 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
+import 'package:kudog/pages/scrap/ViewNewScrabPage.dart';
 import 'package:provider/provider.dart';
 
 class ViewScrapListPageWidget extends StatefulWidget {
@@ -168,13 +169,14 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                 ),
                 IconButton(
                     onPressed: () => {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) =>
-                          //             ViewScrapFilterPageWidget(
-                          //               isEdit: true,
-                          //             )))
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ViewNewScrapPageWidget(
+                                        boxId: widget.boxId,
+                                        name: widget.scrapName,
+                                        description: widget.scrapDescription,
+                                      ))).then((value) => {})
                         },
                     icon: Icon(Icons.settings_rounded))
               ]),

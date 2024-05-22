@@ -34,6 +34,7 @@ class TokenService extends ChangeNotifier {
   }
 
   Future<void> getFcmTokenStatusAndPostToken() async {
+    return;
     //클라이언트 token 상태 확인 후 만료되었으면 다시 post token
     String? fcmToken = await FirebaseMessaging.instance.getToken();
     print(fcmToken);

@@ -27,6 +27,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   List<Notice> noticeList = []; //보여지는 공지사항들
   late String filterDate; //filter의 date
   int selectedIndex = 0; //선택된 단과대학
+
   void initState() {
     super.initState();
     print(overallFilter.categories);
@@ -413,16 +414,32 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             child: ListView.builder(
                 itemCount: noticeList.length,
                 itemBuilder: (context, index) {
-                  return noticeCard(notice: noticeList[index]);
+                  GlobalKey _key = new GlobalKey();
+                  return noticeCard(
+                      key: _key, globalKey: _key, notice: noticeList[index]);
                 }))
       ],
     )));
   }
 }
 
+extension GlobalPaintBounds on BuildContext {
+  Rect? get globalPaintBounds {
+    final renderObject = findRenderObject();
+    final translation = renderObject?.getTransformTo(null).getTranslation();
+    if (translation != null && renderObject?.paintBounds != null) {
+      final offset = Offset(translation.x, translation.y);
+      return renderObject!.paintBounds.shift(offset);
+    } else {
+      return null;
+    }
+  }
+}
+
 class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, required this.notice});
+  const noticeCard({super.key, this.globalKey = null, required this.notice});
   final Notice notice;
+  final GlobalKey? globalKey;
   @override
   _noticeCardState createState() => _noticeCardState();
 }
@@ -435,6 +452,62 @@ class _noticeCardState extends State<noticeCard> {
       widget.notice.scrapped = !widget.notice.scrapped!;
       scrabState = !scrabState;
     });
+  }
+
+  void onSelectScrap() async {
+    await Provider.of<NoticeService>(context, listen: false).getScraps();
+    List<Scrap> scrapList =
+        Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            surfaceTintColor: Colors.transparent,
+            backgroundColor: Colors.transparent,
+            alignment: Alignment.bottomRight,
+            insetPadding: EdgeInsets.only(
+                bottom:
+                    widget.globalKey?.currentContext?.globalPaintBounds == null
+                        ? 20
+                        : MediaQuery.of(context).size.height -
+                            widget.globalKey!.currentContext!.globalPaintBounds!
+                                .top -
+                            24,
+                right: 18),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  scrapList.length,
+                  (index) => Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: TextButton(
+                        onPressed: () async {
+                          await Provider.of<NoticeService>(context,
+                                  listen: false)
+                              .addToScrap(
+                                  widget.notice.id!, scrapList[index].id!);
+                          Navigator.of(context, rootNavigator: true).pop(this);
+                          changeIcon();
+                        },
+                        style: TextButton.styleFrom(
+                            backgroundColor: white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(8),
+                                    topRight: Radius.circular(8),
+                                    bottomLeft: Radius.circular(8))),
+                            fixedSize: Size(227, 44)),
+                        child: Row(
+                          children: [
+                            Icon(Icons.drive_file_move),
+                            Text(scrapList[index].name!)
+                          ],
+                        )),
+                  ),
+                )),
+          );
+        });
   }
 
   @override
@@ -520,7 +593,7 @@ class _noticeCardState extends State<noticeCard> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      changeIcon();
+                      onSelectScrap();
                     },
                     child: Container(
                       width: 22,
