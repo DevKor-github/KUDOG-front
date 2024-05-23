@@ -100,8 +100,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
         .getScrappedNotices(widget.boxId!);
 
     setState(() {
-      noticeList =
-          Provider.of<NoticeService>(context, listen: false).noticeList.notices;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .scrapNoticeList
+          .notices;
     });
   }
 

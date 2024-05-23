@@ -84,7 +84,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     setState(() {
       selectedIndex = 0;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-              .noticeList
+              .mainNoticeList
               .notices ??
           [];
     });
@@ -103,7 +103,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     setState(() {
       selectedIndex = 0;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
+          .mainNoticeList
           .notices!;
     });
   }
@@ -121,7 +121,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     setState(() {
       selectedIndex = idx;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
+          .mainNoticeList
           .notices!;
     });
   }
@@ -138,7 +138,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
-              .noticeList
+              .mainNoticeList
               .notices ??
           [];
     });
@@ -156,7 +156,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
+          .mainNoticeList
           .notices!;
     });
   }
@@ -176,7 +176,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     setState(() {
       selectedIndex = 0;
       noticeList = Provider.of<NoticeService>(context, listen: false)
-          .noticeList
+          .mainNoticeList
           .notices!;
     });
   }

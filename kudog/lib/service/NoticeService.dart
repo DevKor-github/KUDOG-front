@@ -10,10 +10,16 @@ import 'package:kudog/service/TokenService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeService extends ChangeNotifier {
-  NoticeList noticeList = NoticeList();
+  NoticeList mainNoticeList = NoticeList();
+  NoticeList scrapNoticeList = NoticeList();
+  NoticeList subscribeNoticeList = NoticeList();
+
   NoticeDetail noticeDetail = NoticeDetail();
+
   List<Subscribe> subscribeList = List.empty();
   ScrapList scrapList = ScrapList();
+
+  //모든 공지사항을 가져옵니다.
   Future<void> getAllNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -32,7 +38,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data, key: 'records');
+        mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
       } else {
@@ -47,6 +53,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //학과와 카테고리 필터가 적용된 공지사항을 가져옵니다.
   Future<void> getFilteredNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -67,7 +74,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -83,6 +90,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //해당 학과의 공지사항만 가져옵니다.
   Future<void> getProviderNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -102,7 +110,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -118,6 +126,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //카테고리가 적용된 공지사항을 가져옵니다.
   Future<void> getCategoryNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -137,7 +146,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -153,6 +162,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //키워드로 검색한 공지사항을 가져옵니다.
   Future<void> getSearchedNotices(Filter filter) async {
     try {
       SharedPreferences sharedPreferences =
@@ -171,7 +181,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -187,8 +197,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //단일 notice와 그 세부사항을 가져옵니다
   void getNotice(int id) async {
-    //단일 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -223,6 +233,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //해당 id를 가진 구독함의 공지사항들을 가져옵니다.
   Future<void> getSubscribedNotices(int boxId, DateTime date) async {
     try {
       SharedPreferences sharedPreferences =
@@ -245,7 +256,7 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
 
-        noticeList = NoticeList.fromJson(response.data);
+        subscribeNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -261,7 +272,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSubscribedNotices(int page) async {
+  //삭제요망
+  void addSubscribedNotices_deprecated(int page) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -284,7 +296,6 @@ class NoticeService extends ChangeNotifier {
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
-        addSubscribedNotices(page);
       } else {
         print("GET 요청 실패");
         print("Status Code : ${response.statusCode}");
@@ -297,6 +308,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //구독 리스트를 가져옵니다.
   Future<void> getSubscribes() async {
     try {
       SharedPreferences sharedPreferences =
@@ -336,6 +348,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //구독함을 추가합니다.
   Future<void> addSubscribes(name, email, provider, categories) async {
     try {
       SharedPreferences sharedPreferences =
@@ -377,6 +390,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 구독함 정보를 수정합니다.
   Future<void> editSubscribes(boxId, name, email, provider, categories) async {
     try {
       SharedPreferences sharedPreferences =
@@ -427,6 +441,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 구독함을 삭제합니다.
   Future<void> deleteSubscribes(List<int> subscribeIdList) async {
     try {
       SharedPreferences sharedPreferences =
@@ -462,6 +477,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //스크랩 리스트를 가져옵니다.
   Future<void> getScraps() async {
     try {
       SharedPreferences sharedPreferences =
@@ -496,6 +512,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //새 스크랩함을 추가합니다.
   Future<void> addScrap(name, description) async {
     try {
       SharedPreferences sharedPreferences =
@@ -533,6 +550,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 스크랩함을 수정합니다.
   Future<void> editScrap(boxId, name, description) async {
     try {
       SharedPreferences sharedPreferences =
@@ -570,6 +588,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 스크랩함을 삭제합니다.
   Future<void> deleteScraps(List<int> scrapIdList) async {
     try {
       SharedPreferences sharedPreferences =
@@ -605,6 +624,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //해당 id의 스크랩 박스에 들어있는 모든 공지사항을 가져옵니다.
   Future<void> getScrappedNotices(int boxId) async {
     try {
       SharedPreferences sharedPreferences =
@@ -624,7 +644,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data, key: 'notices');
+        scrapNoticeList = NoticeList.fromJson(response.data, key: 'notices');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -640,6 +660,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //스크랩 박스로 공지사항을 보관합니다. (또는 이미 보관중인 공지사항을 제거)
   Future<void> addToScrap(int noticeId, int scrapBoxId) async {
     try {
       SharedPreferences sharedPreferences =
