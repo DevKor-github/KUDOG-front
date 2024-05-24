@@ -63,7 +63,7 @@ class NoticeService extends ChangeNotifier {
       String _categories = filter.categories!.join(",");
       String _providers = filter.providers!.join(",");
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?categories=$_categories&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&keyword=${filter.keyword}",
+        "https://api.kudog.devkor.club/notice/list?categories=$_categories&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}&keyword=${filter.keyword}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -99,7 +99,7 @@ class NoticeService extends ChangeNotifier {
       String _providers = filter.providers!.join(",");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}",
+        "https://api.kudog.devkor.club/notice/list?&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -135,7 +135,7 @@ class NoticeService extends ChangeNotifier {
       String _categories = filter.categories!.join(",");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?&categories=$_categories&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}",
+        "https://api.kudog.devkor.club/notice/list?&categories=$_categories&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
