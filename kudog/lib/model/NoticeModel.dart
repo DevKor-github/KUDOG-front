@@ -145,6 +145,7 @@ class Filter {
   String? startDate;
   String? endDate;
   int? page;
+  int pageSize = 10;
   String? keyword;
 
   Filter(

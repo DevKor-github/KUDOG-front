@@ -170,7 +170,7 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&keyword=${filter.keyword}",
+        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}&keyword=${filter.keyword}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -181,7 +181,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        mainNoticeList = NoticeList.fromJson(response.data);
+        mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
