@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kudog/model/CategoryModel.dart';
@@ -28,8 +30,99 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   late String filterDate; //filter의 date
   int selectedIndex = 0; //선택된 단과대학
 
+  bool isMoreRequesting = false;
+
+  // 드레그 거리를 체크하기 위함
+  // 해당 값을 평균내서 50%이상 움직였을때 데이터 불러오는 작업을 하게됨.
+  double _dragDistance = 0;
+
+  scrollNotification(notification) {
+    // 스크롤 최대 범위
+    var containerExtent = notification.metrics.viewportDimension;
+
+    if (notification is ScrollStartNotification) {
+      // 스크롤을 시작하면 발생(손가락으로 리스트를 누르고 움직이려고 할때)
+      // 스크롤 거리값을 0으로 초기화함
+      _dragDistance = 0;
+    } else if (notification is OverscrollNotification) {
+      // 안드로이드에서 동작
+      // 스크롤을 시작후 움직일때 발생(손가락으로 리스트를 누르고 움직이고 있을때 계속 발생)
+      // 스크롤 움직인 만큼 빼준다.(notification.overscroll)
+      _dragDistance -= notification.overscroll;
+    } else if (notification is ScrollUpdateNotification) {
+      // ios에서 동작
+      // 스크롤을 시작후 움직일때 발생(손가락으로 리스트를 누르고 움직이고 있을때 계속 발생)
+      // 스크롤 움직인 만큼 빼준다.(notification.scrollDelta)
+      _dragDistance -= notification.scrollDelta!;
+    } else if (notification is ScrollEndNotification) {
+      // 스크롤이 끝났을때 발생(손가락을 리스트에서 움직이다가 뗐을때 발생)
+
+      // 지금까지 움직인 거리를 최대 거리로 나눈다.
+      var percent = _dragDistance / (containerExtent);
+      // 해당 값이 -0.4(40프로 이상) 아래서 위로 움직였다면
+      if (percent <= -0.4) {
+        // maxScrollExtent는 리스트 가장 아래 위치 값
+        // pixels는 현재 위치 값
+        // 두 같이 같다면(스크롤이 가장 아래에 있다)
+        if (notification.metrics.maxScrollExtent ==
+            notification.metrics.pixels) {
+          setState(() {
+            // 서버에서 데이터를 더 가져오는 효과를 주기 위함
+            // 하단에 프로그레스 서클 표시용
+            isMoreRequesting = true;
+          });
+
+          // 서버에서 데이터 가져온다.
+          requestMore().then((value) {
+            setState(() {
+              // 다 가져오면 하단 표시 서클 제거
+              isMoreRequesting = false;
+            });
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> requestMore() async {
+    overallFilter.page = overallFilter.page! + 1;
+
+    if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        0) {
+      filterDate = "오늘";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        7) {
+      filterDate = "1주";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays >=
+        50) {
+      filterDate = "3개월";
+    } else {
+      filterDate = "1개월";
+    }
+    if (overallFilter.categories == null && overallFilter.providers == null) {
+      //처음에 가져올 때
+      _loadInitNotices(overallFilter, add: true);
+    } else if (overallFilter.categories == null &&
+        overallFilter.providers != null) {
+      _loadProvidersNotices(overallFilter, add: true);
+    } else if (overallFilter.categories != null &&
+        overallFilter.providers == null) {
+      _loadCategoriesNotices(overallFilter, add: true);
+    } else {
+      //provider, categories 두 개 다 있을 때
+      _loadFilteredNotices(overallFilter, add: true);
+    }
+  }
+
   void initState() {
     super.initState();
+
     print(overallFilter.categories);
     print(overallFilter.providers);
     print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
@@ -65,6 +158,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
       //provider, categories 두 개 다 있을 때
       _loadFilteredNotices(overallFilter);
     }
+
     testToken();
   }
 
@@ -73,13 +167,14 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
         .getFcmTokenStatusAndPostToken();
   }
 
-  void _loadInitNotices(Filter filter) async {
+  void _loadInitNotices(Filter filter, {bool add = false}) async {
     //filter설정된 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getAllNotices(
         Filter(
             startDate: filter.startDate,
             endDate: filter.endDate,
-            page: filter.page));
+            page: filter.page),
+        add: add);
 
     setState(() {
       selectedIndex = 0;
@@ -90,7 +185,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void _loadFilteredNotices(Filter filter) async {
+  void _loadFilteredNotices(Filter filter, {bool add = false}) async {
     //이 페이지에서 필터링된 공지사항을 가져옵니다.
     await Provider.of<NoticeService>(context, listen: false).getFilteredNotices(
         Filter(
@@ -98,7 +193,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             categories: filter.categories,
             startDate: filter.startDate,
             endDate: filter.endDate,
-            page: filter.page));
+            page: filter.page),
+        add: add);
 
     setState(() {
       selectedIndex = 0;
@@ -108,7 +204,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void _loadProviderNotices(Filter filter, int idx) async {
+  void _loadProviderNotices(Filter filter, int idx, {bool add = false}) async {
     //선택한 단과대학의 공지사항을 가져옵니다.
 
     await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
@@ -116,7 +212,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             providers: filter.providers,
             startDate: sevenDaysAgo,
             endDate: formattedDate,
-            page: 1));
+            page: 1),
+        add: add);
 
     setState(() {
       selectedIndex = idx;
@@ -126,7 +223,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void _loadProvidersNotices(Filter filter) async {
+  void _loadProvidersNotices(Filter filter, {bool add = false}) async {
     //선택한 단과대학들의 공지사항을 가져옵니다.
 
     await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
@@ -134,7 +231,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             providers: filter.providers,
             startDate: sevenDaysAgo,
             endDate: formattedDate,
-            page: 1));
+            page: 1),
+        add: add);
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
@@ -144,7 +242,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void _loadCategoriesNotices(Filter filter) async {
+  void _loadCategoriesNotices(Filter filter, {bool add = false}) async {
     //선택한 카테고리들의 공지사항을 가져옵니다.
 
     await Provider.of<NoticeService>(context, listen: false).getCategoryNotices(
@@ -152,7 +250,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             categories: filter.categories,
             startDate: sevenDaysAgo,
             endDate: formattedDate,
-            page: 1));
+            page: 1),
+        add: add);
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
@@ -161,7 +260,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     });
   }
 
-  void _loadSearchedNotices(Filter filter) async {
+  void _loadSearchedNotices(Filter filter, {bool add = false}) async {
     //검색된 공지사항을 가져옵니다.
     String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     String sevenDaysAgo = DateFormat('yyyy-MM-dd')
@@ -171,7 +270,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             startDate: sevenDaysAgo,
             endDate: formattedDate,
             page: 1,
-            keyword: filter.keyword));
+            keyword: filter.keyword),
+        add: add);
 
     setState(() {
       selectedIndex = 0;
@@ -419,15 +519,30 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                       ],
                     )),
                 Expanded(
-                    child: ListView.builder(
-                        itemCount: noticeList.length,
-                        itemBuilder: (context, index) {
-                          GlobalKey _key = new GlobalKey();
-                          return noticeCard(
-                              key: _key,
-                              globalKey: _key,
-                              notice: noticeList[index]);
-                        }))
+                    child: NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification notification) {
+                          /*
+                     스크롤 할때 발생되는 이벤트
+                     해당 함수에서 어느 방향으로 스크롤을 했는지를 판단해
+                     리스트 가장 밑에서 아래서 위로 40프로 이상 스크롤 했을때 
+                     서버에서 데이터를 추가로 가져오는 루틴이 포함됨.
+                    */
+                          scrollNotification(notification);
+                          return false;
+                        },
+                        child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: noticeList.length,
+                            itemBuilder: (context, index) {
+                              GlobalKey _key = new GlobalKey();
+                              return noticeCard(
+                                  key: _key,
+                                  globalKey: _key,
+                                  notice: noticeList[index]);
+                            })))
               ],
             )));
   }

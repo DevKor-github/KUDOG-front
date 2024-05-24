@@ -17,6 +17,14 @@ class NoticeList {
   NoticeList(
       {this.notices, this.page, this.totalPage, this.totalNotice, this.id});
 
+  void addFromJson(Map<String, dynamic> json, {String key = 'notices'}) {
+    if (json[key] != null) {
+      json[key].forEach((v) {
+        notices!.add(new Notice.fromJson(v));
+      });
+    }
+  }
+
   NoticeList.fromJson(Map<String, dynamic> json, {String key = 'notices'}) {
     id = json['id'];
 
