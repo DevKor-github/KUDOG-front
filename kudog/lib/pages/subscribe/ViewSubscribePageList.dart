@@ -12,10 +12,13 @@ import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
 import 'package:provider/provider.dart';
 
 class ViewSubscribePageListWidget extends StatefulWidget {
-  ViewSubscribePageListWidget({Key? key, required this.subscribe, this.date})
+  ViewSubscribePageListWidget(
+      {Key? key, required this.subscribeList, required this.boxId, this.date})
       : super(key: key);
 
-  final Subscribe subscribe;
+  final List<Subscribe> subscribeList;
+  int boxId;
+
   DateTime? date = DateTime.now();
 
   @override
@@ -29,6 +32,7 @@ class _ViewSubscribePageListWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> iconStates = [false, false, false];
   late Dio dio;
+  Subscribe? subscribe;
   List<Notice>? noticeList;
   int currentPage = 1;
 
@@ -96,15 +100,29 @@ class _ViewSubscribePageListWidgetState
   void initState() {
     super.initState();
     dio = Dio();
-    //Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
-    //Provider.of<CategoryService>(context, listen: false)
-    //    .getFullLowerCategoryList();
-    //Provider.of<CategoryService>(context, listen: false).getSubList();
-    Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.subscribe.id, widget.date!);
-    noticeList = Provider.of<NoticeService>(context, listen: false)
-        .subscribeNoticeList
-        .notices;
+
+    _loadNotices();
+  }
+
+  void _loadNotices() async {
+    bool find = false;
+    widget.subscribeList.forEach((element) {
+      if (element.id == widget.boxId) {
+        subscribe = element;
+        find = true;
+      }
+    });
+
+    if (find == false) return;
+
+    await Provider.of<NoticeService>(context, listen: false)
+        .getSubscribedNotices(subscribe!.id, widget.date!);
+
+    setState(() {
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .subscribeNoticeList
+          .notices;
+    });
   }
 
   @override
@@ -118,7 +136,7 @@ class _ViewSubscribePageListWidgetState
       currentPage = page;
     });
     Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.subscribe.id, widget.date!);
+        .getSubscribedNotices(subscribe!.id, widget.date!);
   }
 
   Future<void> requestMore() async {
@@ -153,14 +171,25 @@ class _ViewSubscribePageListWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(widget.subscribe.name,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: black)),
-                Icon(
-                  Icons.arrow_drop_down_rounded,
-                  color: Color(0xFF000000),
+                DropdownMenu(
+                  initialSelection: widget.boxId,
+                  onSelected: (value) {
+                    if (value == null) return;
+
+                    widget.boxId = value;
+                    _loadNotices();
+                  },
+                  textStyle: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600, color: black),
+                  inputDecorationTheme: InputDecorationTheme(
+                    border: InputBorder.none,
+                  ),
+                  dropdownMenuEntries:
+                      List.generate(widget.subscribeList.length, (index) {
+                    return DropdownMenuEntry(
+                        value: widget.subscribeList[index].id,
+                        label: widget.subscribeList[index].name);
+                  }),
                 ),
                 IconButton(
                     onPressed: () => {
@@ -169,7 +198,7 @@ class _ViewSubscribePageListWidgetState
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ViewSubscribeFilterPageWidget(
-                                        subscribe: widget.subscribe,
+                                        subscribe: subscribe,
                                       )))
                         },
                     icon: Icon(Icons.settings_rounded))
@@ -191,7 +220,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.subscribe.id,
+                              .getSubscribedNotices(subscribe!.id,
                                   widget.date!.subtract(Duration(days: 1)));
 
                           setState(() {
@@ -216,7 +245,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.subscribe.id,
+                              .getSubscribedNotices(subscribe!.id,
                                   widget.date!.add(Duration(days: 1)));
 
                           setState(() {

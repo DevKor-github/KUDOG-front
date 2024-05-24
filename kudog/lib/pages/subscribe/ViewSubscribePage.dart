@@ -196,7 +196,8 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           ViewSubscribePageListWidget(
-                                            subscribe: subscribeList[index],
+                                            subscribeList: subscribeList,
+                                            boxId: subscribeList[index].id,
                                             date: DateTime.now(),
                                           )));
                           },

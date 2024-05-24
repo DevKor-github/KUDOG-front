@@ -1,14 +1,11 @@
-import 'dart:html';
-import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
-import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
@@ -25,20 +22,8 @@ class ViewSubscribeFilterPageWidget extends StatefulWidget {
 class _ViewSubscribeFilterPageWidgetState
     extends State<ViewSubscribeFilterPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> majors = ["전체", "정보대학", "공과대학", "디자인조형학부", "미디어학부", "경영대학"];
-  List<String> categories = [
-    "학부",
-    "대학원",
-    "교내 장학",
-    "교외 장학",
-    "근로 장학",
-    "학사 일정",
-    "학사자료실",
-    "자유게시판",
-    "공모전",
-    "채용정보",
-    "행사"
-  ];
+  List<String> majors = [];
+  Map<String, List<String>> categories = {};
 
   String name = '';
   String email = '';
@@ -73,6 +58,18 @@ class _ViewSubscribeFilterPageWidgetState
       name = widget.subscribe!.name;
       email = widget.subscribe!.email;
     }
+
+    _loadCategories();
+  }
+
+  void _loadCategories() async {
+    await Provider.of<CategoryService>(context, listen: false).getCategories();
+
+    setState(() {
+      majors = Provider.of<CategoryService>(context, listen: false).majors;
+      categories =
+          Provider.of<CategoryService>(context, listen: false).categories;
+    });
   }
 
   @override
@@ -205,61 +202,29 @@ class _ViewSubscribeFilterPageWidgetState
                   ),
                 ),
                 Row(
-                  children: [
-                    MajorCard(
-                        major: majors[0],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[0];
-                              })
-                            },
-                        isSelect: provider == majors[0]),
-                    MajorCard(
-                        major: majors[1],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[1];
-                              })
-                            },
-                        isSelect: provider == majors[1]),
-                    MajorCard(
-                        major: majors[2],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[2];
-                              })
-                            },
-                        isSelect: provider == majors[2])
-                  ],
-                ),
+                    children: List.generate(majors.length ~/ 2, (index) {
+                  return MajorCard(
+                      major: majors[index],
+                      onSelect: (val) => {
+                            setState(() {
+                              provider = majors[index];
+                            })
+                          },
+                      isSelect: provider == majors[index]);
+                })),
                 Row(
-                  children: [
-                    MajorCard(
-                        major: majors[3],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[3];
-                              })
-                            },
-                        isSelect: provider == majors[3]),
-                    MajorCard(
-                        major: majors[4],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[4];
-                              })
-                            },
-                        isSelect: provider == majors[4]),
-                    MajorCard(
-                        major: majors[5],
-                        onSelect: (val) => {
-                              setState(() {
-                                provider = majors[5];
-                              })
-                            },
-                        isSelect: provider == majors[5])
-                  ],
-                )
+                    children: List.generate(
+                        majors.length - (majors.length ~/ 2), (index) {
+                  index += majors.length ~/ 2;
+                  return MajorCard(
+                      major: majors[index],
+                      onSelect: (val) => {
+                            setState(() {
+                              provider = majors[index];
+                            })
+                          },
+                      isSelect: provider == majors[index]);
+                })),
               ],
             )),
             Container(
@@ -284,38 +249,42 @@ class _ViewSubscribeFilterPageWidgetState
                     ),
                     Row(
                       children: [
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: List.generate((categories.length ~/ 2),
-                                (index) {
-                              return CategoryCard(
-                                category: categories[index],
-                                onSelect: (val) => {
-                                  val
-                                      ? selectedCategories
-                                          .add(categories[index])
-                                      : selectedCategories
-                                          .remove(categories[index])
-                                },
-                              );
-                            })),
-                        Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: List.generate(
-                                categories.length - (categories.length ~/ 2),
-                                (index) {
-                              index = index + (categories.length ~/ 2);
-                              return CategoryCard(
-                                category: categories[index],
-                                onSelect: (val) => {
-                                  val
-                                      ? selectedCategories
-                                          .add(categories[index])
-                                      : selectedCategories
-                                          .remove(categories[index])
-                                },
-                              );
-                            }))
+                        if (categories[provider] != null)
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: List.generate(
+                                  (categories[provider]!.length ~/ 2), (index) {
+                                return CategoryCard(
+                                  category: categories[provider]![index],
+                                  onSelect: (val) => {
+                                    val
+                                        ? selectedCategories
+                                            .add(categories[provider]![index])
+                                        : selectedCategories.remove(
+                                            categories[provider]![index])
+                                  },
+                                );
+                              })),
+                        if (categories[provider] != null)
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: List.generate(
+                                  categories[provider]!.length -
+                                      (categories[provider]!.length ~/ 2),
+                                  (index) {
+                                index =
+                                    index + (categories[provider]!.length ~/ 2);
+                                return CategoryCard(
+                                  category: categories[provider]![index],
+                                  onSelect: (val) => {
+                                    val
+                                        ? selectedCategories
+                                            .add(categories[provider]![index])
+                                        : selectedCategories.remove(
+                                            categories[provider]![index])
+                                  },
+                                );
+                              }))
                       ],
                     )
                   ],
