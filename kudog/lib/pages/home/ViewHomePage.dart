@@ -213,213 +213,223 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            child: Column(
-      children: [
-        Container(
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            padding: EdgeInsets.fromLTRB(16, 17, 16, 0),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.04,
-                      child: Image.asset("assets/images/login_icon.png"),
-                      margin: EdgeInsets.only(top: 20, bottom: 15),
-                    ),
-                  ],
-                ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.06,
-                  padding: const EdgeInsets.only(
-                      top: 6, left: 16, right: 12, bottom: 6),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFFFF3A46),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text.rich(
-                        TextSpan(
+                    padding: EdgeInsets.fromLTRB(4, 0, 4, 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            TextSpan(
-                              text: '구독함A ',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w600,
-                                height: 0.11,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '에 새로운 소식이 들어왔어요!',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.04,
+                              child:
+                                  Image.asset("assets/images/login_icon.png"),
+                              margin: EdgeInsets.only(top: 20, bottom: 15),
                             ),
                           ],
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Container(
-                          child: Icon(
-                              color: Colors.white,
-                              Icons.arrow_circle_right_outlined))
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(
-                    bottom: 10,
-                  ),
-                  height: MediaQuery.of(context).size.height * 0.07,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Color(0xffF4F2F2), // 배경색 변경
-                      labelText: '키워드로 검색하세요.',
-                      labelStyle:
-                          TextStyle(fontSize: 14, color: Color(0xFFD9D9D9)),
-                      contentPadding: EdgeInsets.all(24.0),
-                      suffixIcon: IconButton(
-                          icon: Icon(Icons.search, color: Color(0xffFF3B47)),
-                          onPressed: () {
-                            _loadSearchedNotices(
-                                Filter(keyword: _searchController.text));
-                          }),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                    height: MediaQuery.of(context).size.height * 0.04,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: majors.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                              onTap: () {
-                                if (index != 0) {
-                                  _loadProviderNotices(
-                                      Filter(
-                                          providers: [majors[index]], page: 1),
-                                      index);
-                                  overallFilter = Filter(
-                                      providers: [majors[index]],
-                                      page: 1,
-                                      startDate: overallFilter.startDate,
-                                      endDate: overallFilter.endDate);
-                                } else {
-                                  _loadInitNotices(overallFilter);
-                                }
-                              },
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    border: selectedIndex != index
-                                        ? Border()
-                                        : Border(
-                                            bottom: BorderSide(
-                                              color: Color(0xffFF3B47),
-                                              width: 2.0,
-                                            ),
-                                          ),
-                                  ),
-                                  margin: EdgeInsets.only(right: 40),
-                                  child: Text(majors[index],
-                                      style: TextStyle(
-                                        color: selectedIndex != index
-                                            ? Color(0xFF787474)
-                                            : Color(0xffFF3B47),
-                                        fontSize: 18,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w500,
-                                      ))));
-                        }))
-              ],
-            )),
-        Container(
-            margin: EdgeInsets.only(left: 18, bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(children: [
-                  FilterCard(content: filterDate, type: "dates"),
-                  overallFilter.providers != null
-                      ? FilterCard(
-                          content: overallFilter.providers!.join(', '),
-                          type: "majors")
-                      : FilterCard(content: "전체", type: "majors"),
-                  overallFilter.categories != null
-                      ? FilterCard(
-                          content: overallFilter.categories!.join(', '),
-                          type: "categories")
-                      : FilterCard(content: "전체", type: "categories"),
-                ]),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SetFilterPageWidget()));
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 18, bottom: 10),
-                      padding: EdgeInsets.all(5),
-                      decoration: ShapeDecoration(
-                        color: Color(0xFFF4F1F1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                              width: 20,
-                              height: 20,
-                              child: Image.asset("assets/images/filter.png")),
-                          Text(
-                            '전체',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF787474),
-                              fontSize: 14,
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w500,
+                        Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          width: MediaQuery.of(context).size.width * 0.95,
+                          height: MediaQuery.of(context).size.height * 0.06,
+                          padding: const EdgeInsets.only(
+                              top: 6, left: 16, right: 12, bottom: 6),
+                          clipBehavior: Clip.antiAlias,
+                          decoration: ShapeDecoration(
+                            color: Color(0xFFFF3A46),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                        ],
-                      ),
-                    ))
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '구독함A ',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w600,
+                                        height: 0.11,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '에 새로운 소식이 들어왔어요!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Container(
+                                  child: Icon(
+                                      color: Colors.white,
+                                      Icons.arrow_circle_right_outlined))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(
+                            bottom: 10,
+                          ),
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF4F2F2), // 배경색 변경
+                              labelText: '키워드로 검색하세요.',
+                              labelStyle: TextStyle(
+                                  fontSize: 14, color: Color(0xFFD9D9D9)),
+                              contentPadding: EdgeInsets.all(24.0),
+                              suffixIcon: IconButton(
+                                  icon: Icon(Icons.search,
+                                      color: Color(0xffFF3B47)),
+                                  onPressed: () {
+                                    _loadSearchedNotices(Filter(
+                                        keyword: _searchController.text));
+                                  }),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: majors.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        if (index != 0) {
+                                          _loadProviderNotices(
+                                              Filter(
+                                                  providers: [majors[index]],
+                                                  page: 1),
+                                              index);
+                                          overallFilter = Filter(
+                                              providers: [majors[index]],
+                                              page: 1,
+                                              startDate:
+                                                  overallFilter.startDate,
+                                              endDate: overallFilter.endDate);
+                                        } else {
+                                          _loadInitNotices(overallFilter);
+                                        }
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            border: selectedIndex != index
+                                                ? Border()
+                                                : Border(
+                                                    bottom: BorderSide(
+                                                      color: Color(0xffFF3B47),
+                                                      width: 2.0,
+                                                    ),
+                                                  ),
+                                          ),
+                                          margin: EdgeInsets.only(right: 40),
+                                          child: Text(majors[index],
+                                              style: TextStyle(
+                                                color: selectedIndex != index
+                                                    ? Color(0xFF787474)
+                                                    : Color(0xffFF3B47),
+                                                fontSize: 18,
+                                                fontFamily: 'Pretendard',
+                                                fontWeight: FontWeight.w500,
+                                              ))));
+                                }))
+                      ],
+                    )),
+                Container(
+                    margin: EdgeInsets.only(left: 18, bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(children: [
+                          FilterCard(content: filterDate, type: "dates"),
+                          overallFilter.providers != null
+                              ? FilterCard(
+                                  content: overallFilter.providers!.join(', '),
+                                  type: "majors")
+                              : FilterCard(content: "전체", type: "majors"),
+                          overallFilter.categories != null
+                              ? FilterCard(
+                                  content: overallFilter.categories!.join(', '),
+                                  type: "categories")
+                              : FilterCard(content: "전체", type: "categories"),
+                        ]),
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SetFilterPageWidget()));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(right: 18, bottom: 10),
+                              padding: EdgeInsets.all(5),
+                              decoration: ShapeDecoration(
+                                color: Color(0xFFF4F1F1),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      width: 20,
+                                      height: 20,
+                                      child: Image.asset(
+                                          "assets/images/filter.png")),
+                                  Text(
+                                    '전체',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFF787474),
+                                      fontSize: 14,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ))
+                      ],
+                    )),
+                Expanded(
+                    child: ListView.builder(
+                        itemCount: noticeList.length,
+                        itemBuilder: (context, index) {
+                          GlobalKey _key = new GlobalKey();
+                          return noticeCard(
+                              key: _key,
+                              globalKey: _key,
+                              notice: noticeList[index]);
+                        }))
               ],
-            )),
-        Expanded(
-            child: ListView.builder(
-                itemCount: noticeList.length,
-                itemBuilder: (context, index) {
-                  GlobalKey _key = new GlobalKey();
-                  return noticeCard(
-                      key: _key, globalKey: _key, notice: noticeList[index]);
-                }))
-      ],
-    )));
+            )));
   }
 }
 
@@ -437,9 +447,14 @@ extension GlobalPaintBounds on BuildContext {
 }
 
 class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, this.globalKey = null, required this.notice});
+  const noticeCard(
+      {super.key,
+      this.globalKey = null,
+      required this.notice,
+      this.isBorder = false});
   final Notice notice;
   final GlobalKey? globalKey;
+  final bool isBorder;
   @override
   _noticeCardState createState() => _noticeCardState();
 }
@@ -523,10 +538,15 @@ class _noticeCardState extends State<noticeCard> {
                         )));
           },
           child: Container(
-              color: Colors.white,
-              margin: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+              margin: EdgeInsets.only(bottom: 6),
               padding: EdgeInsets.all(20),
               width: MediaQuery.of(context).size.width * 0.8,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: widget.isBorder ? gray4 : Colors.transparent,
+                      width: 1),
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  color: white),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

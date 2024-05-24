@@ -194,10 +194,16 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
               SizedBox(
                 height: 17,
               ),
-              Text(
-                scrap!.description!,
-                style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w400, color: gray1_5),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  scrap!.description!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: gray1_5,
+                  ),
+                ),
               ),
               Expanded(
                   child: NotificationListener<ScrollNotification>(
@@ -220,6 +226,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                   itemBuilder: (context, index) {
                     return noticeCard(
                       notice: noticeList![index],
+                      isBorder: true,
                     );
                   },
                 ),

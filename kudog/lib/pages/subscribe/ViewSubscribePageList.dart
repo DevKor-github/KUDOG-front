@@ -278,6 +278,7 @@ class _ViewSubscribePageListWidgetState
                   itemBuilder: (context, index) {
                     return noticeCard(
                       notice: noticeList![index],
+                      isBorder: true,
                     );
                   },
                 ),
