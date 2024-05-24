@@ -5,22 +5,21 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/scrap/ViewNewScrabPage.dart';
 import 'package:provider/provider.dart';
 
 class ViewScrapListPageWidget extends StatefulWidget {
-  ViewScrapListPageWidget(
-      {Key? key,
-      required this.boxId,
-      required this.scrapName,
-      required this.scrapDescription})
-      : super(key: key);
+  ViewScrapListPageWidget({
+    Key? key,
+    required this.scrapList,
+    required this.boxId,
+  }) : super(key: key);
 
-  final int? boxId;
-  final String scrapName;
-  final String scrapDescription;
+  final List<Scrap> scrapList;
+  int boxId;
 
   @override
   _ViewScrapListPageWidgetState createState() =>
@@ -32,6 +31,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> iconStates = [false, false, false];
   late Dio dio;
+  Scrap? scrap;
   List<Notice>? noticeList;
   int currentPage = 1;
 
@@ -96,6 +96,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
   }
 
   void _loadNotices() async {
+    scrap =
+        widget.scrapList.firstWhere((element) => element.id == widget.boxId);
+
     await Provider.of<NoticeService>(context, listen: false)
         .getScrappedNotices(widget.boxId!);
 
@@ -155,14 +158,25 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(widget.scrapName,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: black)),
-                Icon(
-                  Icons.arrow_drop_down_rounded,
-                  color: Color(0xFF000000),
+                DropdownMenu(
+                  initialSelection: widget.boxId,
+                  onSelected: (value) {
+                    if (value == null) return;
+
+                    widget.boxId = value;
+                    _loadNotices();
+                  },
+                  textStyle: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600, color: black),
+                  inputDecorationTheme: InputDecorationTheme(
+                    border: InputBorder.none,
+                  ),
+                  dropdownMenuEntries:
+                      List.generate(widget.scrapList.length, (index) {
+                    return DropdownMenuEntry(
+                        value: widget.scrapList[index].id,
+                        label: widget.scrapList[index].name!);
+                  }),
                 ),
                 IconButton(
                     onPressed: () => {
@@ -171,8 +185,8 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                               MaterialPageRoute(
                                   builder: (context) => ViewNewScrapPageWidget(
                                         boxId: widget.boxId,
-                                        name: widget.scrapName,
-                                        description: widget.scrapDescription,
+                                        name: scrap!.name,
+                                        description: scrap!.description,
                                       ))).then((value) => {})
                         },
                     icon: Icon(Icons.settings_rounded))
@@ -181,7 +195,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                 height: 17,
               ),
               Text(
-                widget.scrapDescription,
+                scrap!.description!,
                 style: TextStyle(
                     fontSize: 14, fontWeight: FontWeight.w400, color: gray1_5),
               ),

@@ -105,15 +105,8 @@ class _ViewSubscribePageListWidgetState
   }
 
   void _loadNotices() async {
-    bool find = false;
-    widget.subscribeList.forEach((element) {
-      if (element.id == widget.boxId) {
-        subscribe = element;
-        find = true;
-      }
-    });
-
-    if (find == false) return;
+    subscribe = widget.subscribeList
+        .firstWhere((element) => element.id == widget.boxId);
 
     await Provider.of<NoticeService>(context, listen: false)
         .getSubscribedNotices(subscribe!.id, widget.date!);
