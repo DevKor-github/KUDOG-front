@@ -133,10 +133,6 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      //noticeList = noticeService.scrapList;
-
-      //int totalPage = noticeService.scrapdNoticeList.totalPage ?? 1;
-
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0x00ffffff),

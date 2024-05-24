@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
 
 class ViewSubscribeFilterPageWidget extends StatefulWidget {
-  const ViewSubscribeFilterPageWidget({Key? key, this.isEdit = false})
+  const ViewSubscribeFilterPageWidget({Key? key, this.subscribe})
       : super(key: key);
 
-  final bool isEdit;
+  final Subscribe? subscribe;
 
   @override
   _ViewSubscribeFilterPageWidgetState createState() =>
@@ -39,10 +40,14 @@ class _ViewSubscribeFilterPageWidgetState
     "행사"
   ];
 
-  String? name;
-  String? email;
+  String name = '';
+  String email = '';
   String? provider;
   Set<String?> selectedCategories = Set();
+
+  bool get isEdit {
+    return widget.subscribe != null ? true : false;
+  }
 
   void AddSubscribe() async {
     await Provider.of<NoticeService>(context, listen: false)
@@ -50,9 +55,24 @@ class _ViewSubscribeFilterPageWidgetState
     Navigator.pop(context);
   }
 
+  void EditSubscribe() async {
+    await Provider.of<NoticeService>(context, listen: false).editSubscribes(
+        widget.subscribe!.id,
+        name,
+        email,
+        provider,
+        selectedCategories.toList());
+    Navigator.pop(context);
+  }
+
   @override
   void initState() {
     super.initState();
+
+    if (widget.subscribe != null) {
+      name = widget.subscribe!.name;
+      email = widget.subscribe!.email;
+    }
   }
 
   @override
@@ -73,7 +93,7 @@ class _ViewSubscribeFilterPageWidgetState
             },
           ),
           title: Text(
-            widget.isEdit ? '구독 설정' : '구독함 만들기',
+            isEdit ? '구독 설정' : '구독함 만들기',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           centerTitle: true,
@@ -86,7 +106,7 @@ class _ViewSubscribeFilterPageWidgetState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (!widget.isEdit)
+                  if (isEdit)
                     Container(
                       alignment: Alignment.center,
                       margin: EdgeInsets.only(top: 68, bottom: 48),
@@ -104,17 +124,23 @@ class _ViewSubscribeFilterPageWidgetState
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: gray4,
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {name = value},
-                  )
+                  TextFormField(
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: gray4,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)))),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {name = value},
+                      initialValue: name,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      })
                 ],
               ),
             ),
@@ -133,17 +159,23 @@ class _ViewSubscribeFilterPageWidgetState
                   SizedBox(
                     height: 10,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        filled: true,
-                        fillColor: gray4,
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8)))),
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    onChanged: (value) => {email = value},
-                  )
+                  TextFormField(
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: gray4,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)))),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                      onChanged: (value) => {email = value},
+                      initialValue: email,
+                      validator: (value) {
+                        return (value == null || value == '')
+                            ? '필수 항목입니다.'
+                            : null;
+                      })
                 ],
               ),
             ),
@@ -290,7 +322,11 @@ class _ViewSubscribeFilterPageWidgetState
                 )),
             TextButton(
               onPressed: () {
-                AddSubscribe();
+                if (isEdit) {
+                  EditSubscribe();
+                } else {
+                  AddSubscribe();
+                }
               },
               style: TextButton.styleFrom(
                   shape: const RoundedRectangleBorder(

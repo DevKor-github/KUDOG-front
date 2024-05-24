@@ -5,18 +5,18 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
 import 'package:provider/provider.dart';
 
 class ViewSubscribePageListWidget extends StatefulWidget {
-  ViewSubscribePageListWidget(
-      {Key? key, required this.boxId, required this.date})
+  ViewSubscribePageListWidget({Key? key, required this.subscribe, this.date})
       : super(key: key);
 
-  final int? boxId;
-  DateTime? date;
+  final Subscribe subscribe;
+  DateTime? date = DateTime.now();
 
   @override
   _ViewSubscribePageListWidgetState createState() =>
@@ -101,7 +101,7 @@ class _ViewSubscribePageListWidgetState
     //    .getFullLowerCategoryList();
     //Provider.of<CategoryService>(context, listen: false).getSubList();
     Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.boxId!, widget.date!);
+        .getSubscribedNotices(widget.subscribe.id, widget.date!);
     noticeList = Provider.of<NoticeService>(context, listen: false)
         .subscribeNoticeList
         .notices;
@@ -118,7 +118,7 @@ class _ViewSubscribePageListWidgetState
       currentPage = page;
     });
     Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.boxId!, widget.date!);
+        .getSubscribedNotices(widget.subscribe.id, widget.date!);
   }
 
   Future<void> requestMore() async {
@@ -153,7 +153,7 @@ class _ViewSubscribePageListWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
-                Text('디조짱',
+                Text(widget.subscribe.name,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -169,7 +169,7 @@ class _ViewSubscribePageListWidgetState
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ViewSubscribeFilterPageWidget(
-                                        isEdit: true,
+                                        subscribe: widget.subscribe,
                                       )))
                         },
                     icon: Icon(Icons.settings_rounded))
@@ -191,7 +191,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.boxId!,
+                              .getSubscribedNotices(widget.subscribe.id,
                                   widget.date!.subtract(Duration(days: 1)));
 
                           setState(() {
@@ -216,7 +216,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.boxId!,
+                              .getSubscribedNotices(widget.subscribe.id,
                                   widget.date!.add(Duration(days: 1)));
 
                           setState(() {
