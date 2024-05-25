@@ -59,10 +59,23 @@ class _ViewSubscribeFilterPageWidgetState
       email = widget.subscribe!.email;
     }
 
-    _loadCategories();
+    _loadCategories().then(
+      (value) {
+        if (widget.subscribe != null) {
+          _initCategoryInfo();
+        }
+      },
+    );
   }
 
-  void _loadCategories() async {
+  void _initCategoryInfo() async {
+    setState(() {
+      provider = widget.subscribe!.provider;
+      selectedCategories.addAll(widget.subscribe!.categories);
+    });
+  }
+
+  Future<void> _loadCategories() async {
     await Provider.of<CategoryService>(context, listen: false).getCategories();
 
     setState(() {
@@ -207,6 +220,7 @@ class _ViewSubscribeFilterPageWidgetState
                       major: majors[index],
                       onSelect: (val) => {
                             setState(() {
+                              selectedCategories.clear();
                               provider = majors[index];
                             })
                           },
@@ -220,6 +234,7 @@ class _ViewSubscribeFilterPageWidgetState
                       major: majors[index],
                       onSelect: (val) => {
                             setState(() {
+                              selectedCategories.clear();
                               provider = majors[index];
                             })
                           },
@@ -255,15 +270,16 @@ class _ViewSubscribeFilterPageWidgetState
                               children: List.generate(
                                   (categories[provider]!.length ~/ 2), (index) {
                                 return CategoryCard(
-                                  category: categories[provider]![index],
-                                  onSelect: (val) => {
-                                    val
-                                        ? selectedCategories
-                                            .add(categories[provider]![index])
-                                        : selectedCategories.remove(
-                                            categories[provider]![index])
-                                  },
-                                );
+                                    category: categories[provider]![index],
+                                    onSelect: (val) => {
+                                          val
+                                              ? selectedCategories.add(
+                                                  categories[provider]![index])
+                                              : selectedCategories.remove(
+                                                  categories[provider]![index])
+                                        },
+                                    isClicked: selectedCategories.contains(
+                                        categories[provider]![index]));
                               })),
                         if (categories[provider] != null)
                           Column(
@@ -275,15 +291,16 @@ class _ViewSubscribeFilterPageWidgetState
                                 index =
                                     index + (categories[provider]!.length ~/ 2);
                                 return CategoryCard(
-                                  category: categories[provider]![index],
-                                  onSelect: (val) => {
-                                    val
-                                        ? selectedCategories
-                                            .add(categories[provider]![index])
-                                        : selectedCategories.remove(
-                                            categories[provider]![index])
-                                  },
-                                );
+                                    category: categories[provider]![index],
+                                    onSelect: (val) => {
+                                          val
+                                              ? selectedCategories.add(
+                                                  categories[provider]![index])
+                                              : selectedCategories.remove(
+                                                  categories[provider]![index])
+                                        },
+                                    isClicked: selectedCategories.contains(
+                                        categories[provider]![index]));
                               }))
                       ],
                     )
@@ -429,31 +446,45 @@ class _WeekPickerState extends State<WeekPicker> {
 }
 
 class CategoryCard extends StatefulWidget {
-  const CategoryCard({super.key, required this.category, this.onSelect});
+  CategoryCard(
+      {super.key,
+      required this.category,
+      this.onSelect,
+      this.isClicked = null});
   final String category;
   final Function? onSelect;
+  bool? isClicked;
+
   @override
   _CategoryCardState createState() => _CategoryCardState();
 }
 
 class _CategoryCardState extends State<CategoryCard> {
   @override
-  bool isClicked = false;
+  bool? _isClicked = null;
+  bool get isClicked {
+    if (_isClicked != null) return _isClicked!;
+    if (widget.isClicked != null) return widget.isClicked!;
+    return false;
+  }
+
   void initState() {
     super.initState();
   }
 
-  void changeColor() {
+  void onSelect() {
     setState(() {
-      isClicked = !isClicked;
-
+      if (_isClicked == null)
+        _isClicked = true;
+      else
+        _isClicked = !(_isClicked!);
       widget.onSelect!(isClicked);
     });
   }
 
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: changeColor,
+        onTap: onSelect,
         child: Container(
           width: 125,
           margin: EdgeInsets.all(3),
