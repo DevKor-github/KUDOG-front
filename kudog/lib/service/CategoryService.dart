@@ -14,6 +14,10 @@ class CategoryService extends ChangeNotifier {
   List<String> subNameList = [];
   List<String> fullLowerCategoryList = [];
   List<int> fullList = List.generate(20, (index) => index + 1);
+
+  List<String> majors = [];
+  Map<String, List<String>> categories = {};
+
   void getUpperCategoryList() async {
     upperCategoryList.clear();
     try {
@@ -190,6 +194,55 @@ class CategoryService extends ChangeNotifier {
         print('subNames: $subNameList');
         print('unsubscribeIds: $unsubIdList');
         return;
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        getUpperCategoryList(); //다시 수행
+      } else {
+        print("GET 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("GET 요청 에러");
+      print(e.toString());
+    }
+    notifyListeners();
+  }
+
+  Future<void> getCategories() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().get(
+        "https://api.kudog.devkor.club/category/providers",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('GET 요청 성공');
+
+        majors.clear();
+        categories.clear();
+
+        response.data.forEach((val) {
+          majors.add(val['name']);
+
+          List<dynamic> list = val['categories'];
+
+          categories.putIfAbsent(val['name'], () {
+            List<String> list = [];
+            val['categories']
+                .forEach((category) => {list.add(category['name'] as String)});
+            return list;
+          });
+        });
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();

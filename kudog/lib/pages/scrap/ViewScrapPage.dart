@@ -197,12 +197,8 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 ViewScrapListPageWidget(
-                                                  boxId: scrapList[index].id,
-                                                  scrapName:
-                                                      scrapList[index].name!,
-                                                  scrapDescription:
-                                                      scrapList[index]
-                                                          .description!,
+                                                  boxId: scrapList[index].id!,
+                                                  scrapList: scrapList,
                                                 )));
                                   }
                                 },
