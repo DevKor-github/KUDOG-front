@@ -26,3 +26,5 @@ const Color gray3 = Color(0xFFCCC9C9);
 const Color gray4 = Color(0xFFF4F2F2);
 const Color gray5 = Color(0xFFFAF8F8);
 const Color white = Color(0xFFFFFFFF);
+
+const Color errorColor = Color(0xFFb3261e);

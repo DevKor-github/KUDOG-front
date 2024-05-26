@@ -30,6 +30,11 @@ class _ViewSubscribeFilterPageWidgetState
   String? provider;
   Set<String?> selectedCategories = Set();
 
+  bool showNameInvalid = false;
+  bool showEmailInvalid = false;
+  bool showProviderInvalid = false;
+  bool showCategoryInvalid = false;
+
   bool get isEdit {
     return widget.subscribe != null ? true : false;
   }
@@ -83,6 +88,28 @@ class _ViewSubscribeFilterPageWidgetState
       categories =
           Provider.of<CategoryService>(context, listen: false).categories;
     });
+  }
+
+  void onSubmitPressed() {
+    if (email.isEmpty ||
+        name.isEmpty ||
+        (provider == null || provider!.isEmpty) ||
+        selectedCategories.isEmpty) {
+      setState(() {
+        showNameInvalid = name.isEmpty;
+        showEmailInvalid = email.isEmpty;
+        showProviderInvalid = (provider == null || provider!.isEmpty);
+        showCategoryInvalid = selectedCategories.isEmpty;
+      });
+
+      return;
+    }
+
+    if (isEdit) {
+      EditSubscribe();
+    } else {
+      AddSubscribe();
+    }
   }
 
   @override
@@ -145,15 +172,21 @@ class _ViewSubscribeFilterPageWidgetState
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                       onChanged: (value) => {name = value},
-                      initialValue: name,
-                      validator: (value) {
-                        return (value == null || value == '')
-                            ? '필수 항목입니다.'
-                            : null;
-                      })
+                      initialValue: name)
                 ],
               ),
             ),
+            if (showNameInvalid)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  "이름을 입력해 주세요",
+                  style: TextStyle(
+                      color: errorColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12),
+                ),
+              ),
             Container(
               margin: EdgeInsets.only(bottom: 21),
               child: Column(
@@ -189,6 +222,17 @@ class _ViewSubscribeFilterPageWidgetState
                 ],
               ),
             ),
+            if (showEmailInvalid)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  "이메일을 입력해 주세요",
+                  style: TextStyle(
+                      color: errorColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12),
+                ),
+              ),
             Container(
                 child: Column(
               children: [
@@ -242,6 +286,17 @@ class _ViewSubscribeFilterPageWidgetState
                 })),
               ],
             )),
+            if (showProviderInvalid)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  "학과를 선택해 주세요",
+                  style: TextStyle(
+                      color: errorColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12),
+                ),
+              ),
             Container(
                 margin: EdgeInsets.only(bottom: 26),
                 child: Column(
@@ -306,13 +361,20 @@ class _ViewSubscribeFilterPageWidgetState
                     )
                   ],
                 )),
+            if (showCategoryInvalid)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  "카테고리를 선택해 주세요",
+                  style: TextStyle(
+                      color: errorColor,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12),
+                ),
+              ),
             TextButton(
               onPressed: () {
-                if (isEdit) {
-                  EditSubscribe();
-                } else {
-                  AddSubscribe();
-                }
+                onSubmitPressed();
               },
               style: TextButton.styleFrom(
                   shape: const RoundedRectangleBorder(
