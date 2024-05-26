@@ -34,7 +34,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   int selectedIndex = 0; //선택된 단과대학
 
   List<Records> newNotifications = [];
-  
+
   bool isMoreRequesting = false;
 
   // 드레그 거리를 체크하기 위함
@@ -132,7 +132,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     print(overallFilter.providers);
     print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
 
-
     if (DateTime.parse(overallFilter.endDate!)
             .difference(DateTime.parse(overallFilter.startDate!))
             .inDays ==
@@ -164,7 +163,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     }
     // testToken();
     loadNewNotifications();
-
   }
 
   Future<void> testToken() async {
@@ -331,7 +329,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             padding: EdgeInsets.fromLTRB(16, 17, 16, 0),
             child: Column(
               children: [
-
                 Container(
                     padding: EdgeInsets.fromLTRB(4, 0, 4, 20),
                     child: Column(
@@ -737,24 +734,22 @@ class _noticeCardState extends State<noticeCard> {
                       )
                     ],
                   ),
-
                   GestureDetector(
-                    onTap: () {
-                      onSelectScrap();
-                    },
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      child: Icon(
-                        widget.notice.scrapped!
-                            ? Icons.bookmark
-                            : Icons.bookmark_outline,
-                        color: widget.notice.scrapped!
-                            ? Color(0xffFF3B47)
-                            : Color(0xffCCC9C9),
-                      ),
-                    ],
-                  )
+                      onTap: () {
+                        onSelectScrap();
+                      },
+                      child: Container(
+                        width: 22,
+                        height: 22,
+                        child: Icon(
+                          widget.notice.scrapped!
+                              ? Icons.bookmark
+                              : Icons.bookmark_outline,
+                          color: widget.notice.scrapped!
+                              ? Color(0xffFF3B47)
+                              : Color(0xffCCC9C9),
+                        ),
+                      ))
                 ],
               )));
     });
