@@ -21,7 +21,7 @@ class ViewMyPageWidget extends StatefulWidget {
 
 class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> bookmarkMajors = ["컴퓨터학과", "디자인조형학부", "미디어학부"];
+  List<String> bookmarkMajors = [];
   UserInfo userInfo = UserInfo(name: "");
   int subscribeCount = 0;
   int scrapCount = 0;
@@ -40,6 +40,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
       _selectedTime = TimeOfDay(
           hour: int.parse(userInfo.sendTime!.substring(0, 2)),
           minute: int.parse(userInfo.sendTime!.substring(3, 5)));
+      bookmarkMajors = userInfo.providerBookmarks!;
     });
   }
 
@@ -314,10 +315,11 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                               UserInfo(
                                                   name: userInfo.name,
                                                   email: userInfo.email,
-                                                  password: userInfo.password,
                                                   sendTime: convertTimeFormat(
                                                       _formatTime(
-                                                          _selectedTime))));
+                                                          _selectedTime)),
+                                                  providerBookmarks: userInfo
+                                                      .providerBookmarks));
                                           bool _isSuccess =
                                               userInfoService.isSuccess;
                                           if (_isSuccess) {
