@@ -1,11 +1,16 @@
 class Subscribe {
-  String? name;
-  String? email;
-  String? provider;
-  int? id;
-  List<String>? categories = List.empty(growable: true);
+  String name = '';
+  String email = '';
+  String provider = '';
+  int id = 0;
+  List<String> categories = List.empty(growable: true);
 
-  Subscribe({this.name, this.email, this.provider, this.categories});
+  Subscribe(
+      {required this.name,
+      required this.email,
+      required this.provider,
+      required this.id,
+      required this.categories});
 
   Subscribe.fromJson(Map<String, dynamic> jsonMap) {
     name = jsonMap['name'];
@@ -14,7 +19,7 @@ class Subscribe {
     id = jsonMap['id'];
 
     for (int i = 0; i < jsonMap['categories'].length; i++) {
-      categories?.add(jsonMap['categories'][i]);
+      categories.add(jsonMap['categories'][i]);
     }
   }
 

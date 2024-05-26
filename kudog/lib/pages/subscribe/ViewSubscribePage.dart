@@ -146,7 +146,9 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: subscribeList.length + 1,
+                itemCount: subscribeList.length == 0 || isEditting
+                    ? subscribeList.length + 1
+                    : subscribeList.length,
                 itemBuilder: (context, index) {
                   return index == subscribeList.length
                       ? Container(
@@ -194,6 +196,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           ViewSubscribePageListWidget(
+                                            subscribeList: subscribeList,
                                             boxId: subscribeList[index].id,
                                             date: DateTime.now(),
                                           )));

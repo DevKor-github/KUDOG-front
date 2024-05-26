@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/model/SubscribeListModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
@@ -12,11 +13,13 @@ import 'package:provider/provider.dart';
 
 class ViewSubscribePageListWidget extends StatefulWidget {
   ViewSubscribePageListWidget(
-      {Key? key, required this.boxId, required this.date})
+      {Key? key, required this.subscribeList, required this.boxId, this.date})
       : super(key: key);
 
-  final int? boxId;
-  DateTime? date;
+  final List<Subscribe> subscribeList;
+  int boxId;
+
+  DateTime? date = DateTime.now();
 
   @override
   _ViewSubscribePageListWidgetState createState() =>
@@ -29,6 +32,7 @@ class _ViewSubscribePageListWidgetState
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<bool> iconStates = [false, false, false];
   late Dio dio;
+  Subscribe? subscribe;
   List<Notice>? noticeList;
   int currentPage = 1;
 
@@ -96,14 +100,22 @@ class _ViewSubscribePageListWidgetState
   void initState() {
     super.initState();
     dio = Dio();
-    //Provider.of<CategoryService>(context, listen: false).getUpperCategoryList();
-    //Provider.of<CategoryService>(context, listen: false)
-    //    .getFullLowerCategoryList();
-    //Provider.of<CategoryService>(context, listen: false).getSubList();
-    Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.boxId!, widget.date!);
-    noticeList =
-        Provider.of<NoticeService>(context, listen: false).noticeList.notices;
+
+    _loadNotices();
+  }
+
+  void _loadNotices() async {
+    subscribe = widget.subscribeList
+        .firstWhere((element) => element.id == widget.boxId);
+
+    await Provider.of<NoticeService>(context, listen: false)
+        .getSubscribedNotices(subscribe!.id, widget.date!);
+
+    setState(() {
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .subscribeNoticeList
+          .notices;
+    });
   }
 
   @override
@@ -117,15 +129,15 @@ class _ViewSubscribePageListWidgetState
       currentPage = page;
     });
     Provider.of<NoticeService>(context, listen: false)
-        .getSubscribedNotices(widget.boxId!, widget.date!);
+        .getSubscribedNotices(subscribe!.id, widget.date!);
   }
 
   Future<void> requestMore() async {
-    setState(() {
-      currentPage++;
-    });
-    Provider.of<NoticeService>(context, listen: false)
-        .addSubscribedNotices(currentPage);
+    // setState(() {
+    //   currentPage++;
+    // });
+    // Provider.of<NoticeService>(context, listen: false)
+    //     .addSubscribedNotices(currentPage);
   }
 
   @override
@@ -152,14 +164,25 @@ class _ViewSubscribePageListWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
-                Text('디조짱',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: black)),
-                Icon(
-                  Icons.arrow_drop_down_rounded,
-                  color: Color(0xFF000000),
+                DropdownMenu(
+                  initialSelection: widget.boxId,
+                  onSelected: (value) {
+                    if (value == null) return;
+
+                    widget.boxId = value;
+                    _loadNotices();
+                  },
+                  textStyle: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600, color: black),
+                  inputDecorationTheme: InputDecorationTheme(
+                    border: InputBorder.none,
+                  ),
+                  dropdownMenuEntries:
+                      List.generate(widget.subscribeList.length, (index) {
+                    return DropdownMenuEntry(
+                        value: widget.subscribeList[index].id,
+                        label: widget.subscribeList[index].name);
+                  }),
                 ),
                 IconButton(
                     onPressed: () => {
@@ -168,7 +191,7 @@ class _ViewSubscribePageListWidgetState
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ViewSubscribeFilterPageWidget(
-                                        isEdit: true,
+                                        subscribe: subscribe,
                                       )))
                         },
                     icon: Icon(Icons.settings_rounded))
@@ -190,7 +213,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.boxId!,
+                              .getSubscribedNotices(subscribe!.id,
                                   widget.date!.subtract(Duration(days: 1)));
 
                           setState(() {
@@ -199,7 +222,7 @@ class _ViewSubscribePageListWidgetState
 
                             noticeList = Provider.of<NoticeService>(context,
                                     listen: false)
-                                .noticeList
+                                .subscribeNoticeList
                                 .notices;
                           });
                         },
@@ -215,7 +238,7 @@ class _ViewSubscribePageListWidgetState
                         onPressed: () async {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
-                              .getSubscribedNotices(widget.boxId!,
+                              .getSubscribedNotices(subscribe!.id,
                                   widget.date!.add(Duration(days: 1)));
 
                           setState(() {
@@ -223,7 +246,7 @@ class _ViewSubscribePageListWidgetState
 
                             noticeList = Provider.of<NoticeService>(context,
                                     listen: false)
-                                .noticeList
+                                .subscribeNoticeList
                                 .notices;
                           });
                         },
@@ -255,6 +278,7 @@ class _ViewSubscribePageListWidgetState
                   itemBuilder: (context, index) {
                     return noticeCard(
                       notice: noticeList![index],
+                      isBorder: true,
                     );
                   },
                 ),

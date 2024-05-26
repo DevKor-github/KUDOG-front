@@ -10,11 +10,17 @@ import 'package:kudog/service/TokenService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeService extends ChangeNotifier {
-  NoticeList noticeList = NoticeList();
+  NoticeList mainNoticeList = NoticeList();
+  NoticeList scrapNoticeList = NoticeList();
+  NoticeList subscribeNoticeList = NoticeList();
+
   NoticeDetail noticeDetail = NoticeDetail();
+
   List<Subscribe> subscribeList = List.empty();
   ScrapList scrapList = ScrapList();
-  Future<void> getAllNotices(Filter filter) async {
+
+  //모든 공지사항을 가져옵니다.
+  Future<void> getAllNotices(Filter filter, {bool add = false}) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -32,7 +38,10 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data, key: 'records');
+        if (add)
+          mainNoticeList.addFromJson(response.data, key: 'records');
+        else
+          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
       } else {
@@ -47,7 +56,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getFilteredNotices(Filter filter) async {
+  //학과와 카테고리 필터가 적용된 공지사항을 가져옵니다.
+  Future<void> getFilteredNotices(Filter filter, {bool add = false}) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -56,7 +66,7 @@ class NoticeService extends ChangeNotifier {
       String _categories = filter.categories!.join(",");
       String _providers = filter.providers!.join(",");
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?categories=$_categories&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&keyword=${filter.keyword}",
+        "https://api.kudog.devkor.club/notice/list?categories=$_categories&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}&keyword=${filter.keyword}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -67,7 +77,10 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        if (add)
+          mainNoticeList.addFromJson(response.data);
+        else
+          mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -83,7 +96,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getProviderNotices(Filter filter) async {
+  //해당 학과의 공지사항만 가져옵니다.
+  Future<void> getProviderNotices(Filter filter, {bool add = false}) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -91,7 +105,7 @@ class NoticeService extends ChangeNotifier {
       String _providers = filter.providers!.join(",");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}",
+        "https://api.kudog.devkor.club/notice/list?&providers=$_providers&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -102,7 +116,11 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        print(response.data);
+        if (add)
+          mainNoticeList.addFromJson(response.data, key: 'records');
+        else
+          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -118,7 +136,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCategoryNotices(Filter filter) async {
+  //카테고리가 적용된 공지사항을 가져옵니다.
+  Future<void> getCategoryNotices(Filter filter, {bool add = false}) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -126,7 +145,7 @@ class NoticeService extends ChangeNotifier {
       String _categories = filter.categories!.join(",");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?&categories=$_categories&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}",
+        "https://api.kudog.devkor.club/notice/list?&categories=$_categories&start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -137,7 +156,10 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        if (add)
+          mainNoticeList.addFromJson(response.data);
+        else
+          mainNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -153,14 +175,15 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getSearchedNotices(Filter filter) async {
+  //키워드로 검색한 공지사항을 가져옵니다.
+  Future<void> getSearchedNotices(Filter filter, {bool add = false}) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&keyword=${filter.keyword}",
+        "https://api.kudog.devkor.club/notice/list?start_date=${filter.startDate}&end_date=${filter.endDate}&page=${filter.page}&pageSize=${filter.pageSize}&keyword=${filter.keyword}",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -171,7 +194,10 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data);
+        if (add)
+          mainNoticeList.addFromJson(response.data, key: 'records');
+        else
+          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -187,8 +213,8 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //단일 notice와 그 세부사항을 가져옵니다
   void getNotice(int id) async {
-    //단일 notice 가져오기
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -223,6 +249,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //해당 id를 가진 구독함의 공지사항들을 가져옵니다.
   Future<void> getSubscribedNotices(int boxId, DateTime date) async {
     try {
       SharedPreferences sharedPreferences =
@@ -245,7 +272,7 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
 
-        noticeList = NoticeList.fromJson(response.data);
+        subscribeNoticeList = NoticeList.fromJson(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -261,42 +288,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSubscribedNotices(int page) async {
-    try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-
-      String? token = sharedPreferences.getString("access_token");
-
-      Response response = await Dio().get(
-        "https://api.kudog.devkor.club/notice/list?page=$page",
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        print("GET 요청 성공");
-        //subscribeList.addFromJson(response.data);
-      } else if (response.statusCode == 401) {
-        print("ACCESS_TOKEN 만료");
-        TokenService().refreshToken();
-        addSubscribedNotices(page);
-      } else {
-        print("GET 요청 실패");
-        print("Status Code : ${response.statusCode}");
-      }
-    } catch (e) {
-      print("GET 요청 에러");
-      print(e.toString());
-    }
-
-    notifyListeners();
-  }
-
+  //구독 리스트를 가져옵니다.
   Future<void> getSubscribes() async {
     try {
       SharedPreferences sharedPreferences =
@@ -336,6 +328,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //구독함을 추가합니다.
   Future<void> addSubscribes(name, email, provider, categories) async {
     try {
       SharedPreferences sharedPreferences =
@@ -343,14 +336,13 @@ class NoticeService extends ChangeNotifier {
       String? token = sharedPreferences.getString("access_token");
 
       String sendTime = DateFormat.Hm().format(DateTime.now());
-
       Response response = await Dio().post(
         "https://api.kudog.devkor.club/subscribe/box",
         data: {
           'name': name,
           'email': email,
           'provider': provider,
-          'categories': ["학부 공지사항", "진로정보 - 인턴"],
+          'categories': categories,
           'sendTime': sendTime
         },
         options: Options(
@@ -378,6 +370,58 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 구독함 정보를 수정합니다.
+  Future<void> editSubscribes(boxId, name, email, provider, categories) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      String sendTime = DateFormat.Hm().format(DateTime.now());
+
+      print({
+        'name': name,
+        'email': email,
+        'provider': provider,
+        'categories': categories,
+        'sendTime': sendTime,
+        'boxid': boxId
+      });
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/subscribe/box/${boxId}",
+        data: {
+          'name': name,
+          'email': email,
+          'provider': provider,
+          'categories': categories,
+          'sendTime': sendTime
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  //기존의 구독함을 삭제합니다.
   Future<void> deleteSubscribes(List<int> subscribeIdList) async {
     try {
       SharedPreferences sharedPreferences =
@@ -413,6 +457,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //스크랩 리스트를 가져옵니다.
   Future<void> getScraps() async {
     try {
       SharedPreferences sharedPreferences =
@@ -447,6 +492,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //새 스크랩함을 추가합니다.
   Future<void> addScrap(name, description) async {
     try {
       SharedPreferences sharedPreferences =
@@ -484,6 +530,45 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //기존의 스크랩함을 수정합니다.
+  Future<void> editScrap(boxId, name, description) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String? token = sharedPreferences.getString("access_token");
+
+      Response response = await Dio().put(
+        "https://api.kudog.devkor.club/scrap/box/${boxId}",
+        data: {
+          'name': name,
+          'description': description,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("PUT 요청 성공");
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+      } else {
+        print("PUT 요청 실패");
+        print("Status Code : ${response.statusCode}");
+      }
+    } catch (e) {
+      print("PUT 요청 에러");
+      print(e.toString());
+    }
+
+    notifyListeners();
+  }
+
+  //기존의 스크랩함을 삭제합니다.
   Future<void> deleteScraps(List<int> scrapIdList) async {
     try {
       SharedPreferences sharedPreferences =
@@ -519,6 +604,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //해당 id의 스크랩 박스에 들어있는 모든 공지사항을 가져옵니다.
   Future<void> getScrappedNotices(int boxId) async {
     try {
       SharedPreferences sharedPreferences =
@@ -538,7 +624,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        noticeList = NoticeList.fromJson(response.data, key: 'notices');
+        scrapNoticeList = NoticeList.fromJson(response.data, key: 'notices');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -554,6 +640,7 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
+  //스크랩 박스로 공지사항을 보관합니다. (또는 이미 보관중인 공지사항을 제거)
   Future<void> addToScrap(int noticeId, int scrapBoxId) async {
     try {
       SharedPreferences sharedPreferences =

@@ -175,7 +175,9 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 10),
                     children: List.generate(
-                        scrapList.length + 1,
+                        scrapList.length == 0 || isEditting
+                            ? scrapList.length + 1
+                            : scrapList.length,
                         (index) => index != scrapList.length
                             ? GestureDetector(
                                 key: ValueKey(index),
@@ -195,12 +197,8 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 ViewScrapListPageWidget(
-                                                  boxId: scrapList[index].id,
-                                                  scrapName:
-                                                      scrapList[index].name!,
-                                                  scrapDescription:
-                                                      scrapList[index]
-                                                          .description!,
+                                                  boxId: scrapList[index].id!,
+                                                  scrapList: scrapList,
                                                 )));
                                   }
                                 },
