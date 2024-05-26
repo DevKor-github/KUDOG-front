@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:kudog/model/ScrapModel.dart';
+import 'package:kudog/model/UserInfoModel.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/ScrapBoxService.dart';
@@ -19,9 +22,10 @@ class ViewMyPageWidget extends StatefulWidget {
 class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> bookmarkMajors = ["컴퓨터학과", "디자인조형학부", "미디어학부"];
-  String userName = '';
+  UserInfo userInfo = UserInfo(name: "");
   int subscribeCount = 0;
   int scrapCount = 0;
+  TimeOfDay _selectedTime = TimeOfDay(hour: 0, minute: 0);
   @override
   void initState() {
     super.initState();
@@ -32,8 +36,10 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   Future<void> loadUserInfo() async {
     await Provider.of<UserInfoService>(context, listen: false).getUserInfo();
     setState(() {
-      userName =
-          Provider.of<UserInfoService>(context, listen: false).user.name!;
+      userInfo = Provider.of<UserInfoService>(context, listen: false).user;
+      _selectedTime = TimeOfDay(
+          hour: int.parse(userInfo.sendTime!.substring(0, 2)),
+          minute: int.parse(userInfo.sendTime!.substring(3, 5)));
     });
   }
 
@@ -57,6 +63,33 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
     });
   }
 
+  String _formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final format = MaterialLocalizations.of(context).formatTimeOfDay(time);
+    return format;
+  }
+
+  String convertTimeFormat(String timeString) {
+    String cleanedTimeString = timeString.replaceAll(RegExp(r'\s+'), '');
+    DateFormat originalFormat = DateFormat('h:mma');
+    DateFormat targetFormat = DateFormat('HH:mm');
+    DateTime dateTime = originalFormat.parse(cleanedTimeString);
+    return targetFormat.format(dateTime);
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -64,15 +97,16 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<SignOutService, WithdrawalService>(
-        builder: (context, signOutService, withdrawalService, child) {
+    return Consumer3<SignOutService, WithdrawalService, UserInfoService>(
+        builder: (context, signOutService, withdrawalService, userInfoService,
+            child) {
       return Scaffold(
           backgroundColor: Colors.white,
           body: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment(0.00, -1.00),
-                end: Alignment(0, 1),
+                end: Alignment(0, 4),
                 colors: [
                   Color(0xA5F9F8F8),
                   Color(0xBAF2F1F1),
@@ -132,43 +166,36 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                         child: Image.asset(
                                             "assets/images/my_post_icon.png")),
                                     Container(
-                                        width: 300,
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                                margin:
-                                                    EdgeInsets.only(bottom: 15),
-                                                child: Text(
-                                                  userName,
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: Color(0xFF1B1616),
-                                                    fontSize: 18,
-                                                    fontFamily: 'Pretendard',
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 0.08,
-                                                  ),
-                                                )),
-                                            Container(
-                                              child: Text(
-                                                "구독함   ${subscribeCount} | 스크랩  ${scrapCount}",
-                                                style: TextStyle(
-                                                  color: Color(0xFF787474),
-                                                  fontSize: 12,
-                                                  fontFamily: 'Pretendard',
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 0.12,
-                                                ),
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                            margin: EdgeInsets.only(bottom: 20),
+                                            child: Text(
+                                              userInfo.name! + " 님",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Color(0xFF1B1616),
+                                                fontSize: 18,
+                                                fontFamily: 'Pretendard',
+                                                fontWeight: FontWeight.w600,
                                               ),
+                                            )),
+                                        Container(
+                                          child: Text(
+                                            "구독함   ${subscribeCount} | 스크랩  ${scrapCount}",
+                                            style: TextStyle(
+                                              color: Color(0xFF787474),
+                                              fontSize: 12,
+                                              fontFamily: 'Pretendard',
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                          ],
-                                        )),
-                                    Container(
-                                        child: Icon(
-                                            color: Color(0xffCCC9C9),
-                                            Icons.settings_outlined))
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                                    Container(width: 120)
                                   ],
                                 ),
                               ),
@@ -235,7 +262,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                     Container(
                                         margin: EdgeInsets.only(bottom: 20),
                                         width:
-                                            MediaQuery.of(context).size.height *
+                                            MediaQuery.of(context).size.width *
                                                 0.8,
                                         height: 44,
                                         padding: const EdgeInsets.symmetric(
@@ -255,51 +282,195 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                               width: 20,
                                             ),
                                             Text(
-                                              'AM',
+                                              _formatTime(_selectedTime),
                                               style: TextStyle(
-                                                color: Color(0xFF423C3C),
+                                                color: Color(0xFF423D3D),
                                                 fontSize: 14,
                                                 fontFamily: 'Pretendard',
                                                 fontWeight: FontWeight.w400,
                                               ),
                                             ),
-                                            Icon(Icons.lock_clock_outlined)
+                                            GestureDetector(
+                                              onTap: () async {
+                                                final TimeOfDay? picked =
+                                                    await showTimePicker(
+                                                  context: context,
+                                                  initialTime: _selectedTime,
+                                                );
+                                                if (picked != null &&
+                                                    picked != _selectedTime)
+                                                  setState(() {
+                                                    _selectedTime = picked;
+                                                  });
+                                              },
+                                              child: Icon(Icons.access_time,
+                                                  color: Color(0xff787474)),
+                                            )
                                           ],
                                         )),
                                     GestureDetector(
+                                        onTap: () async {
+                                          await userInfoService.modifyUserInfo(
+                                              UserInfo(
+                                                  name: userInfo.name,
+                                                  email: userInfo.email,
+                                                  password: userInfo.password,
+                                                  sendTime: convertTimeFormat(
+                                                      _formatTime(
+                                                          _selectedTime))));
+                                          bool _isSuccess =
+                                              userInfoService.isSuccess;
+                                          if (_isSuccess) {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10.0)),
+                                                    content: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: <Widget>[
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Stack(
+                                                              alignment: Alignment
+                                                                  .center, // 이미지들이 서로 겹치도록 정렬
+                                                              children: [
+                                                                Image.asset(
+                                                                  'assets/images/signup_success_background.png', // 기울어진 이미지 URL 또는 로컬 이미지 경로
+                                                                  width: 200,
+                                                                  height: 200,
+                                                                ),
+                                                                Image.asset(
+                                                                  'assets/images/signup_success_foreground.png', // 위에 겹쳐질 이미지 URL 또는 로컬 이미지 경로
+                                                                  width: 100,
+                                                                  height: 100,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Text(
+                                                          '시간 변경 완료!',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xFF1B1616),
+                                                            fontSize: 18,
+                                                            fontFamily:
+                                                                'Pretendard',
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    actions: <Widget>[
+                                                      GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    top: 4),
+                                                            height: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.05,
+                                                            decoration:
+                                                                ShapeDecoration(
+                                                              color: Color(
+                                                                  0xffFF3B47),
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8)),
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  "확인",
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFFffffff),
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontFamily:
+                                                                        'Pretendard',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ))
+                                                    ],
+                                                  );
+                                                });
+                                          }
+                                        },
                                         child: Container(
-                                      width:
-                                          MediaQuery.of(context).size.height *
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
                                               0.8,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 11),
-                                      clipBehavior: Clip.antiAlias,
-                                      decoration: ShapeDecoration(
-                                        color: Color(0xFFE85C64),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            '수정',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontFamily: 'Pretendard',
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 11),
+                                          clipBehavior: Clip.antiAlias,
+                                          decoration: ShapeDecoration(
+                                            color: Color(0xFFE85C64),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
                                           ),
-                                        ],
-                                      ),
-                                    )),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                '수정',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontFamily: 'Pretendard',
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )),
                                   ],
                                 ),
                                 margin: EdgeInsets.only(bottom: 20),
@@ -309,69 +480,71 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                             ],
                           )),
                       Container(
+                          margin: EdgeInsets.only(top: 20),
                           child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  await signOutService.SignOut();
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            LoginPageWidget()),
-                                    (Route<dynamic> route) => false,
-                                  );
-                                },
-                                child: Text(
-                                  '로그아웃',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF787474),
-                                    fontSize: 12,
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: FontWeight.w500,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await signOutService.SignOut();
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                LoginPageWidget()),
+                                        (Route<dynamic> route) => false,
+                                      );
+                                    },
+                                    child: Text(
+                                      '로그아웃',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFF787474),
+                                        fontSize: 12,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 30),
+                                  GestureDetector(
+                                      onTap: () async {
+                                        await withdrawalService.Withdrawal();
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  LoginPageWidget()),
+                                          (Route<dynamic> route) => false,
+                                        );
+                                      },
+                                      child: Text(
+                                        '탈퇴하기',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFF787474),
+                                          fontSize: 12,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ))
+                                ],
                               ),
-                              const SizedBox(width: 30),
-                              GestureDetector(
-                                  onTap: () async {
-                                    await withdrawalService.Withdrawal();
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              LoginPageWidget()),
-                                      (Route<dynamic> route) => false,
-                                    );
-                                  },
+                              Container(
+                                  margin: EdgeInsets.only(top: 20, bottom: 50),
                                   child: Text(
-                                    '탈퇴하기',
+                                    '개인정보 처리 방침',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Color(0xFF787474),
+                                      color: Color(0xFFCCC9C9),
                                       fontSize: 12,
                                       fontFamily: 'Pretendard',
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ))
                             ],
-                          ),
-                          Container(
-                              margin: EdgeInsets.only(top: 10, bottom: 10),
-                              child: Text(
-                                '개인정보 처리 방침',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFFCCC9C9),
-                                  fontSize: 12,
-                                  fontFamily: 'Pretendard',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ))
-                        ],
-                      ))
+                          ))
                     ],
                   ),
                 ],
@@ -427,7 +600,7 @@ class SimpleBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
-      width: MediaQuery.of(context).size.height * 0.9,
+      width: MediaQuery.of(context).size.width * 0.9,
       height: 62,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       clipBehavior: Clip.antiAlias,

@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kudog/model/CategoryModel.dart';
 import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/pages/NavigationPage.dart';
 import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/NotificationService.dart';
 import 'package:kudog/service/TokenService.dart';
 import 'package:kudog/util/Filter.dart';
 import 'package:kudog/util/List.dart';
@@ -30,6 +33,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   late String filterDate; //filter의 date
   int selectedIndex = 0; //선택된 단과대학
 
+  List<Records> newNotifications = [];
+  
   bool isMoreRequesting = false;
 
   // 드레그 거리를 체크하기 위함
@@ -127,6 +132,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     print(overallFilter.providers);
     print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
 
+
     if (DateTime.parse(overallFilter.endDate!)
             .difference(DateTime.parse(overallFilter.startDate!))
             .inDays ==
@@ -146,7 +152,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
       filterDate = "1개월";
     }
     if (overallFilter.categories == null && overallFilter.providers == null) {
-      //처음에 가져올 때
       _loadInitNotices(overallFilter);
     } else if (overallFilter.categories == null &&
         overallFilter.providers != null) {
@@ -155,11 +160,11 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
         overallFilter.providers == null) {
       _loadCategoriesNotices(overallFilter);
     } else {
-      //provider, categories 두 개 다 있을 때
       _loadFilteredNotices(overallFilter);
     }
+    // testToken();
+    loadNewNotifications();
 
-    testToken();
   }
 
   Future<void> testToken() async {
@@ -305,6 +310,16 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     }
   }
 
+  void loadNewNotifications() async {
+    await Provider.of<NotificationService>(context, listen: false)
+        .getNewNotifications();
+    setState(() {
+      newNotifications =
+          Provider.of<NotificationService>(context, listen: false)
+              .newNotificationRecords;
+    });
+  }
+
   void addToScrap(int noticeId) {}
 
   void removeFromScrap(int noticeId) {}
@@ -316,6 +331,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
             padding: EdgeInsets.fromLTRB(16, 17, 16, 0),
             child: Column(
               children: [
+
                 Container(
                     padding: EdgeInsets.fromLTRB(4, 0, 4, 20),
                     child: Column(
@@ -697,8 +713,8 @@ class _noticeCardState extends State<noticeCard> {
                       Row(
                         children: [
                           Text(
-                            widget.notice.title!.length > 30
-                                ? widget.notice.title!.substring(0, 30) + "..."
+                            widget.notice.title!.length > 25
+                                ? widget.notice.title!.substring(0, 25) + "..."
                                 : widget.notice.title!,
                             style: TextStyle(
                               color: Color(0xFF3D3D3D),
@@ -707,11 +723,6 @@ class _noticeCardState extends State<noticeCard> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          Container(
-                              margin: EdgeInsets.only(left: 10),
-                              width: 12,
-                              height: 12,
-                              child: Image.asset("assets/images/new.png"))
                         ],
                       ),
                       Text(
@@ -726,6 +737,7 @@ class _noticeCardState extends State<noticeCard> {
                       )
                     ],
                   ),
+
                   GestureDetector(
                     onTap: () {
                       onSelectScrap();
@@ -741,7 +753,7 @@ class _noticeCardState extends State<noticeCard> {
                             ? Color(0xffFF3B47)
                             : Color(0xffCCC9C9),
                       ),
-                    ),
+                    ],
                   )
                 ],
               )));

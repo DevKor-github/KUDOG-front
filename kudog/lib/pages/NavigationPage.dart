@@ -16,9 +16,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationPageWidget extends StatefulWidget {
-  const NavigationPageWidget({
-    super.key,
-  });
+  const NavigationPageWidget({super.key, required this.idx});
+  final int idx;
   @override
   _NavigationPageWidgetState createState() => _NavigationPageWidgetState();
 }
@@ -28,6 +27,7 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.idx;
   }
 
   void _onItemTapped(int index) {
@@ -66,7 +66,7 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        unselectedItemColor: const Color(0xffC6C6C6),
+        unselectedItemColor: Colors.black,
         selectedItemColor: const Color(0xffFF3B47),
         showUnselectedLabels: true,
       ),
