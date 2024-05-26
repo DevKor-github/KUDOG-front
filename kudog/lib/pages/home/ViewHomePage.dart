@@ -337,7 +337,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             Container(
                               height: MediaQuery.of(context).size.height * 0.04,
                               child:
-                                  Image.asset("assets/images/login_icon.png"),
+                                  Image.asset("assets/images/kudog_home.png"),
                               margin: EdgeInsets.only(top: 20, bottom: 15),
                             ),
                           ],
