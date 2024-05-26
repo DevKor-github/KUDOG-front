@@ -19,6 +19,9 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
   bool isEditting = false;
 
   List<Scrap> scrapList = [];
+  List<Scrap> searchedScrapList = [];
+
+  bool isSearching = false;
 
   Set<int> selectedLists = Set();
 
@@ -52,6 +55,16 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
     setState(() {
       scrapList =
           Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
+    });
+  }
+
+  void _searchScraps(String value) {
+    searchedScrapList.clear();
+
+    scrapList.forEach((scrap) {
+      if (scrap.name!.contains(value)) {
+        searchedScrapList.add(scrap);
+      }
     });
   }
 
@@ -145,6 +158,18 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
               height: 14,
             ),
             TextField(
+              onChanged: (value) {
+                if (value == '') {
+                  setState(() {
+                    isSearching = false;
+                  });
+                } else {
+                  _searchScraps(value);
+                  setState(() {
+                    isSearching = true;
+                  });
+                }
+              },
               decoration: InputDecoration(
                 hintText: '키워드로 검색하세요.',
                 hintStyle: TextStyle(fontSize: 14, color: gray3),
@@ -175,21 +200,23 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 10),
                     children: List.generate(
-                        scrapList.length == 0 || isEditting
-                            ? scrapList.length + 1
-                            : scrapList.length,
-                        (index) => index != scrapList.length
+                        isSearching
+                            ? searchedScrapList.length
+                            : (scrapList.length == 0 || isEditting
+                                ? scrapList.length + 1
+                                : scrapList.length),
+                        (index) => isSearching
                             ? GestureDetector(
                                 key: ValueKey(index),
                                 onTap: () {
                                   if (isEditting)
                                     setState(() {
-                                      selectedLists
-                                              .contains(scrapList[index].id!)
-                                          ? selectedLists
-                                              .remove(scrapList[index].id!)
-                                          : selectedLists
-                                              .add(scrapList[index].id!);
+                                      selectedLists.contains(
+                                              searchedScrapList[index].id!)
+                                          ? selectedLists.remove(
+                                              searchedScrapList[index].id!)
+                                          : selectedLists.add(
+                                              searchedScrapList[index].id!);
                                     });
                                   else {
                                     Navigator.push(
@@ -197,47 +224,80 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 ViewScrapListPageWidget(
-                                                  boxId: scrapList[index].id!,
-                                                  scrapList: scrapList,
+                                                  boxId:
+                                                      searchedScrapList[index]
+                                                          .id!,
+                                                  scrapList: searchedScrapList,
                                                 )));
                                   }
                                 },
                                 child: ScrapCard(
-                                    scrap: scrapList[index],
+                                    scrap: searchedScrapList[index],
                                     selected: selectedLists
-                                        .contains(scrapList[index].id)),
+                                        .contains(searchedScrapList[index].id)),
                               )
-                            : Container(
-                                key: ValueKey(index),
-                                margin: EdgeInsets.zero,
-                                width: double.infinity,
-                                height: 113,
-                                child: OutlinedButton.icon(
-                                    icon: const Icon(
-                                      Icons.create_new_folder_outlined,
-                                      size: 24,
-                                    ),
-                                    label: const Text(
-                                      '구독함 추가',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    onPressed: () => {
-                                          Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ViewNewScrapPageWidget()))
-                                              .then((value) => endEditting())
-                                        },
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: gray1,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(8))),
-                                      minimumSize: Size.fromHeight(40),
-                                    ))))))
+                            : ((index != scrapList.length)
+                                ? GestureDetector(
+                                    key: ValueKey(index),
+                                    onTap: () {
+                                      if (isEditting)
+                                        setState(() {
+                                          selectedLists.contains(
+                                                  scrapList[index].id!)
+                                              ? selectedLists
+                                                  .remove(scrapList[index].id!)
+                                              : selectedLists
+                                                  .add(scrapList[index].id!);
+                                        });
+                                      else {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewScrapListPageWidget(
+                                                      boxId:
+                                                          scrapList[index].id!,
+                                                      scrapList: scrapList,
+                                                    )));
+                                      }
+                                    },
+                                    child: ScrapCard(
+                                        scrap: scrapList[index],
+                                        selected: selectedLists
+                                            .contains(scrapList[index].id)),
+                                  )
+                                : Container(
+                                    key: ValueKey(index),
+                                    margin: EdgeInsets.zero,
+                                    width: double.infinity,
+                                    height: 113,
+                                    child: OutlinedButton.icon(
+                                        icon: const Icon(
+                                          Icons.create_new_folder_outlined,
+                                          size: 24,
+                                        ),
+                                        label: const Text(
+                                          '구독함 추가',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        onPressed: () => {
+                                              Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ViewNewScrapPageWidget()))
+                                                  .then(
+                                                      (value) => endEditting())
+                                            },
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: gray1,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(8))),
+                                          minimumSize: Size.fromHeight(40),
+                                        )))))))
           ]),
         ));
   }
