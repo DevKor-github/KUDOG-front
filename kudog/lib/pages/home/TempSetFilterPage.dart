@@ -631,8 +631,8 @@ class _MajorCardState extends State<MajorCard> {
 
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 20),
-      width: MediaQuery.of(context).size.width * 0.3,
+      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.05),
+      width: MediaQuery.of(context).size.width * 0.31,
       height: MediaQuery.of(context).size.height * 0.07,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: ShapeDecoration(
@@ -728,7 +728,7 @@ class _CategoryCardState extends State<CategoryCard> {
 
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.67,
+      width: MediaQuery.of(context).size.width * 0.64,
       height: MediaQuery.of(context).size.height * 0.07,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: ShapeDecoration(
