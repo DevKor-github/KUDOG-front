@@ -6,7 +6,8 @@ import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
-import 'package:kudog/pages/home/SetFilterPage.dart';
+// import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/pages/home/TempSetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
@@ -494,7 +495,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          SetFilterPageWidget()));
+                                          TempSetFilterPageWidget()));
                             },
                             child: Container(
                               margin: EdgeInsets.only(right: 18, bottom: 10),
