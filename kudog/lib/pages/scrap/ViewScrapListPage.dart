@@ -18,7 +18,7 @@ class ViewScrapListPageWidget extends StatefulWidget {
     required this.boxId,
   }) : super(key: key);
 
-  final List<Scrap> scrapList;
+  List<Scrap> scrapList;
   int boxId;
 
   @override
@@ -46,12 +46,20 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
         widget.scrapList.firstWhere((element) => element.id == widget.boxId);
 
     await Provider.of<NoticeService>(context, listen: false)
-        .getScrappedNotices(widget.boxId!);
+        .getScrappedNotices(widget.boxId);
 
     setState(() {
       noticeList = Provider.of<NoticeService>(context, listen: false)
           .scrapNoticeList
           .notices;
+    });
+  }
+
+  void _refreshScraps() async {
+    await Provider.of<NoticeService>(context, listen: false).getScraps();
+    setState(() {
+      widget.scrapList =
+          Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
     });
   }
 
@@ -103,6 +111,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
             children: [
               Row(mainAxisSize: MainAxisSize.min, children: [
                 DropdownMenu(
+                  key: GlobalKey(),
                   initialSelection: widget.boxId,
                   onSelected: (value) {
                     if (value == null) return;
@@ -131,7 +140,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                                         boxId: widget.boxId,
                                         name: scrap!.name,
                                         description: scrap!.description,
-                                      ))).then((value) => {})
+                                      ))).then((value) => {_refreshScraps()})
                         },
                     icon: Icon(Icons.settings_rounded))
               ]),
