@@ -78,9 +78,9 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         if (add)
-          mainNoticeList.addFromJson(response.data);
+          mainNoticeList.addFromJson(response.data, key: 'records');
         else
-          mainNoticeList = NoticeList.fromJson(response.data);
+          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
