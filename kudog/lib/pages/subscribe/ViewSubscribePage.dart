@@ -246,7 +246,8 @@ class _SubscribeCardState extends State<SubscribeCard> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Text(
-                widget.subscribe.name!,
+                widget.subscribe.name,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               widget.selected
@@ -262,7 +263,7 @@ class _SubscribeCardState extends State<SubscribeCard> {
             ],
           ),
           Row(
-              children: List.generate(widget.subscribe.categories!.length + 1,
+              children: List.generate(widget.subscribe.categories.length + 1,
                   ((index) {
             return index == 0
                 ? Flexible(
@@ -278,16 +279,19 @@ class _SubscribeCardState extends State<SubscribeCard> {
                             borderRadius: BorderRadius.all(Radius.circular(6)),
                             color: white)),
                   )
-                : Container(
-                    margin: EdgeInsets.only(right: 4),
-                    padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-                    height: 26,
-                    child: Text(widget.subscribe.categories![index - 1],
-                        style: TextStyle(
-                            color: red1, fontWeight: FontWeight.w500)),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
-                        color: red2));
+                : Flexible(
+                    child: Container(
+                        margin: EdgeInsets.only(right: 4),
+                        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+                        height: 26,
+                        child: Text(widget.subscribe.categories[index - 1],
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: red1, fontWeight: FontWeight.w500)),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(6)),
+                            color: red2)),
+                  );
           })))
         ],
       ),
