@@ -586,69 +586,108 @@ class noticeCard extends StatefulWidget {
 }
 
 class _noticeCardState extends State<noticeCard> {
-  bool scrabState = false;
+  List<Scrap> scrapList = [];
+  List<bool> isScrappedList = [];
 
   void changeIcon() {
     setState(() {
-      widget.notice.scrapped = !(widget.notice.scrapped);
-      scrabState = !scrabState;
+      widget.notice.scrapped =
+          (isScrappedList.any((element) => element == true));
     });
   }
 
-  void onSelectScrap() async {
+  void _updateScrapInfo() async {
+    isScrappedList = List.generate(scrapList.length, (idx) {
+      return widget.notice.scrapBoxId
+          .any((element) => element == scrapList[idx].id);
+    });
+  }
+
+  Future<void> onSelectScrap() async {
     await Provider.of<NoticeService>(context, listen: false).getScraps();
-    List<Scrap> scrapList =
+    scrapList =
         Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
 
-    showDialog(
+    isScrappedList = List.generate(scrapList.length, (idx) {
+      return widget.notice.scrapBoxId
+          .any((element) => element == scrapList[idx].id);
+    });
+
+    await showDialog(
         context: context,
         builder: (context) {
-          return Dialog(
-            surfaceTintColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.bottomRight,
-            insetPadding: EdgeInsets.only(
-                bottom:
-                    widget.globalKey?.currentContext?.globalPaintBounds == null
-                        ? 20
-                        : MediaQuery.of(context).size.height -
-                            widget.globalKey!.currentContext!.globalPaintBounds!
-                                .top -
-                            24,
-                right: 18),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(
-                  scrapList.length,
-                  (index) => Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: TextButton(
-                        onPressed: () async {
-                          await Provider.of<NoticeService>(context,
-                                  listen: false)
-                              .addToScrap(
-                                  widget.notice.id, scrapList[index].id!);
-                          changeIcon();
-                          Navigator.of(context, rootNavigator: true).pop(this);
-                        },
-                        style: TextButton.styleFrom(
-                            backgroundColor: white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(8),
-                                    topRight: Radius.circular(8),
-                                    bottomLeft: Radius.circular(8))),
-                            fixedSize: Size(227, 44)),
-                        child: Row(
-                          children: [
-                            Icon(Icons.drive_file_move),
-                            Text(scrapList[index].name!)
-                          ],
-                        )),
-                  ),
-                )),
-          );
-        });
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return Dialog(
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              alignment: Alignment.bottomRight,
+              insetPadding: EdgeInsets.only(
+                  bottom: widget.globalKey?.currentContext?.globalPaintBounds ==
+                          null
+                      ? 20
+                      : MediaQuery.of(context).size.height -
+                          widget.globalKey!.currentContext!.globalPaintBounds!
+                              .top -
+                          24,
+                  right: 18),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(scrapList.length, (index) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: TextButton(
+                          onPressed: () async {
+                            setState(() {
+                              isScrappedList[index] = !isScrappedList[index];
+                            });
+                            await Provider.of<NoticeService>(context,
+                                    listen: false)
+                                .addToScrap(
+                                    widget.notice.id, scrapList[index].id!);
+                            changeIcon();
+                          },
+                          style: TextButton.styleFrom(
+                              backgroundColor:
+                                  isScrappedList[index] ? red1 : white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8))),
+                              fixedSize: Size(227, 44)),
+                          child: Row(
+                            children: [
+                              isScrappedList[index]
+                                  ? Icon(
+                                      Icons.folder,
+                                      color: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.drive_file_move,
+                                      color: Colors.black,
+                                    ),
+                              Text(
+                                scrapList[index].name!,
+                                style: TextStyle(
+                                    color:
+                                        isScrappedList[index] ? white : black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16),
+                              )
+                            ],
+                          )),
+                    );
+                  })),
+            );
+          });
+        }).then((value) {
+      widget.notice.scrapBoxId.clear();
+
+      for (int i = 0; i < isScrappedList.length; i++) {
+        if (isScrappedList[i]) widget.notice.scrapBoxId.add(scrapList[i].id!);
+      }
+    });
   }
 
   @override
@@ -726,7 +765,9 @@ class _noticeCardState extends State<noticeCard> {
                   ),
                   GestureDetector(
                       onTap: () {
-                        onSelectScrap();
+                        onSelectScrap().then((value) => setState(() {
+                              _updateScrapInfo();
+                            }));
                       },
                       child: Container(
                         width: 22,
