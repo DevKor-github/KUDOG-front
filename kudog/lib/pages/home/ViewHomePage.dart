@@ -6,7 +6,6 @@ import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
-// import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/TempSetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
@@ -591,7 +590,7 @@ class _noticeCardState extends State<noticeCard> {
 
   void changeIcon() {
     setState(() {
-      widget.notice.scrapped = !widget.notice.scrapped!;
+      widget.notice.scrapped = !(widget.notice.scrapped);
       scrabState = !scrabState;
     });
   }
@@ -628,9 +627,9 @@ class _noticeCardState extends State<noticeCard> {
                           await Provider.of<NoticeService>(context,
                                   listen: false)
                               .addToScrap(
-                                  widget.notice.id!, scrapList[index].id!);
-                          Navigator.of(context, rootNavigator: true).pop(this);
+                                  widget.notice.id, scrapList[index].id!);
                           changeIcon();
+                          Navigator.of(context, rootNavigator: true).pop(this);
                         },
                         style: TextButton.styleFrom(
                             backgroundColor: white,
@@ -666,8 +665,8 @@ class _noticeCardState extends State<noticeCard> {
           },
           child: Container(
               margin: EdgeInsets.only(bottom: 6),
-              padding: EdgeInsets.all(20),
-              width: MediaQuery.of(context).size.width * 0.8,
+              padding: EdgeInsets.all(16),
+              height: 94,
               decoration: BoxDecoration(
                   border: Border.all(
                       color: widget.isBorder ? gray4 : Colors.transparent,
@@ -677,41 +676,33 @@ class _noticeCardState extends State<noticeCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 43,
-                        height: 18,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFF4F1F1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '공지사항',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF787474),
-                                fontSize: 10,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w400,
-                              ),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: ShapeDecoration(
+                            color: gray4,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          child: Text(
+                            '공지사항',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF787474),
+                              fontSize: 10,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w400,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            widget.notice.title!.length > 25
-                                ? widget.notice.title!.substring(0, 25) + "..."
-                                : widget.notice.title!,
+                        Flexible(
+                          child: Text(
+                            widget.notice.title,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Color(0xFF3D3D3D),
                               fontSize: 16,
@@ -719,19 +710,19 @@ class _noticeCardState extends State<noticeCard> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
-                      Text(
-                        widget.notice.date!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF787474),
-                          fontSize: 10,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w300,
                         ),
-                      )
-                    ],
+                        Text(
+                          widget.notice.date!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF787474),
+                            fontSize: 10,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w300,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   GestureDetector(
                       onTap: () {
