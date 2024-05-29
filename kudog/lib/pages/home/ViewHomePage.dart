@@ -550,9 +550,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             itemBuilder: (context, index) {
                               GlobalKey _key = new GlobalKey();
                               return noticeCard(
-                                  key: _key,
-                                  globalKey: _key,
-                                  notice: noticeList[index]);
+                                  notice: noticeList[index], key: _key);
                             })))
               ],
             )));
@@ -573,13 +571,8 @@ extension GlobalPaintBounds on BuildContext {
 }
 
 class noticeCard extends StatefulWidget {
-  const noticeCard(
-      {super.key,
-      this.globalKey = null,
-      required this.notice,
-      this.isBorder = false});
+  const noticeCard({super.key, required this.notice, this.isBorder = false});
   final Notice notice;
-  final GlobalKey? globalKey;
   final bool isBorder;
   @override
   _noticeCardState createState() => _noticeCardState();
@@ -623,11 +616,16 @@ class _noticeCardState extends State<noticeCard> {
               backgroundColor: Colors.transparent,
               alignment: Alignment.bottomRight,
               insetPadding: EdgeInsets.only(
-                  bottom: widget.globalKey?.currentContext?.globalPaintBounds ==
-                          null
+                  bottom: (widget.key == null ||
+                          ((widget.key) as GlobalKey)
+                                  .currentContext
+                                  ?.globalPaintBounds ==
+                              null)
                       ? 20
                       : MediaQuery.of(context).size.height -
-                          widget.globalKey!.currentContext!.globalPaintBounds!
+                          (widget.key as GlobalKey)
+                              .currentContext!
+                              .globalPaintBounds!
                               .top -
                           24,
                   right: 18),
