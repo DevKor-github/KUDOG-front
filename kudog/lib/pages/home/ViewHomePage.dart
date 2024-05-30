@@ -550,7 +550,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             itemBuilder: (context, index) {
                               GlobalKey _key = new GlobalKey();
                               return noticeCard(
-                                  notice: noticeList[index], key: _key);
+                                  noticeId: noticeList[index].id, key: _key);
                             })))
               ],
             )));
@@ -570,48 +570,13 @@ extension GlobalPaintBounds on BuildContext {
   }
 }
 
-class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, required this.notice, this.isBorder = false});
-  final Notice notice;
-  final bool isBorder;
-  @override
-  _noticeCardState createState() => _noticeCardState();
-}
-
-class _noticeCardState extends State<noticeCard> {
-  List<Scrap> scrapList = [];
-  List<bool> isScrappedList = [];
-
-  void changeIcon() {
-    setState(() {
-      widget.notice.scrapped =
-          (isScrappedList.any((element) => element == true));
-    });
-  }
-
-  void _updateScrapInfo() async {
-    isScrappedList = List.generate(scrapList.length, (idx) {
-      return widget.notice.scrapBoxId
-          .any((element) => element == scrapList[idx].id);
-    });
-  }
-
-  Future<void> onSelectScrap() async {
-    await Provider.of<NoticeService>(context, listen: false).getScraps();
-    scrapList =
-        Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
-
-    isScrappedList = List.generate(scrapList.length, (idx) {
-      return widget.notice.scrapBoxId
-          .any((element) => element == scrapList[idx].id);
-    });
-
+extension ScrapPicker on State {
+  Future<void> onSelectScrap({required int noticeId}) async {
     await showDialog(
         context: context,
         builder: (context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return Dialog(
+          return Consumer<NoticeService>(
+            builder: (context, noticeService, child) => Dialog(
               surfaceTintColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               alignment: Alignment.bottomRight,
@@ -631,23 +596,28 @@ class _noticeCardState extends State<noticeCard> {
                   right: 18),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(scrapList.length, (index) {
+                  children: List.generate(noticeService.scrapList.scraps.length,
+                      (index) {
                     return Padding(
                       padding: EdgeInsets.only(top: 6),
                       child: TextButton(
                           onPressed: () async {
-                            setState(() {
-                              isScrappedList[index] = !isScrappedList[index];
-                            });
                             await Provider.of<NoticeService>(context,
                                     listen: false)
                                 .addToScrap(
-                                    widget.notice.id, scrapList[index].id!);
-                            changeIcon();
+                                    noticeService.noticeInfo(noticeId)!.id,
+                                    noticeService.scrapList.scraps[index].id!);
                           },
                           style: TextButton.styleFrom(
-                              backgroundColor:
-                                  isScrappedList[index] ? red1 : white,
+                              backgroundColor: noticeService
+                                      .noticeInfo(noticeId)!
+                                      .scrapBoxId
+                                      .any((element) =>
+                                          element ==
+                                          noticeService
+                                              .scrapList.scraps[index].id)
+                                  ? red1
+                                  : white,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(8),
@@ -656,7 +626,13 @@ class _noticeCardState extends State<noticeCard> {
                               fixedSize: Size(227, 44)),
                           child: Row(
                             children: [
-                              isScrappedList[index]
+                              noticeService
+                                      .noticeInfo(noticeId)!
+                                      .scrapBoxId
+                                      .any((element) =>
+                                          element ==
+                                          noticeService
+                                              .scrapList.scraps[index].id)
                                   ? Icon(
                                       Icons.folder,
                                       color: Colors.white,
@@ -666,10 +642,17 @@ class _noticeCardState extends State<noticeCard> {
                                       color: Colors.black,
                                     ),
                               Text(
-                                scrapList[index].name!,
+                                noticeService.scrapList.scraps[index].name!,
                                 style: TextStyle(
-                                    color:
-                                        isScrappedList[index] ? white : black,
+                                    color: noticeService
+                                            .noticeInfo(noticeId)!
+                                            .scrapBoxId
+                                            .any((element) =>
+                                                element ==
+                                                noticeService
+                                                    .scrapList.scraps[index].id)
+                                        ? white
+                                        : black,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 16),
                               )
@@ -677,15 +660,24 @@ class _noticeCardState extends State<noticeCard> {
                           )),
                     );
                   })),
-            );
-          });
-        }).then((value) {
-      widget.notice.scrapBoxId.clear();
+            ),
+          );
+        });
+  }
+}
 
-      for (int i = 0; i < isScrappedList.length; i++) {
-        if (isScrappedList[i]) widget.notice.scrapBoxId.add(scrapList[i].id!);
-      }
-    });
+class noticeCard extends StatefulWidget {
+  const noticeCard({super.key, required this.noticeId, this.isBorder = false});
+  final int noticeId;
+  final bool isBorder;
+  @override
+  _noticeCardState createState() => _noticeCardState();
+}
+
+class _noticeCardState extends State<noticeCard> {
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -697,7 +689,7 @@ class _noticeCardState extends State<noticeCard> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ViewPostDetailPageWidget(
-                          notice: widget.notice,
+                          notice: noticeService.noticeInfo(widget.noticeId)!,
                         )));
           },
           child: Container(
@@ -738,7 +730,8 @@ class _noticeCardState extends State<noticeCard> {
                         ),
                         Flexible(
                           child: Text(
-                            widget.notice.title,
+                            noticeService.noticeInfo(widget.noticeId)?.title ??
+                                '',
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Color(0xFF3D3D3D),
@@ -749,7 +742,7 @@ class _noticeCardState extends State<noticeCard> {
                           ),
                         ),
                         Text(
-                          widget.notice.date!,
+                          noticeService.noticeInfo(widget.noticeId)?.date ?? '',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Color(0xFF787474),
@@ -763,18 +756,20 @@ class _noticeCardState extends State<noticeCard> {
                   ),
                   GestureDetector(
                       onTap: () {
-                        onSelectScrap().then((value) => setState(() {
-                              _updateScrapInfo();
-                            }));
+                        onSelectScrap(noticeId: widget.noticeId);
                       },
                       child: Container(
                         width: 22,
                         height: 22,
                         child: Icon(
-                          widget.notice.scrapped!
+                          noticeService.noticeInfo(widget.noticeId)?.scrapped ??
+                                  false
                               ? Icons.bookmark
                               : Icons.bookmark_outline,
-                          color: widget.notice.scrapped!
+                          color: noticeService
+                                      .noticeInfo(widget.noticeId)
+                                      ?.scrapped ??
+                                  false
                               ? Color(0xffFF3B47)
                               : Color(0xffCCC9C9),
                         ),

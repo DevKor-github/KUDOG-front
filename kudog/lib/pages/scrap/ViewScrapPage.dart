@@ -97,13 +97,13 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                 SizedBox(
                   width: 200,
                   child: Text(
-                    '스크랩 해두고\n한번에 읽어요',
+                    '스크랩 해두고\n한번에 읽어요📌',
                     softWrap: true,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: isEditting
-                            ? Colors.black.withOpacity(0.5)
+                            ? Colors.black.withOpacity(0.3)
                             : Colors.black),
                   ),
                 ),

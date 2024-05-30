@@ -214,7 +214,7 @@ class _ViewSubscribePageListWidgetState
                   itemCount: noticeList != null ? noticeList!.length : 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
-                      notice: noticeList![index],
+                      noticeId: noticeList![index].id,
                       isBorder: true,
                     );
                   },

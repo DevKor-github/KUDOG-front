@@ -1,5 +1,6 @@
 class ScrapList {
   List<Scrap> scraps = [];
+  bool isInit = false;
 
   ScrapList();
 

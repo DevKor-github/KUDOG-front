@@ -10,14 +10,56 @@ import 'package:kudog/service/TokenService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeService extends ChangeNotifier {
-  NoticeList mainNoticeList = NoticeList();
-  NoticeList scrapNoticeList = NoticeList();
-  NoticeList subscribeNoticeList = NoticeList();
+  NoticeList _mainNoticeList = NoticeList();
+  NoticeList get mainNoticeList {
+    return _mainNoticeList;
+  }
+
+  NoticeList _scrapNoticeList = NoticeList();
+  NoticeList get scrapNoticeList {
+    return _scrapNoticeList;
+  }
+
+  NoticeList _subscribeNoticeList = NoticeList();
+  NoticeList get subscribeNoticeList {
+    return _subscribeNoticeList;
+  }
+
+  Map<int, Notice> _noticeMap = Map();
+  Notice? noticeInfo(int noticeId) {
+    if (_noticeMap.containsKey(noticeId)) return _noticeMap[noticeId]!;
+    return null;
+  }
+
+  void _addNoticeMap(dynamic json, {String key = 'notices'}) {
+    json[key].forEach((val) {
+      Notice notice = Notice.fromJson(val);
+      _noticeMap.putIfAbsent(notice.id, () => notice);
+    });
+  }
+
+  void _setNoticeScrapped(String result, int noticeId, int scrapBoxId) {
+    if (result == 'true') {
+      _noticeMap[noticeId]!.scrapped = true;
+      _noticeMap[noticeId]!.scrapBoxId.add(scrapBoxId);
+    } else if (result == 'false') {
+      _noticeMap[noticeId]!.scrapBoxId.remove(scrapBoxId);
+      if (_noticeMap[noticeId]!.scrapBoxId.isEmpty)
+        _noticeMap[noticeId]!.scrapped = false;
+    }
+  }
 
   NoticeDetail noticeDetail = NoticeDetail();
 
-  List<Subscribe> subscribeList = List.empty();
-  ScrapList scrapList = ScrapList();
+  List<Subscribe> _subscribeList = List.empty();
+  List<Subscribe> get subscribeList {
+    return _subscribeList;
+  }
+
+  ScrapList _scrapList = ScrapList();
+  ScrapList get scrapList {
+    return _scrapList;
+  }
 
   //모든 공지사항을 가져옵니다.
   Future<void> getAllNotices(Filter filter, {bool add = false}) async {
@@ -38,10 +80,11 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        if (add)
-          mainNoticeList.addFromJson(response.data, key: 'records');
-        else
-          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+        if (add) {
+          _mainNoticeList.addFromJson(response.data, key: 'records');
+        } else
+          _mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+        _addNoticeMap(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
       } else {
@@ -78,9 +121,10 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         if (add)
-          mainNoticeList.addFromJson(response.data, key: 'records');
+          _mainNoticeList.addFromJson(response.data, key: 'records');
         else
-          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+          _mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+        _addNoticeMap(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -116,11 +160,11 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        print(response.data);
         if (add)
-          mainNoticeList.addFromJson(response.data, key: 'records');
+          _mainNoticeList.addFromJson(response.data, key: 'records');
         else
-          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+          _mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+        _addNoticeMap(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -157,9 +201,10 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         if (add)
-          mainNoticeList.addFromJson(response.data);
+          _mainNoticeList.addFromJson(response.data);
         else
-          mainNoticeList = NoticeList.fromJson(response.data);
+          _mainNoticeList = NoticeList.fromJson(response.data);
+        _addNoticeMap(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -195,9 +240,10 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
         if (add)
-          mainNoticeList.addFromJson(response.data, key: 'records');
+          _mainNoticeList.addFromJson(response.data, key: 'records');
         else
-          mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+          _mainNoticeList = NoticeList.fromJson(response.data, key: 'records');
+        _addNoticeMap(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -271,8 +317,8 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-
-        subscribeNoticeList = NoticeList.fromJson(response.data);
+        _subscribeNoticeList = NoticeList.fromJson(response.data);
+        _addNoticeMap(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -308,10 +354,10 @@ class NoticeService extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("GET 요청 성공");
 
-        subscribeList = List<Subscribe>.empty(growable: true);
+        _subscribeList = List<Subscribe>.empty(growable: true);
 
         for (Map<String, dynamic> item in response.data['records']) {
-          subscribeList.add(Subscribe.fromJson(item));
+          _subscribeList.add(Subscribe.fromJson(item));
         }
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
@@ -476,7 +522,8 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        scrapList = ScrapList.fromJson(response.data, key: 'records');
+        print(response.data);
+        _scrapList = ScrapList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -624,7 +671,8 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        scrapNoticeList = NoticeList.fromJson(response.data, key: 'notices');
+        _scrapNoticeList = NoticeList.fromJson(response.data, key: 'notices');
+        _addNoticeMap(response.data);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -660,6 +708,7 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("PUT 요청 성공");
+        _setNoticeScrapped(response.data, noticeId, scrapBoxId);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
