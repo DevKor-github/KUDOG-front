@@ -165,7 +165,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                   itemCount: noticeList != null ? noticeList!.length : 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
-                        noticeId: noticeList![index].id, isBorder: true);
+                        key: GlobalKey(),
+                        noticeId: noticeList![index].id,
+                        isBorder: true);
                   },
                 ),
               ),

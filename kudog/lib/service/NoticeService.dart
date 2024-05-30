@@ -522,7 +522,6 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
-        print(response.data);
         _scrapList = ScrapList.fromJson(response.data, key: 'records');
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");

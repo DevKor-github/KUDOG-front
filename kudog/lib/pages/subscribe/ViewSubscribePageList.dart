@@ -214,6 +214,7 @@ class _ViewSubscribePageListWidgetState
                   itemCount: noticeList != null ? noticeList!.length : 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
+                      key: GlobalKey(),
                       noticeId: noticeList![index].id,
                       isBorder: true,
                     );

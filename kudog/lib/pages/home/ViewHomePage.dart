@@ -126,6 +126,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
   void initState() {
     super.initState();
 
+    Provider.of<NoticeService>(context, listen: false).getScraps();
+
     print(overallFilter.categories);
     print(overallFilter.providers);
     print('${overallFilter.startDate} ~ ${overallFilter.endDate}');

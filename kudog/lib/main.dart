@@ -44,7 +44,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<NoticeService>(context, listen: false).getScraps();
     return MaterialApp(
         title: "Kudog",
         debugShowCheckedModeBanner: false,
