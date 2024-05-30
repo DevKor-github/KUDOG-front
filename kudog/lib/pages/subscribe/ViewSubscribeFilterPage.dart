@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -550,7 +551,7 @@ class _CategoryCardState extends State<CategoryCard> {
         child: Container(
           width: 125,
           margin: EdgeInsets.all(3),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
           decoration: ShapeDecoration(
             color: isClicked ? Color(0xFFFFD8DA) : Colors.white,
             shape: RoundedRectangleBorder(
@@ -562,17 +563,26 @@ class _CategoryCardState extends State<CategoryCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.category,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isClicked ? Color(0xFFFF3A46) : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
+              Expanded(
+                child: Text(
+                  widget.category,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: isClicked ? Color(0xFFFF3A46) : Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-              isClicked ? Icon(Icons.close, color: Colors.white) : Container(),
+              isClicked
+                  ? Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 20,
+                    )
+                  : Container(),
             ],
           ),
         ));
