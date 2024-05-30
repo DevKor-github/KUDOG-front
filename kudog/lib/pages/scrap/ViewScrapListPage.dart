@@ -60,6 +60,8 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
     setState(() {
       widget.scrapList =
           Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
+      scrap =
+          widget.scrapList.firstWhere((element) => element.id == widget.boxId);
     });
   }
 
@@ -163,9 +165,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                   itemCount: noticeList != null ? noticeList!.length : 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
-                      notice: noticeList![index],
-                      isBorder: true,
-                    );
+                        key: GlobalKey(),
+                        noticeId: noticeList![index].id,
+                        isBorder: true);
                   },
                 ),
               ),

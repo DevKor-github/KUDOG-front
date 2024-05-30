@@ -63,29 +63,29 @@ class NoticeList {
 }
 
 class Notice {
-  int? id;
-  String? title;
-  bool? scrapped;
-  String? date;
-  String? mappedCategory;
-  String? provider;
-  List<int>? scrapBoxId;
+  late int id;
+  late String title;
+  late bool scrapped;
+  late String date;
+  late String mappedCategory;
+  late String provider;
+  late List<int> scrapBoxId;
 
-  Notice(
-      {this.id,
-      this.title,
-      this.scrapped,
-      this.date,
-      this.mappedCategory,
-      this.provider,
-      this.scrapBoxId});
+  // Notice(
+  //     {this.id,
+  //     this.title,
+  //     this.scrapped,
+  //     this.date,
+  //     this.mappedCategory,
+  //     this.provider,
+  //     this.scrapBoxId});
 
   Notice.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     scrapped = json['scrapped'];
     date = json['date'];
-    mappedCategory = json['mappedCategory'];
+    mappedCategory = json['category'];
     provider = json['provider'];
     scrapBoxId = json['scrapBoxId'].cast<int>();
   }

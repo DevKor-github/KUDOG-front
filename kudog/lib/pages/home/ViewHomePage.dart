@@ -6,7 +6,6 @@ import 'package:kudog/model/NotificationModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
-// import 'package:kudog/pages/home/SetFilterPage.dart';
 import 'package:kudog/pages/home/TempSetFilterPage.dart';
 import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
@@ -126,6 +125,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   void initState() {
     super.initState();
+
+    Provider.of<NoticeService>(context, listen: false).getScraps();
 
     print(overallFilter.categories);
     print(overallFilter.providers);
@@ -551,9 +552,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             itemBuilder: (context, index) {
                               GlobalKey _key = new GlobalKey();
                               return noticeCard(
-                                  key: _key,
-                                  globalKey: _key,
-                                  notice: noticeList[index]);
+                                  noticeId: noticeList[index].id, key: _key);
                             })))
               ],
             )));
@@ -573,83 +572,114 @@ extension GlobalPaintBounds on BuildContext {
   }
 }
 
+extension ScrapPicker on State {
+  Future<void> onSelectScrap({required int noticeId}) async {
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return Consumer<NoticeService>(
+            builder: (context, noticeService, child) => Dialog(
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
+              alignment: Alignment.bottomRight,
+              insetPadding: EdgeInsets.only(
+                  bottom: (widget.key == null ||
+                          ((widget.key) as GlobalKey)
+                                  .currentContext
+                                  ?.globalPaintBounds ==
+                              null)
+                      ? 20
+                      : MediaQuery.of(context).size.height -
+                          (widget.key as GlobalKey)
+                              .currentContext!
+                              .globalPaintBounds!
+                              .top -
+                          24,
+                  right: 18),
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(noticeService.scrapList.scraps.length,
+                      (index) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: TextButton(
+                          onPressed: () async {
+                            await Provider.of<NoticeService>(context,
+                                    listen: false)
+                                .addToScrap(
+                                    noticeService.noticeInfo(noticeId)!.id,
+                                    noticeService.scrapList.scraps[index].id!);
+                          },
+                          style: TextButton.styleFrom(
+                              backgroundColor: noticeService
+                                      .noticeInfo(noticeId)!
+                                      .scrapBoxId
+                                      .any((element) =>
+                                          element ==
+                                          noticeService
+                                              .scrapList.scraps[index].id)
+                                  ? red1
+                                  : white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8))),
+                              fixedSize: Size(227, 44)),
+                          child: Row(
+                            children: [
+                              noticeService
+                                      .noticeInfo(noticeId)!
+                                      .scrapBoxId
+                                      .any((element) =>
+                                          element ==
+                                          noticeService
+                                              .scrapList.scraps[index].id)
+                                  ? Icon(
+                                      Icons.folder,
+                                      color: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.drive_file_move,
+                                      color: Colors.black,
+                                    ),
+                              Text(
+                                noticeService.scrapList.scraps[index].name!,
+                                style: TextStyle(
+                                    color: noticeService
+                                            .noticeInfo(noticeId)!
+                                            .scrapBoxId
+                                            .any((element) =>
+                                                element ==
+                                                noticeService
+                                                    .scrapList.scraps[index].id)
+                                        ? white
+                                        : black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16),
+                              )
+                            ],
+                          )),
+                    );
+                  })),
+            ),
+          );
+        });
+  }
+}
+
 class noticeCard extends StatefulWidget {
-  const noticeCard(
-      {super.key,
-      this.globalKey = null,
-      required this.notice,
-      this.isBorder = false});
-  final Notice notice;
-  final GlobalKey? globalKey;
+  const noticeCard({super.key, required this.noticeId, this.isBorder = false});
+  final int noticeId;
   final bool isBorder;
   @override
   _noticeCardState createState() => _noticeCardState();
 }
 
 class _noticeCardState extends State<noticeCard> {
-  bool scrabState = false;
-
-  void changeIcon() {
-    setState(() {
-      widget.notice.scrapped = !widget.notice.scrapped!;
-      scrabState = !scrabState;
-    });
-  }
-
-  void onSelectScrap() async {
-    await Provider.of<NoticeService>(context, listen: false).getScraps();
-    List<Scrap> scrapList =
-        Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
-
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            surfaceTintColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            alignment: Alignment.bottomRight,
-            insetPadding: EdgeInsets.only(
-                bottom:
-                    widget.globalKey?.currentContext?.globalPaintBounds == null
-                        ? 20
-                        : MediaQuery.of(context).size.height -
-                            widget.globalKey!.currentContext!.globalPaintBounds!
-                                .top -
-                            24,
-                right: 18),
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(
-                  scrapList.length,
-                  (index) => Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: TextButton(
-                        onPressed: () async {
-                          await Provider.of<NoticeService>(context,
-                                  listen: false)
-                              .addToScrap(
-                                  widget.notice.id!, scrapList[index].id!);
-                          Navigator.of(context, rootNavigator: true).pop(this);
-                          changeIcon();
-                        },
-                        style: TextButton.styleFrom(
-                            backgroundColor: white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(8),
-                                    topRight: Radius.circular(8),
-                                    bottomLeft: Radius.circular(8))),
-                            fixedSize: Size(227, 44)),
-                        child: Row(
-                          children: [
-                            Icon(Icons.drive_file_move),
-                            Text(scrapList[index].name!)
-                          ],
-                        )),
-                  ),
-                )),
-          );
-        });
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -661,13 +691,13 @@ class _noticeCardState extends State<noticeCard> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ViewPostDetailPageWidget(
-                          notice: widget.notice,
+                          notice: noticeService.noticeInfo(widget.noticeId)!,
                         )));
           },
           child: Container(
               margin: EdgeInsets.only(bottom: 6),
-              padding: EdgeInsets.all(20),
-              width: MediaQuery.of(context).size.width * 0.8,
+              padding: EdgeInsets.all(16),
+              height: 94,
               decoration: BoxDecoration(
                   border: Border.all(
                       color: widget.isBorder ? gray4 : Colors.transparent,
@@ -677,41 +707,34 @@ class _noticeCardState extends State<noticeCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 43,
-                        height: 18,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFFF4F1F1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '공지사항',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF787474),
-                                fontSize: 10,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w400,
-                              ),
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: ShapeDecoration(
+                            color: gray4,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          child: Text(
+                            '공지사항',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF787474),
+                              fontSize: 10,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w400,
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            widget.notice.title!.length > 25
-                                ? widget.notice.title!.substring(0, 25) + "..."
-                                : widget.notice.title!,
+                        Flexible(
+                          child: Text(
+                            noticeService.noticeInfo(widget.noticeId)?.title ??
+                                '',
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Color(0xFF3D3D3D),
                               fontSize: 16,
@@ -719,32 +742,36 @@ class _noticeCardState extends State<noticeCard> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
-                      Text(
-                        widget.notice.date!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF787474),
-                          fontSize: 10,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w300,
                         ),
-                      )
-                    ],
+                        Text(
+                          noticeService.noticeInfo(widget.noticeId)?.date ?? '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF787474),
+                            fontSize: 10,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w300,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   GestureDetector(
                       onTap: () {
-                        onSelectScrap();
+                        onSelectScrap(noticeId: widget.noticeId);
                       },
                       child: Container(
                         width: 22,
                         height: 22,
                         child: Icon(
-                          widget.notice.scrapped!
+                          noticeService.noticeInfo(widget.noticeId)?.scrapped ??
+                                  false
                               ? Icons.bookmark
                               : Icons.bookmark_outline,
-                          color: widget.notice.scrapped!
+                          color: noticeService
+                                      .noticeInfo(widget.noticeId)
+                                      ?.scrapped ??
+                                  false
                               ? Color(0xffFF3B47)
                               : Color(0xffCCC9C9),
                         ),

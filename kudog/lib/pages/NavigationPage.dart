@@ -50,25 +50,32 @@ class _NavigationPageWidgetState extends State<NavigationPageWidget> {
       body: SafeArea(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark_outline, size: 30), label: "스크랩"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.mail_outline, size: 30), label: "구독함"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined, size: 30), label: "홈"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none_outlined, size: 30),
-              label: "알림"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline_outlined, size: 30), label: "마이"),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: const Color(0xffFF3B47),
-        showUnselectedLabels: true,
+      bottomNavigationBar: Theme(
+        data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.bookmark_outline, size: 30), label: "스크랩"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.mail_outline, size: 30), label: "구독함"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined, size: 30), label: "홈"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.notifications_none_outlined, size: 30),
+                label: "알림"),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline_outlined, size: 30),
+                label: "마이"),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          unselectedItemColor: Colors.black,
+          selectedItemColor: const Color(0xffFF3B47),
+          showUnselectedLabels: true,
+        ),
       ),
     );
   }

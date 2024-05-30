@@ -23,6 +23,7 @@ dependencies:
   firebase_messaging: ^14.9.2
   firebase_core: ^2.31.0
   share_plus: ^6.0.0
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:
