@@ -89,7 +89,7 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: isEditting
-                          ? Colors.black.withOpacity(0.5)
+                          ? Colors.black.withOpacity(0.3)
                           : Colors.black),
                 ),
               ),

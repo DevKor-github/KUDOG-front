@@ -570,21 +570,8 @@ extension GlobalPaintBounds on BuildContext {
   }
 }
 
-class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, required this.noticeId, this.isBorder = false});
-  final int noticeId;
-  final bool isBorder;
-  @override
-  _noticeCardState createState() => _noticeCardState();
-}
-
-class _noticeCardState extends State<noticeCard> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<void> onSelectScrap() async {
+extension ScrapPicker on State {
+  Future<void> onSelectScrap({required int noticeId}) async {
     await showDialog(
         context: context,
         builder: (context) {
@@ -618,14 +605,12 @@ class _noticeCardState extends State<noticeCard> {
                             await Provider.of<NoticeService>(context,
                                     listen: false)
                                 .addToScrap(
-                                    noticeService
-                                        .noticeInfo(widget.noticeId)!
-                                        .id,
+                                    noticeService.noticeInfo(noticeId)!.id,
                                     noticeService.scrapList.scraps[index].id!);
                           },
                           style: TextButton.styleFrom(
                               backgroundColor: noticeService
-                                      .noticeInfo(widget.noticeId)!
+                                      .noticeInfo(noticeId)!
                                       .scrapBoxId
                                       .any((element) =>
                                           element ==
@@ -642,7 +627,7 @@ class _noticeCardState extends State<noticeCard> {
                           child: Row(
                             children: [
                               noticeService
-                                      .noticeInfo(widget.noticeId)!
+                                      .noticeInfo(noticeId)!
                                       .scrapBoxId
                                       .any((element) =>
                                           element ==
@@ -660,7 +645,7 @@ class _noticeCardState extends State<noticeCard> {
                                 noticeService.scrapList.scraps[index].name!,
                                 style: TextStyle(
                                     color: noticeService
-                                            .noticeInfo(widget.noticeId)!
+                                            .noticeInfo(noticeId)!
                                             .scrapBoxId
                                             .any((element) =>
                                                 element ==
@@ -678,6 +663,21 @@ class _noticeCardState extends State<noticeCard> {
             ),
           );
         });
+  }
+}
+
+class noticeCard extends StatefulWidget {
+  const noticeCard({super.key, required this.noticeId, this.isBorder = false});
+  final int noticeId;
+  final bool isBorder;
+  @override
+  _noticeCardState createState() => _noticeCardState();
+}
+
+class _noticeCardState extends State<noticeCard> {
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -756,7 +756,7 @@ class _noticeCardState extends State<noticeCard> {
                   ),
                   GestureDetector(
                       onTap: () {
-                        onSelectScrap();
+                        onSelectScrap(noticeId: widget.noticeId);
                       },
                       child: Container(
                         width: 22,
