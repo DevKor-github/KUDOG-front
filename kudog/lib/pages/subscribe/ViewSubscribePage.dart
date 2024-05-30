@@ -6,6 +6,7 @@ import 'package:kudog/pages/subscribe/ViewSubscribePageList.dart';
 import 'package:kudog/pages/subscribe/ViewSubscribeFilterPage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 class ViewSubscribePageWidget extends StatefulWidget {
   const ViewSubscribePageWidget({Key? key}) : super(key: key);
@@ -155,7 +156,22 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                           margin: EdgeInsets.zero,
                           width: double.infinity,
                           height: 113,
-                          child: OutlinedButton.icon(
+                          child: DottedBorder(
+                            borderType: BorderType.RRect,
+                            padding: EdgeInsets.all(8),
+                            radius: Radius.circular(8),
+                            strokeWidth: 1.5,
+                            color: gray3,
+                            child: TextButton.icon(
+                              style: TextButton.styleFrom(
+                                fixedSize: Size.fromHeight(128),
+                                backgroundColor: gray4,
+                                foregroundColor: gray2,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8))),
+                                minimumSize: Size.fromHeight(40),
+                              ),
                               icon: const Icon(
                                 Icons.create_new_folder_outlined,
                                 size: 24,
@@ -166,20 +182,15 @@ class _ViewSubscribePageWidgetState extends State<ViewSubscribePageWidget> {
                                     fontSize: 10, fontWeight: FontWeight.w500),
                               ),
                               onPressed: () => {
-                                    Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ViewSubscribeFilterPageWidget()))
-                                        .then((value) => endEditting())
-                                  },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: gray1,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8))),
-                                minimumSize: Size.fromHeight(40),
-                              )))
+                                Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ViewSubscribeFilterPageWidget()))
+                                    .then((value) => endEditting())
+                              },
+                            ),
+                          ))
                       : GestureDetector(
                           onTap: () {
                             if (isEditting)

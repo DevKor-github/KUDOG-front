@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/ScrapModel.dart';
@@ -271,33 +272,42 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                     margin: EdgeInsets.zero,
                                     width: double.infinity,
                                     height: 113,
-                                    child: OutlinedButton.icon(
+                                    child: DottedBorder(
+                                      borderType: BorderType.RRect,
+                                      padding: EdgeInsets.all(8),
+                                      radius: Radius.circular(8),
+                                      strokeWidth: 1.5,
+                                      color: gray3,
+                                      child: TextButton.icon(
+                                        style: OutlinedButton.styleFrom(
+                                          fixedSize: Size.fromHeight(128),
+                                          backgroundColor: gray4,
+                                          foregroundColor: gray2,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(8))),
+                                          minimumSize: Size.fromHeight(40),
+                                        ),
                                         icon: const Icon(
                                           Icons.create_new_folder_outlined,
                                           size: 24,
                                         ),
                                         label: const Text(
-                                          '구독함 추가',
+                                          '폴더 추가',
                                           style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w500),
                                         ),
                                         onPressed: () => {
-                                              Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ViewNewScrapPageWidget()))
-                                                  .then(
-                                                      (value) => endEditting())
-                                            },
-                                        style: OutlinedButton.styleFrom(
-                                          foregroundColor: gray1,
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(8))),
-                                          minimumSize: Size.fromHeight(40),
-                                        )))))))
+                                          Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ViewNewScrapPageWidget()))
+                                              .then((value) => endEditting())
+                                        },
+                                      ),
+                                    ))))))
           ]),
         ));
   }
