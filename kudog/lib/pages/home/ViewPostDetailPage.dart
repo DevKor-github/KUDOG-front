@@ -5,6 +5,7 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/ScrapBoxService.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -61,8 +62,12 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NoticeService>(builder: (context, noticeService, child) {
+    return Consumer2<NoticeService, ScrapBoxService>(
+        builder: (context, noticeService, scrapBoxService, child) {
       NoticeDetail noticeDetail = noticeService.noticeDetail;
+      print(noticeDetail.scrapBoxId);
+      scrapBoxService.getScrapBoxes();
+      print(scrapBoxService.scrapBoxes);
       return Scaffold(
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -124,24 +129,47 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              margin: EdgeInsets.only(bottom: 10),
-                              decoration: ShapeDecoration(
-                                color: Color(0x7FFFD8DA),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
-                              child: Text(
-                                noticeDetail.provider!,
-                                style: const TextStyle(
-                                  color: Color(0xffFF3B47),
-                                  fontSize: 12,
-                                  fontFamily: 'Noto Sans KR',
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5),
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  decoration: ShapeDecoration(
+                                    color: Color(0x7FFFD8DA),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  child: Text(
+                                    noticeDetail.mappedCategory!,
+                                    style: const TextStyle(
+                                      color: Color(0xffFF3B47),
+                                      fontSize: 12,
+                                      fontFamily: 'Noto Sans KR',
+                                      fontWeight: FontWeight.w500,
+                                      height: 0,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Container(
+                                  padding: EdgeInsets.all(5),
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  decoration: ShapeDecoration(
+                                    color: Color(0x7FFFD8DA),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  child: Text(
+                                    noticeDetail.mappedCategory!,
+                                    style: const TextStyle(
+                                      color: Color(0xffFF3B47),
+                                      fontSize: 12,
+                                      fontFamily: 'Noto Sans KR',
+                                      fontWeight: FontWeight.w500,
+                                      height: 0,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
                               noticeDetail.title!,

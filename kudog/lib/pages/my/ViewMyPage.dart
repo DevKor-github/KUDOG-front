@@ -82,13 +82,33 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: _selectedTime,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            timePickerTheme: TimePickerThemeData(
+              backgroundColor: Colors.white,
+              dialHandColor: Colors.red, // 시계 바늘 색상
+              dialBackgroundColor: Color(0xffFFD8DA), // 시계 다이얼 배경 색상
+              dialTextColor: MaterialStateColor.resolveWith(
+                  (states) => states.contains(MaterialState.selected)
+                      ? Colors.white // 선택된 상태의 시계 숫자 색상
+                      : Colors.black), // 기본 시계 숫자 색상
+              hourMinuteTextColor: MaterialStateColor.resolveWith(
+                  (states) => states.contains(MaterialState.selected)
+                      ? Colors.white // 선택된 상태의 시간/분 텍스트 색상
+                      : Colors.black), // 기본 시간/분 텍스트 색상
+              entryModeIconColor: Colors.red, // 입력 모드 아이콘 색상
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null && picked != _selectedTime)
       setState(() {
         _selectedTime = picked;
       });
-    }
   }
 
   @override
@@ -293,16 +313,7 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                             ),
                                             GestureDetector(
                                               onTap: () async {
-                                                final TimeOfDay? picked =
-                                                    await showTimePicker(
-                                                  context: context,
-                                                  initialTime: _selectedTime,
-                                                );
-                                                if (picked != null &&
-                                                    picked != _selectedTime)
-                                                  setState(() {
-                                                    _selectedTime = picked;
-                                                  });
+                                                await _selectTime(context);
                                               },
                                               child: Icon(Icons.access_time,
                                                   color: Color(0xff787474)),

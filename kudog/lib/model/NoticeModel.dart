@@ -169,40 +169,46 @@ class NoticeDetail {
   int? id;
   String? title;
   String? content;
-  String? date;
-  int? view;
-  String? url;
-  bool? scrapped;
   String? writer;
+  String? date;
+  String? url;
+  int? view;
+  bool? scrapped;
   int? scrapCount;
-  String? category;
   String? provider;
+  String? category;
+  List<int>? scrapBoxId;
+  String? mappedCategory;
 
   NoticeDetail(
       {this.id,
       this.title,
       this.content,
-      this.date,
-      this.view,
-      this.url,
-      this.scrapped,
       this.writer,
+      this.date,
+      this.url,
+      this.view,
+      this.scrapped,
       this.scrapCount,
+      this.provider,
       this.category,
-      this.provider});
+      this.scrapBoxId,
+      this.mappedCategory});
 
   NoticeDetail.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     content = json['content'];
-    date = json['date'];
-    view = json['view'];
-    url = json['url'];
-    scrapped = json['scrapped'];
     writer = json['writer'];
+    date = json['date'];
+    url = json['url'];
+    view = json['view'];
+    scrapped = json['scrapped'];
     scrapCount = json['scrapCount'];
-    category = json['category'];
     provider = json['provider'];
+    category = json['category'];
+    scrapBoxId = json['scrapBoxId'].cast<int>();
+    mappedCategory = json['mappedCategory'];
   }
 
   Map<String, dynamic> toJson() {
@@ -210,14 +216,16 @@ class NoticeDetail {
     data['id'] = this.id;
     data['title'] = this.title;
     data['content'] = this.content;
-    data['date'] = this.date;
-    data['view'] = this.view;
-    data['url'] = this.url;
-    data['scrapped'] = this.scrapped;
     data['writer'] = this.writer;
+    data['date'] = this.date;
+    data['url'] = this.url;
+    data['view'] = this.view;
+    data['scrapped'] = this.scrapped;
     data['scrapCount'] = this.scrapCount;
-    data['category'] = this.category;
     data['provider'] = this.provider;
+    data['category'] = this.category;
+    data['scrapBoxId'] = this.scrapBoxId;
+    data['mappedCategory'] = this.mappedCategory;
     return data;
   }
 }
