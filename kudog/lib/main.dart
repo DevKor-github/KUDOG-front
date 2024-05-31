@@ -13,6 +13,7 @@ import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/ChangePwService.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:kudog/service/NotificationService.dart';
+import 'package:kudog/service/ScrapBoxService.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/service/SignOutService.dart';
 import 'package:kudog/service/SignUpService.dart';
@@ -36,6 +37,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => WithdrawalService()),
     ChangeNotifierProvider(create: (context) => TokenService()),
     ChangeNotifierProvider(create: (context) => NotificationService()),
+    ChangeNotifierProvider(create: (context) => ScrapBoxService()),
   ], child: const MainApp()));
 }
 

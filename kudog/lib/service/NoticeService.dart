@@ -11,6 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NoticeService extends ChangeNotifier {
   NoticeList _mainNoticeList = NoticeList();
+
+  List<MajorCategory> bookmarkMajorCategoryList = [];
   NoticeList get mainNoticeList {
     return _mainNoticeList;
   }
@@ -270,7 +272,7 @@ class NoticeService extends ChangeNotifier {
   }
 
   //단일 notice와 그 세부사항을 가져옵니다
-  void getNotice(int id) async {
+  Future<void> getNotice(int id) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -772,14 +774,14 @@ class NoticeService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCategories() async {
+  Future<void> getBookmarkProvider() async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       String? token = sharedPreferences.getString("access_token");
 
       Response response = await Dio().get(
-        "https://api.kudog.devkor.club/category/providers",
+        "https://api.kudog.devkor.club/category/providers/bookmarks",
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -789,23 +791,10 @@ class NoticeService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print('GET 요청 성공');
-
-        _providers.clear();
-        _categories.clear();
-
-        response.data.forEach((val) {
-          _providers.add(val['name']);
-
-          List<dynamic> list = val['categories'];
-
-          _categories.putIfAbsent(val['name'], () {
-            List<String> list = [];
-            val['categories']
-                .forEach((category) => {list.add(category['name'] as String)});
-            return list;
-          });
-        });
+        print("GET 요청 성공");
+        for (Map<String, dynamic> item in response.data) {
+          bookmarkMajorCategoryList.add(MajorCategory.fromJson(item));
+        }
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
