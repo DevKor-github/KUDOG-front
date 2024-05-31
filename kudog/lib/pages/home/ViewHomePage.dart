@@ -385,7 +385,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                           ),
                           height: MediaQuery.of(context).size.height * 0.07,
                           child: TextField(
-                            cursorColor: Color(0xffF4F2F2),
+                            cursorColor: Colors.black,
                             controller: _searchController,
                             decoration: InputDecoration(
                               filled: true,
@@ -398,8 +398,15 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   icon: Icon(Icons.search,
                                       color: Color(0xffFF3B47)),
                                   onPressed: () {
-                                    _loadSearchedNotices(Filter(
-                                        keyword: _searchController.text));
+                                    setState(() {
+                                      overallFilter = Filter(
+                                          categories: null,
+                                          providers: null,
+                                          keyword: _searchController.text,
+                                          startDate: overallFilter.startDate,
+                                          endDate: overallFilter.endDate);
+                                    });
+                                    _loadSearchedNotices(overallFilter);
                                   }),
                               border: OutlineInputBorder(
                                 borderSide: BorderSide.none,
@@ -418,6 +425,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                                   return GestureDetector(
                                       onTap: () {
                                         setState(() {
+                                          _searchController.clear();
                                           isMajorCardClicked = true;
                                         });
                                         if (index != 0) {
