@@ -23,6 +23,7 @@ class ScrapBoxService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("GET 요청 성공");
+        print(response.data);
         for (Map<String, dynamic> item in response.data) {
           print(Scrap.fromJson(item));
           scrapBoxes.add(Scrap.fromJson(item));

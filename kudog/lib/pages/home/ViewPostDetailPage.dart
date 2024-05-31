@@ -3,8 +3,10 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/ScrapBoxService.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
@@ -29,6 +31,9 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   bool isClicked = false;
   bool isButton1Clicked = false;
   bool isButton2Clicked = false;
+  NoticeDetail noticeDetail = NoticeDetail();
+  ScrapList _scrapList = ScrapList();
+  List<String> scrapNameList = [];
 
   List<String> extractAttachmentUrls(String htmlContent) {
     List<String> attachmentUrls = [];
@@ -50,8 +55,34 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   void initState() {
     super.initState();
-    Provider.of<NoticeService>(context, listen: false)
+    loadScrapBoxes();
+    loadNoticeDetail();
+  }
+
+  Future<void> loadNoticeDetail() async {
+    await Provider.of<NoticeService>(context, listen: false)
         .getNotice(widget.notice.id);
+    setState(() {
+      noticeDetail =
+          Provider.of<NoticeService>(context, listen: false).noticeDetail;
+      for (int i = 0; i < _scrapList.scraps.length; i++) {
+        for (int j = 0; j < noticeDetail.scrapBoxId!.length; j++) {
+          if (_scrapList.scraps[i].id == noticeDetail.scrapBoxId![j]) {
+            scrapNameList.add(_scrapList.scraps[i].name!);
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> loadScrapBoxes() async {
+    await Provider.of<NoticeService>(context, listen: false).getScraps();
+    setState(() {
+      _scrapList = Provider.of<NoticeService>(context, listen: false).scrapList;
+    });
+    // for (int i = 0; i < _scrapList.scraps.length; i++) {
+    //   scrapNameList.add()
+    // }
   }
 
   @override
@@ -62,7 +93,6 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NoticeService>(builder: (context, noticeService, child) {
-      NoticeDetail noticeDetail = noticeService.noticeDetail;
       return Scaffold(
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -124,24 +154,62 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              margin: EdgeInsets.only(bottom: 10),
-                              decoration: ShapeDecoration(
-                                color: Color(0x7FFFD8DA),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
-                              child: Text(
-                                noticeDetail.provider!,
-                                style: const TextStyle(
-                                  color: Color(0xffFF3B47),
-                                  fontSize: 12,
-                                  fontFamily: 'Noto Sans KR',
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5),
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  decoration: ShapeDecoration(
+                                    color: Color(0x7FFFD8DA),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                  child: Text(
+                                    noticeDetail.mappedCategory!,
+                                    style: const TextStyle(
+                                      color: Color(0xffFF3B47),
+                                      fontSize: 12,
+                                      fontFamily: 'Noto Sans KR',
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 10),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                  height: 37,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: scrapNameList.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          padding: EdgeInsets.all(5),
+                                          margin: EdgeInsets.only(
+                                              bottom: 10, right: 10),
+                                          decoration: ShapeDecoration(
+                                            color: Color(0xFFFAF8F8),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              scrapNameList[index],
+                                              style: const TextStyle(
+                                                color: Color(0xffFF3B47),
+                                                fontSize: 12,
+                                                fontFamily: 'Noto Sans KR',
+                                                fontWeight: FontWeight.w500,
+                                                height: 0,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                )
+                              ],
                             ),
                             Text(
                               noticeDetail.title!,
