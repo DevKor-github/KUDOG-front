@@ -63,6 +63,16 @@ class NoticeService extends ChangeNotifier {
     return _scrapList;
   }
 
+  List<String> _providers = [];
+  Map<String, List<String>> _categories = {};
+  List<String> get providers {
+    return _providers;
+  }
+
+  Map<String, List<String>> get categories {
+    return _categories;
+  }
+
   //모든 공지사항을 가져옵니다.
   Future<void> getAllNotices(Filter filter, {bool add = false}) async {
     try {
@@ -403,6 +413,12 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 201 && response.data != null) {
         print("POST 요청 성공");
+        _subscribeList.add(Subscribe(
+            name: name,
+            email: email,
+            provider: provider,
+            id: response.data['id'],
+            categories: categories));
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -454,6 +470,13 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("PUT 요청 성공");
+        int idx = _subscribeList.indexWhere((element) => element.id == boxId);
+        _subscribeList[idx] = Subscribe(
+            name: name,
+            email: email,
+            provider: provider,
+            id: boxId,
+            categories: List<String>.from(categories));
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -471,6 +494,7 @@ class NoticeService extends ChangeNotifier {
 
   //기존의 구독함을 삭제합니다.
   Future<void> deleteSubscribes(List<int> subscribeIdList) async {
+    bool result = true;
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -492,10 +516,19 @@ class NoticeService extends ChangeNotifier {
         } else if (response.statusCode == 401) {
           print("ACCESS_TOKEN 만료");
           TokenService().refreshToken();
+          result = false;
         } else {
           print("DELETE 요청 실패");
           print("Status Code : ${response.statusCode}");
+          result = false;
         }
+      }
+
+      if (result) {
+        Set<int> set = subscribeIdList.toSet();
+        _subscribeList.removeWhere((element) {
+          return set.contains(element.id);
+        });
       }
     } catch (e) {
       print("DELETE 요청 에러");
@@ -563,6 +596,11 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 201 && response.data != null) {
         print("POST 요청 성공");
+        _scrapList.scraps.add(Scrap(
+            name: name,
+            description: description,
+            id: response.data['id'],
+            noticeCount: 0));
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -601,6 +639,13 @@ class NoticeService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         print("PUT 요청 성공");
+        int idx =
+            _scrapList.scraps.indexWhere((element) => element.id == boxId);
+        _scrapList.scraps[idx] = Scrap(
+            name: name,
+            description: description,
+            id: boxId,
+            noticeCount: _scrapList.scraps[idx].noticeCount);
       } else if (response.statusCode == 401) {
         print("ACCESS_TOKEN 만료");
         TokenService().refreshToken();
@@ -636,6 +681,10 @@ class NoticeService extends ChangeNotifier {
 
         if (response.statusCode == 200) {
           print("DELETE 요청 성공");
+          Set<int> set = scrapIdList.toSet();
+          _scrapList.scraps.removeWhere((element) {
+            return set.contains(element.id);
+          });
         } else if (response.statusCode == 401) {
           print("ACCESS_TOKEN 만료");
           TokenService().refreshToken();
@@ -757,7 +806,6 @@ class NoticeService extends ChangeNotifier {
       print("GET 요청 에러");
       print(e.toString());
     }
-
     notifyListeners();
   }
 }
