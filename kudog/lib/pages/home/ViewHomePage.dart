@@ -126,13 +126,8 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   void initState() {
     super.initState();
-    print(overallFilterMap);
 
     Provider.of<NoticeService>(context, listen: false).getScraps();
-
-    print(overallFilter.categories);
-    print(overallFilter.providers);
-    print('${overallFilter.startDate} ~ ${overallFilter.endDate}');
 
     if (DateTime.parse(overallFilter.endDate!)
             .difference(DateTime.parse(overallFilter.startDate!))
@@ -165,7 +160,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     }
     // testToken();
     loadNewNotifications();
-    print(newNotifications);
   }
 
   Future<void> testToken() async {
@@ -327,7 +321,6 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
 
   @override
   Widget build(BuildContext context) {
-    print(overallFilter.providers);
     return Scaffold(
         body: Container(
             padding: EdgeInsets.fromLTRB(16, 17, 16, 0),
