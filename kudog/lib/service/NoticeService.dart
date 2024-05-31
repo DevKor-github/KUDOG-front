@@ -260,7 +260,7 @@ class NoticeService extends ChangeNotifier {
   }
 
   //단일 notice와 그 세부사항을 가져옵니다
-  void getNotice(int id) async {
+  Future<void> getNotice(int id) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
