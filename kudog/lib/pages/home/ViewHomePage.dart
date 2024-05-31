@@ -392,12 +392,13 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                           ),
                           height: MediaQuery.of(context).size.height * 0.07,
                           child: TextField(
+                            cursorColor: Color(0xffF4F2F2),
                             controller: _searchController,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Color(0xffF4F2F2), // 배경색 변경
-                              labelText: '키워드로 검색하세요.',
-                              labelStyle: TextStyle(
+                              hintText: '키워드로 검색하세요.',
+                              hintStyle: TextStyle(
                                   fontSize: 14, color: Color(0xFFD9D9D9)),
                               contentPadding: EdgeInsets.all(24.0),
                               suffixIcon: IconButton(
