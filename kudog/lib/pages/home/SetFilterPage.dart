@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +28,8 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
   late TabController _tabController;
   DateTime? _selectedStartDate;
   DateTime? _selectedEndDate;
-
+  String currentMajor = "";
+  int categoryCount = 0;
   List<MajorCategory> majors = [
     MajorCategory(id: 0, name: "즐겨찾기", categories: [])
   ];
@@ -36,23 +38,27 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
   bool isBookmarkClicked = false;
   List<bool> isMajorClickedList = [];
   List<bool> isDatesClickedList = [false, false, false, false];
+  bool isDatesClicked = false;
+  String dateCard = "";
   List<bool> isCategoriesClickedList = [];
   bool isCardClicked = false;
   String selectedDateCard = "";
   List<String> selectedCategories = [];
   int? selectedMajorId;
+  Map<String, List<String>> filterMap = {};
 
   void click(int idx, int type) {
     //type = 1 -> major, type = 2 -> dates, type = 3 -> categories
     setState(() {
       if (type == 1) {
         //
-        if (idx == 0) {
-          isMajorClickedList[idx] = !isMajorClickedList[idx];
-        } else {
-          isMajorClickedList[0] = false;
-          isMajorClickedList[idx] = !isMajorClickedList[idx];
+        isMajorClickedList[0] = false;
+        for (int i = 0; i < isMajorClickedList.length; i++) {
+          if (i != idx) {
+            isMajorClickedList[i] = false;
+          }
         }
+        isMajorClickedList[idx] = !isMajorClickedList[idx];
       } else if (type == 2) {
         isDatesClickedList = List.generate(dates.length, (_) => false);
         isDatesClickedList[idx] = !isDatesClickedList[idx];
@@ -99,6 +105,11 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
 
       bookmarkedMajorList = Provider.of<NoticeService>(context, listen: false)
           .bookmarkMajorCategoryList;
+      for (int i = 0; i < majors.length; i++) {
+        final t = <String, List<String>>{majors[i].name!: []};
+        filterMap.addEntries(t.entries);
+      }
+      isMajorClickedList = List.generate(majors.length, (_) => false);
     });
   }
 
@@ -129,21 +140,27 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
     List<dynamic> jsonData = json.decode(major_category_json);
     setState(() {
       categories = getCategoryNamesById(jsonData, id);
+      isCategoriesClickedList = List.generate(categories.length, (_) => false);
     });
   }
 
-  void _goToTab(int index) {
-    _tabController.animateTo(index);
+  void _goToTab(int index, int majorIdx) {
+    if (majorIdx != 0) {
+      _tabController.animateTo(index);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    loadMajors();
 
-    print(overallFilter.categories);
-    print(overallFilter.providers);
+    loadMajors();
+    _selectedStartDate = DateTime.parse(overallFilter.startDate!);
+    _selectedEndDate = DateTime.parse(overallFilter.endDate!);
+
     _tabController = TabController(length: 3, vsync: this);
+
+    isCategoriesClickedList = List.generate(categories.length, (_) => false);
   }
 
   @override
@@ -154,8 +171,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
 
   @override
   Widget build(BuildContext context) {
-    isMajorClickedList = List.generate(majors.length, (_) => false);
-    isCategoriesClickedList = List.generate(majors.length, (_) => false);
+    print(bookmarkedMajorList);
     return Scaffold(
       body: Column(
         children: [
@@ -168,18 +184,26 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                   GestureDetector(
                       child: Icon(Icons.arrow_back_ios),
                       onTap: () {
-                        List<String> selectedMajors = [];
-                        for (int i = 0; i < isMajorClickedList.length; i++) {
-                          if (isMajorClickedList[i]) {
-                            selectedMajors.add(majors[i].name!);
+                        List<MapEntry<String, dynamic>> entriesList =
+                            filterMap.entries.toList();
+                        List<String> _categories = [];
+                        List<String> _providers = [];
+                        for (var entry in entriesList) {
+                          if (!entry.value.isEmpty) {
+                            _providers.add(entry.key);
+                          }
+                          for (var v in entry.value) {
+                            _categories.add(v);
                           }
                         }
-                        List<String> selectedCategories = [];
-                        for (int i = 0; i < isMajorClickedList.length; i++) {
-                          if (isMajorClickedList[i]) {
-                            selectedMajors.add(majors[i].name!);
-                          }
-                        }
+                        overallFilterMap = filterMap;
+                        overallFilter = Filter(
+                            startDate: DateFormat('yyyy-MM-dd')
+                                .format(_selectedStartDate!),
+                            endDate: DateFormat('yyyy-MM-dd')
+                                .format(_selectedEndDate!),
+                            categories: _categories,
+                            providers: _providers);
                         Navigator.pushReplacement<void, void>(
                           context,
                           MaterialPageRoute<void>(
@@ -220,21 +244,40 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
               color: Colors.white,
               margin: EdgeInsets.only(bottom: 10),
               padding: EdgeInsets.only(left: 20, bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      // FilterCard(content: date, type: "dates"),
-                      // FilterCard(
-                      //     content: filters["providers"].join(', '),
-                      //     type: "majors"),
-                      // FilterCard(
-                      //     content: filters["categories"].join(', '),
-                      //     type: "categories"),
-                    ],
-                  ),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        _selectedEndDate == null
+                            ? Container()
+                            : DateFilterCard(
+                                content: isDatesClicked
+                                    ? dateCard
+                                    : "${DateFormat('yyyy-MM-dd').format(_selectedStartDate!)} ~ ${DateFormat('yyyy-MM-dd').format(_selectedEndDate!)}"),
+                        categoryCount == 0
+                            ? Container()
+                            : Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
+                                width: MediaQuery.of(context).size.width * 1,
+                                child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: filterMap.length,
+                                    itemBuilder: (context, index) {
+                                      return CategoryFilterCard(
+                                        major: filterMap.keys.toList()[index],
+                                        categories: filterMap[
+                                            filterMap.keys.toList()[index]]!,
+                                      );
+                                    }),
+                              ),
+                      ],
+                    ),
+                  ],
+                ),
               )),
           Container(color: Color(0xffF4F2F2), height: 10),
           TabBar(
@@ -290,19 +333,13 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                       majors.length,
                       (index) => GestureDetector(
                         onTap: () {
+                          _goToTab(1, index);
                           click(index, 1);
-
-                          if (index != 0) {
-                            // loadCategories(index);
-                            selectedMajorId = majors[index].id;
-                            setState(() {
-                              isBookmarkClicked = false;
-                            });
-                          } else {
-                            setState(() {
-                              isBookmarkClicked = !isBookmarkClicked;
-                            });
+                          if (index == 0) {
+                            isBookmarkClicked = true;
                           }
+                          currentMajor = majors[index].name!;
+                          loadCategories(majors[index].id!);
                         },
                         child: MajorCard(
                             major: majors[index].name!,
@@ -313,23 +350,26 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                 ),
                 Visibility(
                     visible: isBookmarkClicked,
-                    child: Container(
-                      child: Column(
-                        children: List.generate(
-                          bookmarkedMajorList.length,
-                          (index) => GestureDetector(
-                            onTap: () {
-                              if (index != 0) {
-                                loadCategories(index);
-                              } else {}
-                            },
-                            child: BookmarkMajorCard(
-                                major: bookmarkedMajorList[index].name!,
-                                isClicked: false),
-                          ),
-                        ),
-                      ),
-                    ))
+                    child: bookmarkedMajorList.isEmpty
+                        ? BookmarkMajorCard(
+                            major: "즐겨찾는 학과가 없습니다.", isClicked: false)
+                        : Container(
+                            child: Column(
+                              children: List.generate(
+                                bookmarkedMajorList.length,
+                                (index) => GestureDetector(
+                                  onTap: () {
+                                    if (index != 0) {
+                                      loadCategories(index);
+                                    } else {}
+                                  },
+                                  child: BookmarkMajorCard(
+                                      major: bookmarkedMajorList[index].name!,
+                                      isClicked: false),
+                                ),
+                              ),
+                            ),
+                          ))
               ],
             ),
           ],
@@ -347,10 +387,11 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
           Container(
             color: Colors.white,
             child: Column(
-              children: List.generate(
-                  majors.length,
-                  (index) =>
-                      MajorCard(major: majors[index].name!, isClicked: false)),
+              children: List.generate(majors.length, (index) {
+                return SecondMajorCard(
+                    major: majors[index].name!,
+                    isClicked: currentMajor == majors[index].name!);
+              }),
             ),
           ),
           SingleChildScrollView(
@@ -361,9 +402,20 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                 (index) => GestureDetector(
                   onTap: () {
                     click(index, 3);
+                    setState(() {
+                      if (filterMap[currentMajor]!
+                          .contains(categories[index])) {
+                        filterMap[currentMajor]!.remove(categories[index]);
+                        categoryCount -= 1;
+                      } else {
+                        filterMap[currentMajor]!.add(categories[index]);
+                        categoryCount += 1;
+                      }
+                    });
                   },
                   child: CategoryCard(
-                      category: categories[index], isClicked: false),
+                      category: categories[index],
+                      isClicked: isCategoriesClickedList[index]),
                 ),
               ),
             ),
@@ -388,57 +440,38 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                 dates.length,
                 (index) => GestureDetector(
                   onTap: () {
-                    isCardClicked = true;
-                    isDatesClickedList = [false, false, false, false];
-                    isDatesClickedList[index] = !isDatesClickedList[index];
+                    setState(() {
+                      isCardClicked = true;
+                      isDatesClickedList = [false, false, false, false];
+                      isDatesClickedList[index] = !isDatesClickedList[index];
 
-                    // changeColor(index, 2);
-                    // if (dates[index] == "오늘") {
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                    //       "startDate",
-                    //       index);
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                    //       "endDate",
-                    //       index);
-                    // } else if (dates[index] == "1주") {
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(
-                    //           DateTime.now().subtract(Duration(days: 7))),
-                    //       "startDate",
-                    //       index);
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                    //       "endDate",
-                    //       index);
-                    // } else if (dates[index] == "1개월") {
-                    //   DateTime currentDate = DateTime.now();
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime(
-                    //           currentDate.year,
-                    //           currentDate.month - 1,
-                    //           currentDate.day)),
-                    //       "startDate",
-                    //       index);
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                    //       "endDate",
-                    //       index);
-                    // } else {
-                    //   DateTime currentDate = DateTime.now();
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime(
-                    //           currentDate.year,
-                    //           currentDate.month - 3,
-                    //           currentDate.day)),
-                    //       "startDate",
-                    //       index);
-                    //   changeFilter(
-                    //       DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                    //       "endDate",
-                    //       index);
-                    // }
+                      if (dates[index] == "오늘") {
+                        _selectedEndDate = DateTime.now();
+                        _selectedStartDate = DateTime.now();
+                        isDatesClicked = true;
+                        dateCard = "오늘";
+                      } else if (dates[index] == "1주") {
+                        _selectedStartDate =
+                            DateTime.now().subtract(Duration(days: 7));
+                        _selectedStartDate = DateTime.now();
+                        dateCard = "1주";
+                        isDatesClicked = true;
+                      } else if (dates[index] == "1개월") {
+                        DateTime currentDate = DateTime.now();
+                        _selectedStartDate = DateTime(currentDate.year,
+                            currentDate.month - 1, currentDate.day);
+                        _selectedEndDate = DateTime.now();
+                        dateCard = "1개월";
+                        isDatesClicked = true;
+                      } else {
+                        DateTime currentDate = DateTime.now();
+                        _selectedStartDate = DateTime(currentDate.year,
+                            currentDate.month - 3, currentDate.day);
+                        _selectedEndDate = DateTime.now();
+                        dateCard = "3개월";
+                        isDatesClicked = true;
+                      }
+                    });
                   },
                   child: DateCard(date: dates[index], isClicked: false),
                 ),
@@ -476,6 +509,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
                           margin: EdgeInsets.only(left: 30),
                           child: GestureDetector(
                             onTap: () {
+                              isDatesClicked = false;
                               isCardClicked = false;
                               _selectStartDate(context);
                             },
@@ -573,6 +607,53 @@ class _MajorCardState extends State<MajorCard> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: widget.isClicked ? Colors.white : Color(0xFF423C3C),
+              fontSize: 16,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SecondMajorCard extends StatefulWidget {
+  const SecondMajorCard(
+      {super.key, required this.major, required this.isClicked});
+  final String major;
+  final bool isClicked;
+
+  @override
+  _SecondMajorCardState createState() => _SecondMajorCardState();
+}
+
+class _SecondMajorCardState extends State<SecondMajorCard> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 20),
+      width: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.height * 0.07,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            widget.major,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: !widget.isClicked ? Color(0xff423D3D) : Color(0xFFFF3B47),
               fontSize: 16,
               fontFamily: 'Pretendard',
               fontWeight: FontWeight.w400,
@@ -734,22 +815,58 @@ class FilterCard extends StatelessWidget {
   final String type;
   final String content;
   Widget build(BuildContext context) {
+    return content == ""
+        ? Container()
+        : Container(
+            margin: EdgeInsets.only(right: 5),
+            padding: EdgeInsets.all(5),
+            decoration: type != "dates"
+                ? ShapeDecoration(
+                    color: Color(0x7FFFD8DA),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                  )
+                : ShapeDecoration(
+                    color: Color(0xFFF4F1F1),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(width: 1, color: Color(0xFFFFD8DA)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  content,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFF3A46),
+                    fontSize: 14,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
+  }
+}
+
+class DateFilterCard extends StatelessWidget {
+  const DateFilterCard({super.key, required this.content});
+  final String content;
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(right: 5),
       padding: EdgeInsets.all(5),
-      decoration: type != "dates"
-          ? ShapeDecoration(
-              color: Color(0x7FFFD8DA),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-            )
-          : ShapeDecoration(
-              color: Color(0xFFF4F1F1),
-              shape: RoundedRectangleBorder(
-                side: BorderSide(width: 1, color: Color(0xFFFFD8DA)),
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
+      decoration: ShapeDecoration(
+        color: Color(0xFFF4F1F1),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 1, color: Color(0xFFFFD8DA)),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -767,5 +884,55 @@ class FilterCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class CategoryFilterCard extends StatelessWidget {
+  const CategoryFilterCard(
+      {super.key, required this.major, required this.categories});
+  final String major;
+  final List<String> categories;
+  Widget build(BuildContext context) {
+    return categories.isEmpty
+        ? Container()
+        : Container(
+            margin: EdgeInsets.only(right: 5),
+            padding: EdgeInsets.all(5),
+            decoration: ShapeDecoration(
+              color: Color(0x7FFFD8DA),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  major,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFF3A46),
+                    fontSize: 14,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  categories.isEmpty
+                      ? ""
+                      : categories.length > 1
+                          ? "+ ${categories.length}"
+                          : " - ${categories[0]}",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFFF3A46),
+                    fontSize: 14,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 }
