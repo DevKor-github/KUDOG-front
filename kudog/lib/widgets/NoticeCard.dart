@@ -136,24 +136,17 @@ extension ScrapPicker on State {
     await showDialog(
         context: context,
         builder: (context) {
+          Rect? rect =
+              ((widget.key as GlobalKey).currentContext!.globalPaintBounds);
           return Consumer<NoticeService>(
             builder: (context, noticeService, child) => Dialog(
               surfaceTintColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               alignment: Alignment.bottomRight,
               insetPadding: EdgeInsets.only(
-                  bottom: (widget.key == null ||
-                          ((widget.key) as GlobalKey)
-                                  .currentContext
-                                  ?.globalPaintBounds ==
-                              null)
+                  bottom: (rect == null)
                       ? 20
-                      : MediaQuery.of(context).size.height -
-                          (widget.key as GlobalKey)
-                              .currentContext!
-                              .globalPaintBounds!
-                              .top -
-                          24,
+                      : MediaQuery.of(context).size.height - rect.bottom + 76,
                   right: 18),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -168,7 +161,7 @@ extension ScrapPicker on State {
                                 .addToScrap(
                                     noticeService.noticeInfo(noticeId)!.id,
                                     noticeService.scrapList.scraps[index].id!);
-                            Navigator.pop(context);
+                            //Navigator.pop(context);
                           },
                           style: TextButton.styleFrom(
                               backgroundColor: noticeService
