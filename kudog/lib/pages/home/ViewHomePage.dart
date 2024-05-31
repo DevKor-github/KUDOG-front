@@ -163,6 +163,7 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     }
     // testToken();
     loadNewNotifications();
+    print(newNotifications);
   }
 
   Future<void> testToken() async {
@@ -344,57 +345,44 @@ class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
                             ),
                           ],
                         ),
-                        Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          width: MediaQuery.of(context).size.width * 0.95,
-                          height: MediaQuery.of(context).size.height * 0.06,
-                          padding: const EdgeInsets.only(
-                              top: 6, left: 16, right: 12, bottom: 6),
-                          clipBehavior: Clip.antiAlias,
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFFF3A46),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text.rich(
-                                TextSpan(
+                        newNotifications == []
+                            ? Container()
+                            : Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.06,
+                                padding: const EdgeInsets.only(
+                                    top: 6, left: 16, right: 12, bottom: 6),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFFF3A46),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    TextSpan(
-                                      text: '구독함A ',
+                                    Text(
+                                      newNotifications[0].title!,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 14,
                                         fontFamily: 'Pretendard',
                                         fontWeight: FontWeight.w600,
-                                        height: 0.11,
                                       ),
                                     ),
-                                    TextSpan(
-                                      text: '에 새로운 소식이 들어왔어요!',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
+                                    Container(
+                                        child: Icon(
+                                            color: Colors.white,
+                                            Icons.arrow_circle_right_outlined))
                                   ],
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                              Container(
-                                  child: Icon(
-                                      color: Colors.white,
-                                      Icons.arrow_circle_right_outlined))
-                            ],
-                          ),
-                        ),
                         Container(
                           margin: EdgeInsets.only(
                             bottom: 10,
