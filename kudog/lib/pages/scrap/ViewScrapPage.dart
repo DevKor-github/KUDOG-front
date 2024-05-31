@@ -228,12 +228,11 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                                   boxId:
                                                       searchedScrapList[index]
                                                           .id!,
-                                                  scrapList: searchedScrapList,
                                                 )));
                                   }
                                 },
                                 child: ScrapCard(
-                                    scrap: searchedScrapList[index],
+                                    boxId: scrapList[index].id!,
                                     selected: selectedLists
                                         .contains(searchedScrapList[index].id)),
                               )
@@ -258,12 +257,11 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
                                                     ViewScrapListPageWidget(
                                                       boxId:
                                                           scrapList[index].id!,
-                                                      scrapList: scrapList,
                                                     )));
                                       }
                                     },
                                     child: ScrapCard(
-                                        scrap: scrapList[index],
+                                        boxId: scrapList[index].id!,
                                         selected: selectedLists
                                             .contains(scrapList[index].id)),
                                   )
@@ -314,8 +312,8 @@ class _ViewScrapPageWidgetState extends State<ViewScrapPageWidget> {
 }
 
 class ScrapCard extends StatefulWidget {
-  const ScrapCard({super.key, required this.scrap, this.selected = false});
-  final Scrap scrap;
+  const ScrapCard({super.key, required this.boxId, this.selected = false});
+  final int boxId;
   final bool selected;
 
   @override
@@ -327,51 +325,55 @@ class _ScrapCardState extends State<ScrapCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      height: 130,
-      decoration: BoxDecoration(
-          color: (widget.selected) ? red2.withOpacity(0.7) : gray5,
-          borderRadius: BorderRadius.all(Radius.circular(9)),
-          border: (widget.selected)
-              ? Border.all(color: red1, width: 2)
-              : Border.all(style: BorderStyle.none)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.folder,
-            color: red1_5,
-            size: 24,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                widget.scrap.name!,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              widget.selected
-                  ? Icon(
-                      Icons.check,
-                      color: red1,
-                      size: 44,
-                    )
-                  : SizedBox(
-                      height: 44,
-                      width: 44,
-                    ),
-            ],
-          ),
-          Text(
-            "${widget.scrap.noticeCount}개의 게시물",
-            style: TextStyle(
-                color: gray2, fontSize: 10, fontWeight: FontWeight.w400),
-          )
-        ],
-      ),
-    );
+    return Consumer<NoticeService>(builder: (context, noticeService, child) {
+      Scrap scrap = noticeService.scrapList.scraps
+          .firstWhere((element) => element.id == widget.boxId);
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        height: 130,
+        decoration: BoxDecoration(
+            color: (widget.selected) ? red2.withOpacity(0.7) : gray5,
+            borderRadius: BorderRadius.all(Radius.circular(9)),
+            border: (widget.selected)
+                ? Border.all(color: red1, width: 2)
+                : Border.all(style: BorderStyle.none)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.folder,
+              color: red1_5,
+              size: 24,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  scrap.name!,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                widget.selected
+                    ? Icon(
+                        Icons.check,
+                        color: red1,
+                        size: 44,
+                      )
+                    : SizedBox(
+                        height: 44,
+                        width: 44,
+                      ),
+              ],
+            ),
+            Text(
+              "${scrap.noticeCount}개의 게시물",
+              style: TextStyle(
+                  color: gray2, fontSize: 10, fontWeight: FontWeight.w400),
+            )
+          ],
+        ),
+      );
+    });
   }
 }

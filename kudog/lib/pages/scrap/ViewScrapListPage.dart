@@ -7,18 +7,16 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/service/NoticeService.dart';
-import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/pages/scrap/ViewNewScrabPage.dart';
 import 'package:provider/provider.dart';
+import 'package:kudog/widgets/NoticeCard.dart';
 
 class ViewScrapListPageWidget extends StatefulWidget {
   ViewScrapListPageWidget({
     Key? key,
-    required this.scrapList,
     required this.boxId,
   }) : super(key: key);
 
-  List<Scrap> scrapList;
   int boxId;
 
   @override
@@ -29,40 +27,14 @@ class ViewScrapListPageWidget extends StatefulWidget {
 class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
   late List<bool> isSelected;
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<bool> iconStates = [false, false, false];
   late Dio dio;
-  Scrap? scrap;
-  List<Notice>? noticeList;
+  // Scrap? scrap;
+  // List<Notice>? noticeList;
   int currentPage = 1;
 
-  void changeIcon(int index) {
-    setState(() {
-      iconStates[index] = !iconStates[index];
-    });
-  }
-
   void _loadNotices() async {
-    scrap =
-        widget.scrapList.firstWhere((element) => element.id == widget.boxId);
-
     await Provider.of<NoticeService>(context, listen: false)
         .getScrappedNotices(widget.boxId);
-
-    setState(() {
-      noticeList = Provider.of<NoticeService>(context, listen: false)
-          .scrapNoticeList
-          .notices;
-    });
-  }
-
-  void _refreshScraps() async {
-    await Provider.of<NoticeService>(context, listen: false).getScraps();
-    setState(() {
-      widget.scrapList =
-          Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
-      scrap =
-          widget.scrapList.firstWhere((element) => element.id == widget.boxId);
-    });
   }
 
   @override
@@ -116,9 +88,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                   key: GlobalKey(),
                   initialSelection: widget.boxId,
                   onSelected: (value) {
-                    if (value == null) return;
+                    if (value == null || value is int) return;
 
-                    widget.boxId = value;
+                    widget.boxId = value as int;
                     _loadNotices();
                   },
                   textStyle: TextStyle(
@@ -126,11 +98,11 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                   inputDecorationTheme: InputDecorationTheme(
                     border: InputBorder.none,
                   ),
-                  dropdownMenuEntries:
-                      List.generate(widget.scrapList.length, (index) {
+                  dropdownMenuEntries: List.generate(
+                      noticeService.scrapList.scraps.length, (index) {
                     return DropdownMenuEntry(
-                        value: widget.scrapList[index].id,
-                        label: widget.scrapList[index].name!);
+                        value: noticeService.scrapList.scraps[index].id,
+                        label: noticeService.scrapList.scraps[index].name!);
                   }),
                 ),
                 IconButton(
@@ -140,9 +112,7 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
                               MaterialPageRoute(
                                   builder: (context) => ViewNewScrapPageWidget(
                                         boxId: widget.boxId,
-                                        name: scrap!.name,
-                                        description: scrap!.description,
-                                      ))).then((value) => {_refreshScraps()})
+                                      )))
                         },
                     icon: Icon(Icons.settings_rounded))
               ]),
@@ -152,7 +122,9 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
-                  scrap!.description!,
+                  noticeService.scrapList.scraps
+                      .firstWhere((element) => element.id == widget.boxId)
+                      .description!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -162,11 +134,12 @@ class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: noticeList != null ? noticeList!.length : 0,
+                  itemCount: noticeService.scrapNoticeList.notices?.length ?? 0,
                   itemBuilder: (context, index) {
                     return noticeCard(
                         key: GlobalKey(),
-                        noticeId: noticeList![index].id,
+                        noticeId:
+                            noticeService.scrapNoticeList.notices![index].id,
                         isBorder: true);
                   },
                 ),

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 
 class ViewNewScrapPageWidget extends StatefulWidget {
-  const ViewNewScrapPageWidget(
-      {Key? key, this.name, this.description, this.boxId})
-      : super(key: key);
+  const ViewNewScrapPageWidget({Key? key, this.boxId}) : super(key: key);
 
-  final String? name;
-  final String? description;
   final int? boxId;
 
   @override
@@ -25,7 +22,7 @@ class _ViewNewScrapPageWidgetState extends State<ViewNewScrapPageWidget> {
   final _formKey = GlobalKey<FormState>();
 
   bool get isEdit {
-    return widget.name != null ? true : false;
+    return widget.boxId != null ? true : false;
   }
 
   void AddScrap() async {
@@ -45,8 +42,13 @@ class _ViewNewScrapPageWidgetState extends State<ViewNewScrapPageWidget> {
     super.initState();
 
     if (isEdit) {
-      name = widget.name;
-      description = widget.description;
+      Scrap scrap = Provider.of<NoticeService>(context, listen: false)
+          .scrapList
+          .scraps
+          .firstWhere((element) => element.id == widget.boxId);
+
+      name = scrap.name;
+      description = scrap.description;
     }
   }
 

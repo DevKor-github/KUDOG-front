@@ -3,11 +3,11 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/NoticeModel.dart';
-import 'package:kudog/pages/home/ViewHomePage.dart';
 import 'package:kudog/service/NoticeService.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:kudog/widgets/NoticeCard.dart';
 
 class ViewPostDetailPageWidget extends StatefulWidget {
   const ViewPostDetailPageWidget({super.key, required this.notice});
@@ -92,7 +92,7 @@ class _ViewPostDetailPageWidgetState extends State<ViewPostDetailPageWidget> {
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
-          child: noticeService.noticeDetail!.id == null
+          child: noticeService.noticeDetail.id == null
               ? Container()
               : Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
