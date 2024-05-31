@@ -94,17 +94,22 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
       });
   }
 
-  void loadMajors() async {
+  Future<void> loadBookmarkMajors() async {
     await Provider.of<NoticeService>(context, listen: false)
         .getBookmarkProvider();
+    setState(() {
+      bookmarkedMajorList = Provider.of<NoticeService>(context, listen: false)
+          .bookmarkMajorCategoryList;
+    });
+  }
+
+  void loadMajors() async {
     setState(() {
       majors += (json.decode(major_category_json) as List)
           .map((data) => MajorCategory.fromJson(data))
           .toList();
       ;
 
-      bookmarkedMajorList = Provider.of<NoticeService>(context, listen: false)
-          .bookmarkMajorCategoryList;
       for (int i = 0; i < majors.length; i++) {
         final t = <String, List<String>>{majors[i].name!: []};
         filterMap.addEntries(t.entries);
@@ -155,6 +160,7 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
     super.initState();
 
     loadMajors();
+    loadBookmarkMajors();
     _selectedStartDate = DateTime.parse(overallFilter.startDate!);
     _selectedEndDate = DateTime.parse(overallFilter.endDate!);
 
@@ -171,7 +177,6 @@ class _SetFilterPageWidgetState extends State<SetFilterPageWidget>
 
   @override
   Widget build(BuildContext context) {
-    print(bookmarkedMajorList);
     return Scaffold(
       body: Column(
         children: [
