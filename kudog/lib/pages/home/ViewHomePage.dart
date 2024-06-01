@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/NotificationModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
-import 'package:kudog/pages/home/VIewPostDetailPage.dart';
+import 'package:kudog/pages/NavigationPage.dart';
+import 'package:kudog/pages/home/SetFilterPage.dart';
+import 'package:kudog/pages/home/ViewPostDetailPage.dart';
 import 'package:kudog/service/CategoryService.dart';
 import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/service/NotificationService.dart';
+import 'package:kudog/service/TokenService.dart';
+import 'package:kudog/util/Filter.dart';
+import 'package:kudog/util/List.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:kudog/widgets/NoticeCard.dart';
 
 class ViewHomePageWidget extends StatefulWidget {
   const ViewHomePageWidget({super.key});
@@ -13,712 +24,592 @@ class ViewHomePageWidget extends StatefulWidget {
 
 class _ViewHomePageWidgetState extends State<ViewHomePageWidget>
     with TickerProviderStateMixin {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<Notice> noticeList = [];
-  List<Notice> searchedNoticeList = [];
-  bool _isWidgetVisible = false;
-  double alertRatio = 0.33;
-  List<bool> iconStates = [false, false, false];
-  int selectedIndex = 0;
-  List<String> upperCategories = ["전체"];
-  List<String> lowerCategories = [];
-  List<int> lowerCategoryIds = [];
-  List<bool> lowerStates = List.filled(20, false); //lowerstates가 20개 이하라고 가정
-  String? selectedCategory = "전체";
   TextEditingController _searchController = TextEditingController();
-  bool isSearch = false; //임시 : 검색 버전인지 아닌지 구별하는 변수
-  NoticeService noticeService = NoticeService();
-  int k = 0;
-  bool isLowerSelected = false;
-  int currentPage = 1;
-  void changeIcon(int index) {
-    setState(() {
-      iconStates[index] = !iconStates[index];
-    });
-  }
+  @override
+  List<Notice> noticeList = []; //보여지는 공지사항들
+  late String filterDate; //filter의 date
+  int selectedIndex = 0; //선택된 단과대학
+  bool isMajorCardClicked = overallFilterMap.isEmpty;
 
-  void selectOrReleaseLower(int index) {
-    setState(() {
-      if (lowerStates[index] == true) {
-        lowerStates[index] = false;
-      } else {
-        lowerStates[index] = true;
-        for (int i = 0; i < lowerStates.length; i++) {
-          if (index != i) {
-            lowerStates[i] = false;
-          }
+  List<Records> newNotifications = [];
+
+  bool isMoreRequesting = false;
+
+  // 드레그 거리를 체크하기 위함
+  // 해당 값을 평균내서 50%이상 움직였을때 데이터 불러오는 작업을 하게됨.
+  double _dragDistance = 0;
+
+  scrollNotification(notification) {
+    // 스크롤 최대 범위
+    var containerExtent = notification.metrics.viewportDimension;
+
+    if (notification is ScrollStartNotification) {
+      // 스크롤을 시작하면 발생(손가락으로 리스트를 누르고 움직이려고 할때)
+      // 스크롤 거리값을 0으로 초기화함
+      _dragDistance = 0;
+    } else if (notification is OverscrollNotification) {
+      // 안드로이드에서 동작
+      // 스크롤을 시작후 움직일때 발생(손가락으로 리스트를 누르고 움직이고 있을때 계속 발생)
+      // 스크롤 움직인 만큼 빼준다.(notification.overscroll)
+      _dragDistance -= notification.overscroll;
+    } else if (notification is ScrollUpdateNotification) {
+      // ios에서 동작
+      // 스크롤을 시작후 움직일때 발생(손가락으로 리스트를 누르고 움직이고 있을때 계속 발생)
+      // 스크롤 움직인 만큼 빼준다.(notification.scrollDelta)
+      _dragDistance -= notification.scrollDelta!;
+    } else if (notification is ScrollEndNotification) {
+      // 스크롤이 끝났을때 발생(손가락을 리스트에서 움직이다가 뗐을때 발생)
+
+      // 지금까지 움직인 거리를 최대 거리로 나눈다.
+      var percent = _dragDistance / (containerExtent);
+      // 해당 값이 -0.4(40프로 이상) 아래서 위로 움직였다면
+      if (percent <= -0.4) {
+        // maxScrollExtent는 리스트 가장 아래 위치 값
+        // pixels는 현재 위치 값
+        // 두 같이 같다면(스크롤이 가장 아래에 있다)
+        if (notification.metrics.maxScrollExtent ==
+            notification.metrics.pixels) {
+          setState(() {
+            // 서버에서 데이터를 더 가져오는 효과를 주기 위함
+            // 하단에 프로그레스 서클 표시용
+            isMoreRequesting = true;
+          });
+
+          // 서버에서 데이터 가져온다.
+          requestMore().then((value) {
+            setState(() {
+              // 다 가져오면 하단 표시 서클 제거
+              isMoreRequesting = false;
+            });
+          });
         }
       }
-    });
+    }
   }
 
-  void pageClick(int page) {
-    setState(() {
-      currentPage = page;
-    });
+  Future<void> requestMore() async {
+    overallFilter.page = overallFilter.page! + 1;
+
+    if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        0) {
+      filterDate = "오늘";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        7) {
+      filterDate = "1주";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays >=
+        50) {
+      filterDate = "3개월";
+    } else {
+      filterDate = "1개월";
+    }
+    if (overallFilter.categories == null && overallFilter.providers == null) {
+      //처음에 가져올 때
+      _loadInitNotices(overallFilter, add: true);
+    } else if (overallFilter.categories == null &&
+        overallFilter.providers != null) {
+      _loadProvidersNotices(overallFilter, add: true);
+    } else if (overallFilter.categories != null &&
+        overallFilter.providers == null) {
+      _loadCategoriesNotices(overallFilter, add: true);
+    } else {
+      //provider, categories 두 개 다 있을 때
+      _loadFilteredNotices(overallFilter, add: true);
+    }
   }
 
-  @override
   void initState() {
     super.initState();
-    _loadNotices();
+
+    Provider.of<NoticeService>(context, listen: false).getScraps();
+
+    if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        0) {
+      filterDate = "오늘";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays ==
+        7) {
+      filterDate = "1주";
+    } else if (DateTime.parse(overallFilter.endDate!)
+            .difference(DateTime.parse(overallFilter.startDate!))
+            .inDays >=
+        50) {
+      filterDate = "3개월";
+    } else {
+      filterDate = "1개월";
+    }
+    if (overallFilter.categories!.isEmpty && overallFilter.providers!.isEmpty) {
+      _loadInitNotices(overallFilter);
+    } else if (overallFilter.categories!.isEmpty &&
+        overallFilter.providers != null) {
+      _loadProvidersNotices(overallFilter);
+    } else if (overallFilter.categories != null &&
+        overallFilter.providers!.isEmpty) {
+      _loadCategoriesNotices(overallFilter);
+    } else {
+      _loadFilteredNotices(overallFilter);
+    }
+    // testToken();
+    loadNewNotifications();
   }
 
-  Future<void> _loadNotices() async {
-    await Provider.of<NoticeService>(context, listen: false).getAllNotices(1);
-    await Provider.of<CategoryService>(context, listen: false)
-        .getUpperCategoryList();
-    upperCategories = ["전체"] +
-        Provider.of<CategoryService>(context, listen: false).upperCategoryList;
-    noticeList =
-        Provider.of<NoticeService>(context, listen: false).noticeList.notices!;
-    selectedIndex = 0;
-    lowerCategories =
-        Provider.of<CategoryService>(context, listen: false).lowerCategoryList;
-    lowerCategoryIds = Provider.of<CategoryService>(context, listen: false)
-        .lowerCategoryIdList;
-    lowerStates = [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false
-    ];
+  Future<void> testToken() async {
+    await Provider.of<TokenService>(context, listen: false)
+        .getFcmTokenStatusAndPostToken();
   }
 
-  void _showWidget() {
+  void _loadInitNotices(Filter filter, {bool add = false}) async {
+    //filter설정된 공지사항을 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false).getAllNotices(
+        Filter(
+            startDate: filter.startDate,
+            endDate: filter.endDate,
+            page: filter.page),
+        add: add);
+
     setState(() {
-      _isWidgetVisible = true;
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+              .mainNoticeList
+              .notices ??
+          [];
     });
   }
 
-  void _hideWidget() {
+  void _loadFilteredNotices(Filter filter, {bool add = false}) async {
+    //이 페이지에서 필터링된 공지사항을 가져옵니다.
+    await Provider.of<NoticeService>(context, listen: false).getFilteredNotices(
+        Filter(
+            providers: filter.providers,
+            categories: filter.categories,
+            startDate: filter.startDate,
+            endDate: filter.endDate,
+            page: filter.page),
+        add: add);
+
     setState(() {
-      _isWidgetVisible = false;
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .mainNoticeList
+          .notices!;
     });
   }
 
-  void _extendWidget() {
+  void _loadProviderNotices(Filter filter, int idx, {bool add = false}) async {
+    //선택한 단과대학의 공지사항을 가져옵니다.
+
+    await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
+        Filter(
+            providers: filter.providers,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1),
+        add: add);
+
     setState(() {
-      alertRatio = 1;
+      selectedIndex = idx;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .mainNoticeList
+          .notices!;
     });
   }
 
-  void _shrinkWidget() {
+  void _loadProvidersNotices(Filter filter, {bool add = false}) async {
+    //선택한 단과대학들의 공지사항을 가져옵니다.
+
+    await Provider.of<NoticeService>(context, listen: false).getProviderNotices(
+        Filter(
+            providers: filter.providers,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1),
+        add: add);
+
     setState(() {
-      alertRatio = 0.33;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+              .mainNoticeList
+              .notices ??
+          [];
     });
   }
+
+  void _loadCategoriesNotices(Filter filter, {bool add = false}) async {
+    //선택한 카테고리들의 공지사항을 가져옵니다.
+
+    await Provider.of<NoticeService>(context, listen: false).getCategoryNotices(
+        Filter(
+            categories: filter.categories,
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1),
+        add: add);
+
+    setState(() {
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .mainNoticeList
+          .notices!;
+    });
+  }
+
+  void _loadSearchedNotices(Filter filter, {bool add = false}) async {
+    //검색된 공지사항을 가져옵니다.
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String sevenDaysAgo = DateFormat('yyyy-MM-dd')
+        .format(DateTime.now().subtract(Duration(days: 7)));
+    await Provider.of<NoticeService>(context, listen: false).getSearchedNotices(
+        Filter(
+            startDate: sevenDaysAgo,
+            endDate: formattedDate,
+            page: 1,
+            keyword: filter.keyword),
+        add: add);
+
+    setState(() {
+      selectedIndex = 0;
+      noticeList = Provider.of<NoticeService>(context, listen: false)
+          .mainNoticeList
+          .notices!;
+    });
+  }
+
+  int showScrapList =
+      0; //0 at default, notice id value when showing scrap list.
+  List<Scrap> scrapList = [];
+
+  void _showScrapList(int noticeId) async {
+    await Provider.of<NoticeService>(context, listen: false).getScraps();
+
+    setState(() {
+      scrapList =
+          Provider.of<NoticeService>(context, listen: false).scrapList.scraps;
+      showScrapList = noticeId;
+    });
+  }
+
+  void _hideScrapList() {
+    _loadInitNotices(overallFilter);
+
+    if (showScrapList != 0) {
+      setState(() {
+        showScrapList = 0;
+      });
+    }
+  }
+
+  void loadNewNotifications() async {
+    await Provider.of<NotificationService>(context, listen: false)
+        .getNewNotifications();
+    setState(() {
+      newNotifications =
+          Provider.of<NotificationService>(context, listen: false)
+              .newNotificationRecords;
+    });
+  }
+
+  void addToScrap(int noticeId) {}
+
+  void removeFromScrap(int noticeId) {}
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<CategoryService, NoticeService>(
-      builder: (context, categoryService, noticeService, child) {
-        int? numOfPages = isSearch
-            ? noticeService.searchedNoticeList.totalPage
-            : (selectedCategory == "전체"
-                ? noticeService.noticeList.totalPage
-                : noticeService.selectedNoticeList.totalPage);
-        List<bool> pageNum = List.filled(numOfPages ?? 50, false);
-        return Scaffold(
-            resizeToAvoidBottomInset: false,
-            backgroundColor: const Color(0xFFCE4040),
-            body: Stack(children: [
-              Column(
-                children: [
-                  Container(
-                      height: 64,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFCE4040),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 88,
-                            margin: const EdgeInsets.all(15),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  "assets/images/icon_6.png",
-                                  width: 21.21,
-                                  height: 21.34,
-                                  color: Colors.white,
-                                ),
-                                Image.asset(
-                                  "assets/images/icon_7.png",
-                                  width: 36.79,
-                                  height: 21.34,
-                                  color: Colors.white,
-                                ),
-                              ],
+    return Scaffold(
+        body: Container(
+            padding: EdgeInsets.fromLTRB(16, 17, 16, 0),
+            child: Column(
+              children: [
+                Container(
+                    padding: EdgeInsets.fromLTRB(4, 0, 4, 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: MediaQuery.of(context).size.height * 0.04,
+                              child:
+                                  Image.asset("assets/images/kudog_home.png"),
+                              margin: EdgeInsets.only(top: 20, bottom: 15),
                             ),
-                          ),
-                          const Text(
-                            '홈',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 19,
-                              fontFamily: 'Noto Sans KR',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerRight,
-                            width: 88,
-                            margin: const EdgeInsets.all(15),
-                            child: InkWell(
-                              onTap: _showWidget,
-                              child: Image.asset(
-                                "assets/images/icon_8.png",
-                                width: 36.79,
-                                height: 21.34,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )),
-                  Expanded(
-                    child: Stack(children: [
-                      Container(
-                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                          decoration: const ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30),
-                              ),
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    height: 70,
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 10, 20, 10),
-                                    child: TextFormField(
-                                      controller: _searchController,
-                                      decoration: InputDecoration(
-                                        labelText: '검색어를 입력하세요',
-                                        labelStyle: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xFFD9D9D9)),
-                                        contentPadding:
-                                            const EdgeInsets.all(24.0),
-                                        suffixIcon: IconButton(
-                                            icon: const Icon(Icons.search),
-                                            onPressed: () {
-                                              setState(() async {
-                                                isSearch = true;
-                                                String searchTerm =
-                                                    _searchController.text;
-                                                await noticeService
-                                                    .searchNotices(searchTerm);
-                                                searchedNoticeList =
-                                                    noticeService
-                                                        .searchedNoticeList
-                                                        .notices!;
-                                              });
-                                            }),
-                                        border: const OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Color(0xff999999),
-                                              width: 2.0),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(25.0)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    child: DropdownButtonFormField<String>(
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                      ),
-                                      alignment: AlignmentDirectional.center,
-                                      value: selectedCategory,
-                                      onChanged: (String? newValue) {
-                                        setState(() async {
-                                          isLowerSelected = false;
-                                          isSearch = false;
-                                          _searchController.text = "";
-                                          selectedCategory = newValue!;
-                                          if (selectedCategory != "전체") {
-                                            selectedIndex = upperCategories
-                                                .indexOf(selectedCategory!);
-                                            await noticeService
-                                                .getUpperCategoryNotice(
-                                                    1, selectedIndex);
-                                            categoryService
-                                                .getLowerCategoryList(
-                                                    selectedIndex);
-                                            lowerCategories = categoryService
-                                                .lowerCategoryList;
-                                            lowerCategoryIds = categoryService
-                                                .lowerCategoryIdList;
-
-                                            noticeList = noticeService
-                                                .selectedNoticeList.notices!;
-                                            for (int i = 0;
-                                                i < lowerStates.length;
-                                                i++) {
-                                              lowerStates[i] = false;
-                                            }
-                                          } else {
-                                            await noticeService
-                                                .getAllNotices(1);
-                                            noticeList = noticeService
-                                                .noticeList.notices!;
-                                          }
-                                        });
-                                      },
-                                      items: upperCategories
-                                          .map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        },
-                                      ).toList(),
-                                    ),
-                                  ),
-                                  const Divider(
-                                      thickness: 0.5, color: Color(0xffCDCDCD)),
-                                  selectedCategory != "전체"
-                                      ? SizedBox(
-                                          height: selectedCategory != "전체"
-                                              ? 40
-                                              : 10,
-                                          child: ListView.builder(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                24, 0, 0, 0),
-                                            scrollDirection: Axis.horizontal,
-                                            itemCount: lowerCategories.length,
-                                            itemBuilder: (context, index) {
-                                              return GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      isLowerSelected = true;
-                                                      _searchController.text =
-                                                          "";
-                                                      isSearch = false;
-                                                      if (!lowerStates[index]) {
-                                                        selectOrReleaseLower(
-                                                            index);
-                                                        k = lowerCategoryIds[
-                                                            index];
-                                                        noticeService
-                                                            .getLowerCategoryNotice(
-                                                                1,
-                                                                k); // -> 현재 선택된 lowerCategory의 id를 저장하는 변수가 필요
-                                                        noticeList = noticeService
-                                                            .selectedNoticeList
-                                                            .notices!;
-                                                      }
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                      margin: const EdgeInsets
-                                                          .fromLTRB(0, 0, 8, 0),
-                                                      decoration: BoxDecoration(
-                                                        color: lowerStates[
-                                                                index]
-                                                            ? const Color
-                                                                .fromARGB(255,
-                                                                213, 124, 124)
-                                                            : Colors
-                                                                .transparent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(32),
-                                                        border: Border.all(
-                                                          color: lowerStates[
-                                                                  index]
-                                                              ? Colors
-                                                                  .transparent
-                                                              : const Color(
-                                                                  0xFFCDCDCD),
-                                                        ),
-                                                      ),
-                                                      child: Align(
-                                                        alignment:
-                                                            const AlignmentDirectional(
-                                                                0, 0),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                  24, 4, 24, 4),
-                                                          child: Text(
-                                                            lowerCategories[
-                                                                index],
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  'Noto Sans KR',
-                                                              color: lowerStates[
-                                                                      index]
-                                                                  ? const Color(
-                                                                      0xFFFFFFFF)
-                                                                  : const Color(
-                                                                      0xff696969),
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      )));
-                                            },
-                                          ))
-                                      : Container(
-                                          height: 10,
-                                        )
-                                ],
-                              ),
-                              isSearch
-                                  ? Expanded(
-                                      child: noticeService.searchedNoticeList
-                                              .notices!.isEmpty
-                                          ? const Column()
-                                          : ListView.builder(
-                                              padding: EdgeInsets.zero,
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.vertical,
-                                              itemCount:
-                                                  searchedNoticeList.length,
-                                              itemBuilder: (context, index) {
-                                                return noticeCard(
-                                                    notice: searchedNoticeList[
-                                                        index]);
-                                              },
-                                            ))
-                                  : Expanded(
-                                      child: noticeService
-                                              .noticeList.notices!.isEmpty
-                                          ? const Column()
-                                          : ListView.builder(
-                                              padding: EdgeInsets.zero,
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.vertical,
-                                              itemCount: noticeList.length,
-                                              itemBuilder: (context, index) {
-                                                return noticeCard(
-                                                    notice: noticeList[index]);
-                                              },
-                                            )),
-                              SizedBox(
-                                  height: 60,
-                                  child: ListView.builder(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: numOfPages,
-                                    itemBuilder: (context, index) {
-                                      return InkWell(
-                                          onTap: () {
-                                            pageClick(index + 1);
-                                            pageNum[index] = true;
-                                            if (selectedCategory == "전체") {
-                                              noticeService
-                                                  .getAllNotices(index + 1);
-                                              noticeList = noticeService
-                                                  .noticeList.notices!;
-                                            } else {
-                                              if (isLowerSelected) {
-                                                noticeService
-                                                    .getLowerCategoryNotice(
-                                                        index + 1, k);
-                                                noticeList = noticeService
-                                                    .selectedNoticeList
-                                                    .notices!;
-                                              } else {
-                                                noticeService
-                                                    .getUpperCategoryNotice(
-                                                        index + 1,
-                                                        selectedIndex - 1);
-                                                noticeList = noticeService
-                                                    .selectedNoticeList
-                                                    .notices!;
-                                              }
-                                            }
-                                          },
-                                          child: Container(
-                                              height: 20,
-                                              decoration: BoxDecoration(
-                                                color: currentPage == index + 1
-                                                    ? const Color.fromRGBO(
-                                                        206, 64, 64, 0.65)
-                                                    : const Color(0xFFCDCDCD),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              margin: const EdgeInsets.all(8),
-                                              padding: const EdgeInsets.all(8),
-                                              child: Text(
-                                                (index + 1).toString(),
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              )));
-                                    },
-                                  ))
-                            ],
-                          )),
-                      Positioned(
-                        child: Visibility(
-                            visible: _isWidgetVisible,
-                            child: Container(
-                                height: MediaQuery.of(context).size.height *
-                                    alertRatio,
+                          ],
+                        ),
+                        newNotifications.length == 0
+                            ? Container()
+                            : Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.06,
+                                padding: const EdgeInsets.only(
+                                    top: 6, left: 16, right: 12, bottom: 6),
+                                clipBehavior: Clip.antiAlias,
                                 decoration: ShapeDecoration(
-                                  color: Colors.white,
+                                  color: Color(0xFFFF3A46),
                                   shape: RoundedRectangleBorder(
-                                    side: const BorderSide(
-                                        width: 2, color: Color(0xFFCDCDCD)),
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: Column(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+                                    Text(
+                                      newNotifications[0].title!,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                     Container(
-                                        height: 18,
-                                        margin: const EdgeInsets.fromLTRB(
-                                            30, 23, 30, 30),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            GestureDetector(
-                                                onTap: _hideWidget,
-                                                child: Image.asset(
-                                                    "assets/images/close.png")),
-                                            Row(
-                                              children: [
-                                                Image.asset(
-                                                    "assets/images/alarm.png"),
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 4),
-                                                  child: const Text(
-                                                    '알림',
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 19,
-                                                      fontFamily:
-                                                          'Noto Sans KR',
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      height: 0,
+                                        child: Icon(
+                                            color: Colors.white,
+                                            Icons.arrow_circle_right_outlined))
+                                  ],
+                                ),
+                              ),
+                        Container(
+                          margin: EdgeInsets.only(
+                            bottom: 10,
+                          ),
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          child: TextField(
+                            cursorColor: Colors.black,
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Color(0xffF4F2F2), // 배경색 변경
+                              hintText: '키워드로 검색하세요.',
+                              hintStyle: TextStyle(
+                                  fontSize: 14, color: Color(0xFFD9D9D9)),
+                              contentPadding: EdgeInsets.all(24.0),
+                              suffixIcon: IconButton(
+                                  icon: Icon(Icons.search,
+                                      color: Color(0xffFF3B47)),
+                                  onPressed: () {
+                                    setState(() {
+                                      overallFilter = Filter(
+                                          categories: null,
+                                          providers: null,
+                                          keyword: _searchController.text,
+                                          startDate: overallFilter.startDate,
+                                          endDate: overallFilter.endDate);
+                                    });
+                                    _loadSearchedNotices(overallFilter);
+                                  }),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0)),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: majors.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          isMajorCardClicked = true;
+                                        });
+                                        if (index != 0) {
+                                          _loadProviderNotices(
+                                              Filter(
+                                                  providers: [majors[index]],
+                                                  page: 1),
+                                              index);
+                                          overallFilter = Filter(
+                                              providers: [majors[index]],
+                                              page: 1,
+                                              startDate:
+                                                  overallFilter.startDate,
+                                              endDate: overallFilter.endDate);
+                                        } else {
+                                          overallFilter = Filter(
+                                              providers: null,
+                                              page: 1,
+                                              startDate:
+                                                  overallFilter.startDate,
+                                              endDate: overallFilter.endDate);
+                                          _loadInitNotices(overallFilter);
+                                        }
+                                      },
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            border: selectedIndex != index
+                                                ? Border()
+                                                : Border(
+                                                    bottom: BorderSide(
+                                                      color: Color(0xffFF3B47),
+                                                      width: 2.0,
                                                     ),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                            Container(width: 20),
-                                          ],
-                                        )),
-                                    const Column(
-                                      children: [
-                                        alertCard(),
-                                        alertCard(),
-                                      ],
-                                    ),
-                                    Expanded(
-                                        child: GestureDetector(
-                                            onTap: alertRatio == 0.33
-                                                ? _extendWidget
-                                                : _shrinkWidget,
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                alertRatio == 0.33
-                                                    ? const Icon(Icons
-                                                        .keyboard_arrow_down)
-                                                    : const Icon(Icons
-                                                        .keyboard_arrow_up),
-                                                Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            bottom: 8),
-                                                    child: Text(
-                                                      alertRatio == 0.33
-                                                          ? "더보기"
-                                                          : "간략히",
-                                                      style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 12,
-                                                        fontFamily:
-                                                            'Noto Sans KR',
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        height: 0,
-                                                      ),
-                                                    ))
-                                              ],
-                                            )))
-                                  ],
-                                ))),
-                      ),
-                    ]),
-                  )
-
-                  //
-                ],
-              ),
-            ]));
-      },
-    );
-  }
-}
-
-class alertCard extends StatelessWidget {
-  const alertCard({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                child: const Text(
-                  '쿠독 서비스 인스타그램 친구 태그 이벤트 하고있어요!\n@kudog_email',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontFamily: 'Noto Sans KR',
-                    fontWeight: FontWeight.w700,
-                    height: 0,
-                  ),
-                ),
-              ),
-              const Text(
-                '2022-09-15',
-                style: TextStyle(
-                  color: Color(0xFF7E7E7E),
-                  fontSize: 10,
-                  fontFamily: 'Noto Sans KR',
-                  fontWeight: FontWeight.w400,
-                  height: 0,
-                ),
-              ),
-            ],
-          )),
-    );
-  }
-}
-
-class noticeCard extends StatefulWidget {
-  const noticeCard({super.key, required this.notice});
-  final Notice notice;
-  @override
-  _noticeCardState createState() => _noticeCardState();
-}
-
-class _noticeCardState extends State<noticeCard>
-    with AutomaticKeepAliveClientMixin {
-  bool iconState = false;
-
-  void changeIcon() {
-    setState(() {
-      widget.notice.scrapped = !widget.notice.scrapped!;
-      iconState = !iconState;
-    });
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return Consumer<NoticeService>(
-      builder: (context, noticeService, child) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ViewPostDetailPageWidget(notice: widget.notice)));
-          },
-          child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          ),
+                                          margin: EdgeInsets.only(right: 40),
+                                          child: Text(majors[index],
+                                              style: TextStyle(
+                                                color: selectedIndex != index
+                                                    ? Color(0xFF787474)
+                                                    : Color(0xffFF3B47),
+                                                fontSize: 18,
+                                                fontFamily: 'Pretendard',
+                                                fontWeight: FontWeight.w500,
+                                              ))));
+                                }))
+                      ],
+                    )),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     children: [
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.75,
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                        child: Text(
-                          widget.notice.title!,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontFamily: 'Noto Sans KR',
-                            fontWeight: FontWeight.w700,
-                            height: 0,
-                          ),
+                        margin: EdgeInsets.only(left: 18, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            isMajorCardClicked
+                                ? Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.05,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.85,
+                                    child: Row(children: [
+                                      FilterCard(
+                                          content: filterDate, type: "dates"),
+                                      overallFilter.providers != null
+                                          ? FilterCard(
+                                              content: overallFilter.providers!
+                                                  .join(', '),
+                                              type: "majors")
+                                          : FilterCard(
+                                              content: "전체", type: "majors"),
+                                    ]))
+                                : Row(children: [
+                                    FilterCard(
+                                        content: filterDate, type: "dates"),
+                                    overallFilterMap.isEmpty
+                                        ? Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.05,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.8,
+                                          )
+                                        : Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.05,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.8,
+                                            child: ListView.builder(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemCount:
+                                                    overallFilterMap.length,
+                                                itemBuilder: (context, index) {
+                                                  return CategoryFilterCard(
+                                                    major: overallFilterMap.keys
+                                                        .toList()[index],
+                                                    categories:
+                                                        overallFilterMap[
+                                                            overallFilterMap
+                                                                    .keys
+                                                                    .toList()[
+                                                                index]]!,
+                                                  );
+                                                }),
+                                          ),
+                                  ]),
+                          ],
                         ),
                       ),
                       GestureDetector(
                           onTap: () {
-                            changeIcon();
-                            noticeService.scrapNotice(widget.notice.id!);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        SetFilterPageWidget()));
                           },
-                          child: ImageIcon(
-                            AssetImage(widget.notice.scrapped!
-                                ? "assets/images/icon_9.png"
-                                : "assets/images/icon_10.png"),
-                            color: const Color(0xFFCE4040),
+                          child: Container(
+                            margin: EdgeInsets.only(right: 18, bottom: 10),
+                            padding: EdgeInsets.all(5),
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFF4F1F1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                    width: 20,
+                                    height: 20,
+                                    child: Image.asset(
+                                        "assets/images/filter.png")),
+                                Text(
+                                  " 필터",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xFF787474),
+                                    fontSize: 14,
+                                    fontFamily: 'Pretendard',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ))
                     ],
                   ),
-                  Text(
-                    widget.notice.date!,
-                    style: const TextStyle(
-                      color: Color(0xFF7E7E7E),
-                      fontSize: 10,
-                      fontFamily: 'Noto Sans KR',
-                      fontWeight: FontWeight.w400,
-                      height: 0,
-                    ),
-                  ),
-                ],
-              )),
-        );
-      },
-    );
+                ),
+                Expanded(
+                    child: NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification notification) {
+                          /*
+                     스크롤 할때 발생되는 이벤트
+                     해당 함수에서 어느 방향으로 스크롤을 했는지를 판단해
+                     리스트 가장 밑에서 아래서 위로 40프로 이상 스크롤 했을때 
+                     서버에서 데이터를 추가로 가져오는 루틴이 포함됨.
+                    */
+                          scrollNotification(notification);
+                          return false;
+                        },
+                        child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: noticeList.length,
+                            itemBuilder: (context, index) {
+                              GlobalKey _key = new GlobalKey();
+                              return noticeCard(
+                                  noticeId: noticeList[index].id, key: _key);
+                            })))
+              ],
+            )));
   }
 }

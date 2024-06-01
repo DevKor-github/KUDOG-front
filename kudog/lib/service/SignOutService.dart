@@ -4,16 +4,35 @@ import 'package:kudog/util/DioClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignOutService extends ChangeNotifier {
-  void signOut() async {
+  Future<void> SignOut() async {
+    SharedPreferences sharedPreference = await SharedPreferences.getInstance();
     try {
-      SharedPreferences sharedPreference =
-          await SharedPreferences.getInstance();
-      DioClient dioClient = DioClient();
-      await dioClient.delete("/auth/logout");
+      String? token = sharedPreference.getString("refresh_token");
+      Response response = await Dio().delete(
+        "https://api.kudog.devkor.club/auth/logout",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
       sharedPreference.remove("access_token");
       sharedPreference.remove("refresh_token");
-    } on DioError catch (e) {
-      // TODO: 에러 피드백
+
+      if (response.statusCode == 200) {
+        print('DELETE 요청 성공');
+      } else if (response.statusCode == 401) {
+        print("ACCESS_TOKEN 만료");
+        TokenService().refreshToken();
+        SignOut();
+      } else {
+        print('DELETE 요청 실패');
+        print('Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('DELETE 요청 에러');
+      print(e.toString());
     }
 
     notifyListeners();

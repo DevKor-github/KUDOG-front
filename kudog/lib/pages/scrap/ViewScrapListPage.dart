@@ -1,0 +1,154 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:kudog/etc/Colors.dart';
+import 'package:kudog/model/NoticeModel.dart';
+import 'package:kudog/model/ScrapModel.dart';
+import 'package:kudog/service/NoticeService.dart';
+import 'package:kudog/pages/scrap/ViewNewScrabPage.dart';
+import 'package:provider/provider.dart';
+import 'package:kudog/widgets/NoticeCard.dart';
+
+class ViewScrapListPageWidget extends StatefulWidget {
+  ViewScrapListPageWidget({
+    Key? key,
+    required this.boxId,
+  }) : super(key: key);
+
+  int boxId;
+
+  @override
+  _ViewScrapListPageWidgetState createState() =>
+      _ViewScrapListPageWidgetState();
+}
+
+class _ViewScrapListPageWidgetState extends State<ViewScrapListPageWidget> {
+  late List<bool> isSelected;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  late Dio dio;
+  // Scrap? scrap;
+  // List<Notice>? noticeList;
+  int currentPage = 1;
+
+  void _loadNotices() async {
+    await Provider.of<NoticeService>(context, listen: false)
+        .getScrappedNotices(widget.boxId);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dio = Dio();
+
+    _loadNotices();
+  }
+
+  @override
+  void dispose() {
+    dio.close();
+    super.dispose();
+  }
+
+  void onPageClick(int page) {
+    setState(() {
+      currentPage = page;
+    });
+    Provider.of<NoticeService>(context, listen: false)
+        .getScrappedNotices(widget.boxId!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<NoticeService>(builder: (context, noticeService, child) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0x00ffffff),
+          title: Text(
+            '스크랩 폴더',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.chevron_left_rounded),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                DropdownMenu(
+                  key: GlobalKey(),
+                  initialSelection: widget.boxId,
+                  onSelected: (value) {
+                    if (value == null || value is int) return;
+
+                    widget.boxId = value as int;
+                    _loadNotices();
+                  },
+                  textStyle: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600, color: black),
+                  inputDecorationTheme: InputDecorationTheme(
+                    border: InputBorder.none,
+                  ),
+                  dropdownMenuEntries: List.generate(
+                      noticeService.scrapList.scraps.length, (index) {
+                    return DropdownMenuEntry(
+                        value: noticeService.scrapList.scraps[index].id,
+                        label: noticeService.scrapList.scraps[index].name!);
+                  }),
+                ),
+                IconButton(
+                    onPressed: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ViewNewScrapPageWidget(
+                                        boxId: widget.boxId,
+                                      )))
+                        },
+                    icon: Icon(Icons.settings_rounded))
+              ]),
+              SizedBox(
+                height: 17,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  noticeService.scrapList.scraps
+                      .firstWhere((element) => element.id == widget.boxId)
+                      .description!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: gray1_5,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: noticeService.scrapNoticeList.notices?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    GlobalKey _key = new GlobalKey();
+                    return noticeCard(
+                        key: _key,
+                        noticeId:
+                            noticeService.scrapNoticeList.notices![index].id,
+                        isBorder: true);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+}

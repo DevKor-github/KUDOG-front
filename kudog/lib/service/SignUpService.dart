@@ -8,13 +8,16 @@ class SignUpService extends ChangeNotifier {
   int firstId = 0; //정상작동 : 1, 그렇지 않으면 : 0
   int secondId = 0;
   String secondAnswer = "";
+  bool isSuccess = false;
   Future<void> SignUp(SignUpUser user) async {
     Map<String, dynamic> data = user.toJson();
+
     try {
       Response response = await Dio()
           .post("https://api.kudog.devkor.club/auth/signup", data: data);
       if (response.statusCode == 201) {
         print("POST 요청 성공");
+        isSuccess = true;
       } else {
         print("POST 요청 실패");
         print("Status Code : ${response.statusCode}");
@@ -26,8 +29,6 @@ class SignUpService extends ChangeNotifier {
   }
 
   Future<void> SendEmail(String address) async {
-    // Map<String, dynamic> data = mail.toJson();
-    print(address);
     try {
       Response response = await Dio().post(
           "https://api.kudog.devkor.club/mail/verify/send",
