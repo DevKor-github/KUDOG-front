@@ -44,3 +44,4 @@ app.*.map.json
 # Android keys
 key.properties
 keystore.jks
+certificate.pem
