@@ -45,3 +45,4 @@ app.*.map.json
 key.properties
 keystore.jks
 certificate.pem
+upload_cert.der
