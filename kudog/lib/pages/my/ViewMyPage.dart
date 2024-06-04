@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:kudog/etc/Privacy.dart';
 import 'package:kudog/model/ScrapModel.dart';
 import 'package:kudog/model/UserInfoModel.dart';
 import 'package:kudog/pages/auth/LoginPage.dart';
@@ -544,18 +545,22 @@ class _ViewMyPageWidgetState extends State<ViewMyPageWidget> {
                                       ))
                                 ],
                               ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 20, bottom: 50),
-                                  child: Text(
-                                    '개인정보 처리 방침',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Color(0xFFCCC9C9),
-                                      fontSize: 12,
-                                      fontFamily: 'Pretendard',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ))
+                              GestureDetector(
+                                onTap: () => loadPrivacyRule(context),
+                                child: Container(
+                                    margin:
+                                        EdgeInsets.only(top: 20, bottom: 50),
+                                    child: Text(
+                                      '개인정보 처리 방침',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color(0xFFCCC9C9),
+                                        fontSize: 12,
+                                        fontFamily: 'Pretendard',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )),
+                              )
                             ],
                           ))
                     ],
@@ -613,7 +618,7 @@ class SimpleBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
-      width: MediaQuery.of(context).size.width * 0.9,
+      width: MediaQuery.of(context).size.width,
       height: 62,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
       clipBehavior: Clip.antiAlias,

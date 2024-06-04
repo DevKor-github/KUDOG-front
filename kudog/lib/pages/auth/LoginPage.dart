@@ -326,7 +326,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                GestureDetector(
+                                InkWell(
                                     onTap: () {
                                       Navigator.push(
                                           context,
