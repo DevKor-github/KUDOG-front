@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
@@ -302,7 +303,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                             )),
                         Container(
                             margin: EdgeInsets.only(top: 10),
-                            width: 120,
+                            width: 140,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -342,7 +343,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                         fontSize: 12,
                                         fontFamily: 'Pretendard',
                                         fontWeight: FontWeight.w400,
-                                        height: 0.15,
                                       ),
                                     ))
                               ],
@@ -372,7 +372,6 @@ class InputForm extends StatelessWidget {
     return GestureDetector(
         child: Container(
             width: MediaQuery.of(context).size.width * ratio,
-            // padding: EdgeInsets.only(left: 10),
             margin: EdgeInsets.only(bottom: 6),
             decoration: BoxDecoration(
               color: Color(0xffF4F2F2),
@@ -382,6 +381,8 @@ class InputForm extends StatelessWidget {
               cursorColor: Colors.black,
               controller: controller,
               decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(

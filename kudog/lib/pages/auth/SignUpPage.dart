@@ -69,7 +69,7 @@ class _SignUpPageWidgetState extends State<SignUpPageWidget> {
                   child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(bottom: 20),
+                        margin: EdgeInsets.only(bottom: 16),
                         child: signUpForm(
                             headText: "이름",
                             hintText: "  이름",

@@ -42,11 +42,17 @@ class SignUpService extends ChangeNotifier {
     } catch (e) {
       if (e is DioError) {
         if (e.response!.statusCode == 400) {
+          print("dedfe");
           firstAnswer = "korea.ac.kr형식의 이메일을 입력하세요.";
           print(e.response!.statusCode);
           print("POST 요청 실패");
         } else if (e.response!.statusCode == 409) {
+          print("heff");
           firstAnswer = "ⓘ 사용 중인 이메일입니다.";
+          print(e.response!.statusCode);
+          print("POST 요청 실패");
+        } else if (e.response!.statusCode == 406) {
+          firstAnswer = "ⓘ 입력값이 유효하지 않습니다.";
           print(e.response!.statusCode);
           print("POST 요청 실패");
         } else if (e.response!.statusCode == 429) {
@@ -54,7 +60,7 @@ class SignUpService extends ChangeNotifier {
           print(e.response!.statusCode);
           print("POST 요청 실패");
         } else {
-          firstAnswer = "ⓘ 잠시 후 요청하시기 바랍니다.";
+          firstAnswer = "ⓘ 알 수 없는 이유로 메일 전송에 실패했습니다. 잠시 후에 다시 시도해주세요.";
           print(e.response!.statusCode);
           print("POST 요청 실패");
           print("Status Code : ${e.response!.statusCode}");
