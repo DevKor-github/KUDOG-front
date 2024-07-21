@@ -60,7 +60,7 @@ class SignUpService extends ChangeNotifier {
           print(e.response!.statusCode);
           print("POST 요청 실패");
         } else {
-          firstAnswer = "ⓘ 알 수 없는 이유로 메일 전송에 실패했습니다. 잠시 후에 다시 시도해주세요.";
+          firstAnswer = "	알 수 없는 이유로 메일 전송에 실패했습니다. 잠시 후에 다시 시도해주세요.";
           print(e.response!.statusCode);
           print("POST 요청 실패");
           print("Status Code : ${e.response!.statusCode}");

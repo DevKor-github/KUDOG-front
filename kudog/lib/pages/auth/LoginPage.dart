@@ -5,6 +5,7 @@ import 'package:kudog/etc/Colors.dart';
 import 'package:kudog/model/AuthModel.dart';
 import 'package:kudog/model/NoticeModel.dart';
 import 'package:kudog/pages/NavigationPage.dart';
+import 'package:kudog/pages/auth/FindPwPage.dart';
 import 'package:kudog/pages/auth/SignUpPage.dart';
 import 'package:kudog/service/SignInService.dart';
 import 'package:kudog/util/DioClient.dart';
@@ -301,52 +302,61 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                                 ],
                               ),
                             )),
-                        Container(
-                            margin: EdgeInsets.only(top: 10),
-                            width: 140,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '비밀번호 찾기',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFFF4F2F2),
-                                    fontSize: 12,
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: FontWeight.w400,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => FindPwPageWidget()));
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(top: 10),
+                              width: 140,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '비밀번호 찾기',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFFF4F2F2),
+                                      fontSize: 12,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '|',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFFF4F2F2),
-                                    fontSize: 12,
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: FontWeight.w400,
+                                  Text(
+                                    '|',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFFF4F2F2),
+                                      fontSize: 12,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                                InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  SignUpPageWidget()));
-                                    },
-                                    child: Text(
-                                      '회원가입',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color(0xFFF4F2F2),
-                                        fontSize: 12,
-                                        fontFamily: 'Pretendard',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ))
-                              ],
-                            )),
+                                  InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SignUpPageWidget()));
+                                      },
+                                      child: Text(
+                                        '회원가입',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Color(0xFFF4F2F2),
+                                          fontSize: 12,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ))
+                                ],
+                              )),
+                        ),
                       ]),
                     )
                   ],
